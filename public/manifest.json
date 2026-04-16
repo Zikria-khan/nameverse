@@ -1,0 +1,21 @@
+{
+  "name": "NameVerse",
+  "short_name": "NameVerse",
+  "description": "Discover 65,000+ baby names with meanings, origins, and numerology across Islamic, Christian, and Hindu traditions",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4F46E5",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
