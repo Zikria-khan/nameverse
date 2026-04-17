@@ -2,7 +2,7 @@ import NamesDatabaseClient from './NameClientComponent';
 import React from 'react';
 import { notFound } from 'next/navigation';
 
-export const revalidate = 3600; // 1 hour ISR
+export const revalidate = 2592000; // 1 month ISR (names data is static)
 
 const DEFAULT_OG_IMAGE = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com'}/default-og.png`;
 

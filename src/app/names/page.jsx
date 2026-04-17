@@ -8,8 +8,8 @@ import { fetchFilters, fetchNames } from '@/lib/api/names';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.com';
 
-// ✅ ISR Configuration - Revalidate every 24 hours
-export const revalidate = 86400; // 24 hours in seconds
+// ✅ ISR Configuration - Revalidate every 1 month
+export const revalidate = 2592000; // 1 month in seconds
 
 // ✅ Generate Dynamic Metadata (for Google, social, and rich snippets)
 export async function generateMetadata({ searchParams }) {

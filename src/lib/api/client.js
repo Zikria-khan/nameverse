@@ -51,8 +51,8 @@ class RequestCache {
     
     if (!data || !timestamp) return null;
     
-    // Default TTL: 5 minutes for cached responses
-    const TTL = 5 * 60 * 1000;
+    // Default TTL: 1 hour for cached responses to stay within free limits
+    const TTL = 60 * 60 * 1000;
     if (Date.now() - timestamp > TTL) {
       this.delete(key);
       return null;

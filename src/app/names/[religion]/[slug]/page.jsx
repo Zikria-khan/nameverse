@@ -8,7 +8,7 @@ import { validateAndSanitizeSlug, isSingleLetter } from '@/lib/utils/slugValidat
 
 const NamesDatabaseClient = dynamic(() => import('../letter/[letter]/NameClientComponent'), { ssr: true });
 
-export const revalidate = 86400;  // revalidates once per day
+export const revalidate = 2592000;  // 1 month ISR (names data is static)
 
 export const dynamicParams = true;
 

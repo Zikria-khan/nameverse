@@ -88,14 +88,9 @@ export function middleware(request) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - sitemap files
-     * - robots.txt
+     * Optimized matcher to only run on name-related routes
+     * This reduces Edge Function invocations for static pages
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.xml).*)',
+    '/names/:path*',
   ],
 };
