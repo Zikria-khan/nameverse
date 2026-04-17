@@ -150,7 +150,7 @@ export default function HomePageClient() {
         }}
       />
 
-      <main role="main" className="min-h-screen flex flex-col bg-black">
+      <main role="main" className="min-h-screen flex flex-col bg-slate-50">
         {/* Hero Section */}
         <HeroSection />
 

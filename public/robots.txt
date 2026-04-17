@@ -4,12 +4,8 @@
 User-agent: *
 Allow: /
 
-# Sitemap locations
+# Sitemap location
 Sitemap: https://nameverse.vercel.app/sitemaps/sitemap.xml
-Sitemap: https://nameverse.vercel.app/islamic_sitemap_index.xml
-Sitemap: https://nameverse.vercel.app/christian_sitemap_index.xml
-Sitemap: https://nameverse.vercel.app/hindu_sitemap_index.xml
-Sitemap: https://nameverse.vercel.app/sitemap-main.xml
 
 # Crawl-delay (optional, for respectful crawling)
 Crawl-delay: 10

@@ -25,17 +25,22 @@ const navItems = [
       { href: '/hindu/girl-names', label: 'Hindu' },
     ]
   },
-  { href: '/blog', label: 'Blog' },
   { 
-    label: 'More', 
+    label: 'Resources', 
     submenu: [
+      { href: '/blog', label: 'Blog & Articles' },
       { href: '/guides/expert-naming-guide', label: 'Naming Guides' },
-      { href: '/names/islamic', label: 'All Islamic Names' },
-      { href: '/names/christian', label: 'All Christian Names' },
-      { href: '/names/hindu', label: 'All Hindu Names' },
-{ href: '/about', label: 'About Us' },
-{ href: '/terms', label: 'Terms' },
-{ href: '/privacy', label: 'Privacy' },
+      { href: '/names/islamic', label: 'Islamic Database' },
+      { href: '/names/christian', label: 'Christian Database' },
+      { href: '/names/hindu', label: 'Hindu Database' },
+    ]
+  },
+  { 
+    label: 'Company', 
+    submenu: [
+      { href: '/about', label: 'About Us' },
+      { href: '/terms', label: 'Terms' },
+      { href: '/privacy', label: 'Privacy' },
     ]
   },
 ];

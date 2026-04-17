@@ -34,6 +34,8 @@ import {
   ArrowRight,
 } from 'lucide-react';
 
+import AdUnit from '@/components/Ads/AdUnit';
+
 /**
  * 2026 SEO-Optimized Name Detail UI
  * - Visible high-value content (no hidden accordions for key data)
@@ -522,6 +524,9 @@ export default function NameDetailClientSEO2026({ data, initialLanguage = 'engli
             {data.spiritual_symbolism && <p className="text-gray-700 dark:text-gray-300 leading-relaxed"><strong>Symbolism:</strong> {data.spiritual_symbolism}</p>}
           </div>
         </section>
+
+        {/* Strategic Ad Placement - Below primary content but before secondary traits */}
+        <AdUnit adId="1606e7870f004d67136f85f2b1698cd3" className="mb-4" />
 
         {/* Emotional Traits & Numerology - Always Visible */}
         {(data.emotional_traits || data.numerology_meaning) && (

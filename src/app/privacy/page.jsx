@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Privacy Policy | NameVerse',
-  description: 'Read the Privacy Policy for NameVerse - learn how we collect, use, and protect your personal information when you use our baby names database.',
+  title: 'Privacy Policy | NameVerse — Protecting Your Personal Information',
+  description: 'Read the NameVerse Privacy Policy. We are committed to protecting your privacy and explaining how we handle your data when you use our baby names database.',
 };
 
 export default function PrivacyPage() {

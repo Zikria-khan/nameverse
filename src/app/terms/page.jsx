@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Terms of Service | NameVerse',
-  description: 'Read the Terms of Service for NameVerse - the trusted baby names database with 65,000+ names from Islamic, Hindu, and Christian traditions.',
+  title: 'Terms of Service | NameVerse — Use Our Names Database Responsibly',
+  description: 'Understand the terms and conditions of using NameVerse. Learn about our data usage, licensing, and user responsibilities for our baby names service.',
 };
 
 export default function TermsPage() {
