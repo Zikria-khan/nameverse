@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import {
   Search, ChevronLeft, ChevronRight, Star, Heart, Globe, Sparkles, BookOpen, Tag, ArrowUp, Loader2, Filter, SlidersHorizontal, X
 } from 'lucide-react';
+import useSWR from 'swr';
 
 export default function NamesDatabaseClient({
   initialNames = [],
@@ -40,9 +41,39 @@ export default function NamesDatabaseClient({
   const [genderFilter, setGenderFilter] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
 
-  const names = initialNames;
-  const totalResults = propTotalResults || initialTotal;
-  const perPage = perPageDefault;
+  // Define a fetcher function for SWR
+  const fetcher = useCallback(async (url) => {
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error('Failed to fetch data');
+    }
+    return res.json();
+  }, []);
+
+  // Construct the API URL based on filters
+  const apiUrl = useMemo(() => {
+    const params = new URLSearchParams({
+      religion: selectedReligion,
+      letter: selectedLetter.toLowerCase(),
+      page: currentPage,
+      limit: perPage,
+      sort: sortBy,
+      ...(genderFilter !== 'all' && { gender: genderFilter }),
+      ...(searchTerm && { search: searchTerm }),
+    });
+    return `/api/v1/names/${selectedReligion}/letter/${selectedLetter.toLowerCase()}?${params.toString()}`;
+  }, [selectedReligion, selectedLetter, currentPage, perPage, sortBy, genderFilter, searchTerm]);
+
+  // Use SWR for data fetching
+  const { data: swrData, error: swrError, isLoading: swrLoading } = useSWR(apiUrl, fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    dedupingInterval: 60000, // Deduplicate requests within 60 seconds
+  });
+
+  const names = swrData?.data?.names || initialNames;
+  const totalResults = swrData?.data?.pagination?.totalCount || initialTotal;
+  const isLoading = swrLoading;
 
   const religions = useMemo(() => [
     { value: 'islamic', label: 'Islamic', icon: Star, color: 'from-emerald-500 to-teal-600' },
@@ -104,46 +135,17 @@ export default function NamesDatabaseClient({
     }
   }, []);
 
-  const filteredNames = useMemo(() => {
-    let filtered = names;
-    
-    // Gender filter
-    if (genderFilter !== 'all') {
-      filtered = filtered.filter(name => name.gender?.toLowerCase() === genderFilter);
-    }
-    
-    // Search filter
-    if (searchTerm.trim()) {
-      const term = searchTerm.toLowerCase().trim();
-      filtered = filtered.filter(name =>
-        (name.name ?? '').toLowerCase().includes(term) ||
-        (name.short_meaning ?? '').toLowerCase().includes(term) ||
-        (name.origin ?? '').toLowerCase().includes(term)
-      );
-    }
-    
-    return filtered;
-  }, [names, searchTerm, genderFilter]);
+
 
   // Paginated names with load more
   const displayedNames = useMemo(() => {
-    return filteredNames.slice(0, displayedCount);
-  }, [filteredNames, displayedCount]);
+    return names;
+  }, [names]);
 
-  const hasMoreToLoad = displayedCount < filteredNames.length;
-  const totalPages = Math.ceil(filteredNames.length / perPage);
+  const hasMoreToLoad = false; // No more client-side loading
+  const totalPages = Math.ceil(totalResults / perPage);
 
-  const handleLoadMore = useCallback(() => {
-    setIsLoadingMore(true);
-    setTimeout(() => {
-      setDisplayedCount(prev => Math.min(prev + perPageDefault, filteredNames.length));
-      setIsLoadingMore(false);
-    }, 500);
-  }, [perPageDefault, filteredNames.length]);
 
-  useEffect(() => {
-    setDisplayedCount(perPageDefault);
-  }, [selectedReligion, selectedLetter, searchTerm, genderFilter, perPageDefault]);
 
   const currentReligion = religions.find(r => r.value === selectedReligion);
 
@@ -395,68 +397,32 @@ export default function NamesDatabaseClient({
                 ))}
               </div>
 
-              {/* Load More or Pagination */}
-              <div className="flex flex-col items-center gap-4">
-                {hasMoreToLoad ? (
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <nav className="flex items-center justify-center gap-2 mt-8" aria-label="Pagination">
                   <button
-                    onClick={handleLoadMore}
-                    disabled={isLoadingMore}
-                    className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-xl transition-all disabled:opacity-50 flex items-center gap-2 transform hover:scale-105"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1 || isLoading}
+                    className="p-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    aria-label="Previous page"
                   >
-                    {isLoadingMore ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Loading...
-                      </>
-                    ) : (
-                      <>
-                        Load More Names
-                        <span className="bg-white/20 px-3 py-0.5 rounded-full text-xs">
-                          {filteredNames.length - displayedCount} remaining
-                        </span>
-                      </>
-                    )}
+                    <ChevronLeft className="w-4 h-4" />
                   </button>
-                ) : (
-                  <div className="text-center">
-                    <p className="text-sm text-gray-600 mb-2">
-                      Showing all {filteredNames.length} names
-                    </p>
-                  </div>
-                )}
 
-                {/* Page Indicator */}
-                {totalPages > 1 && (
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => {
-                        setDisplayedCount(Math.max(perPage, displayedCount - perPage));
-                        scrollToTop();
-                      }}
-                      disabled={displayedCount <= perPage}
-                      className="p-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </button>
-                    
-                    <span className="text-sm text-gray-600 font-medium px-4">
-                      Page {Math.ceil(displayedCount / perPage)} of {totalPages}
-                    </span>
+                  <span className="text-sm text-gray-600 font-medium px-4">
+                    Page {currentPage} of {totalPages}
+                  </span>
 
-                    <button
-                      onClick={() => {
-                        if (hasMoreToLoad) {
-                          handleLoadMore();
-                        }
-                      }}
-                      disabled={!hasMoreToLoad}
-                      className="p-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                )}
-              </div>
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages || isLoading}
+                    className="p-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    aria-label="Next page"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </nav>
+              )}
             </>
           )}
         </main>

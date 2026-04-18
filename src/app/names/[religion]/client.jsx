@@ -5,6 +5,7 @@ import {
   Search, X, Filter, ChevronLeft, ChevronRight, Heart, Globe, Star, BookOpen, User, Hash
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import useSWR from 'swr';
 
 // ==========================================
 // CONFIGURATION
@@ -42,23 +43,16 @@ const GENDERS = [
 
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
-// ==========================================
 // API FUNCTIONS
 // ==========================================
 
-async function fetchNames(religion, params) {
-  try {
-    const queryParams = new URLSearchParams({
-      religion,
-      ...params
-    });
-    const response = await fetch(`${API_BASE}/api/v1/names?${queryParams}`);
-    return await response.json();
-  } catch (error) {
-    
-    return { success: false, data: [], pagination: {} };
+const fetcher = async (url) => {
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error('Failed to fetch data');
   }
-}
+  return res.json();
+};
 
 function normalizeGender(gender) {
   const g = (gender || '').toLowerCase();
@@ -261,40 +255,93 @@ export default function ReligiousNamesBrowser({
 
   const currentReligion = RELIGIONS.find(r => r.id === religion) || RELIGIONS[0];
 
-  // Load names when filters change with optimized debouncing
+  // New state for filters
+  const [filters, setFilters] = useState({});
+  const [filtersLoading, setFiltersLoading] = useState(false);
+
+  // Helper function for cleaning and deduplicating filter items
+  const deduplicateAndClean = useCallback((items) => {
+    if (!items) return [];
+    const seen = new Set();
+    return items
+      .map(item => item.replace(/\s*\([^)]*\)/g, "").trim())
+      .filter(item => {
+        const lower = item.toLowerCase();
+        if (!lower || seen.has(lower)) return false;
+        seen.add(lower);
+        return true;
+      })
+      .sort();
+  }, []);
+
+  // Construct API URL for names
+  const namesApiUrl = useMemo(() => {
+    const queryParams = new URLSearchParams({
+      religion,
+      page,
+      limit: pageSize,
+      sort,
+      ...(gender && { gender }),
+      ...(search && { search }),
+      ...(startsWith && { startsWith })
+    });
+    return `${API_BASE}/api/v1/names?${queryParams.toString()}`;
+  }, [religion, page, pageSize, sort, gender, search, startsWith]);
+
+  // Use SWR for names data
+  const { data: namesSwrData, error: namesSwrError, isLoading: namesSwrLoading } = useSWR(namesApiUrl, fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    dedupingInterval: 60000, // Deduplicate requests within 60 seconds
+  });
+
+  // Construct API URL for filters
+  const filtersApiUrl = useMemo(() => {
+    return `${API_BASE}/api/v1/filters/${religion}`;
+  }, [religion]);
+
+  // Use SWR for filters data
+  const { data: filtersSwrData, error: filtersSwrError, isLoading: filtersSwrLoading } = useSWR(filtersApiUrl, fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    dedupingInterval: 86400000, // 24 hours deduplication for filters
+  });
+
+  // Update names and pagination when SWR data changes
   useEffect(() => {
-    if (page === 1 && !gender && !search && !startsWith && sort === 'asc' && names.length > 0) {
-      return;
+    if (namesSwrData) {
+      setNames(namesSwrData.data || []);
+      setTotalPages(namesSwrData.pagination?.totalPages || 1);
+      setTotalCount(namesSwrData.pagination?.totalCount || 0);
     }
+  }, [namesSwrData]);
 
-    const timer = setTimeout(() => {
-      setLoading(true);
-      const params = {
-        page,
-        limit: pageSize,
-        sort,
-        ...(gender && { gender }),
-        ...(search && { search }),
-        ...(startsWith && { startsWith })
+  // Update filters when SWR data changes
+  useEffect(() => {
+    if (filtersSwrData) {
+      const freshFiltersRaw = filtersSwrData;
+      const freshFilters = {
+        origins: deduplicateAndClean(freshFiltersRaw.origins),
+        languages: deduplicateAndClean(freshFiltersRaw.languages),
+        categories: deduplicateAndClean(freshFiltersRaw.categories),
+        themes: deduplicateAndClean(freshFiltersRaw.themes),
+        lucky_days: deduplicateAndClean(freshFiltersRaw.lucky_days),
+        lucky_colors: deduplicateAndClean(freshFiltersRaw.lucky_colors),
+        lucky_stones: deduplicateAndClean(freshFiltersRaw.lucky_stones),
+        genders: deduplicateAndClean(freshFiltersRaw.genders)
       };
+      setFilters(freshFilters);
+    }
+  }, [filtersSwrData, deduplicateAndClean]);
 
-      fetchNames(religion, params)
-        .then(data => {
-          if (data.success) {
-            setNames(data.data || []);
-            setTotalPages(data.pagination?.totalPages || 1);
-            setTotalCount(data.pagination?.totalCount || 0);
-          }
-        })
-        .catch(error => {
-          console.error('Error fetching names:', error);
-          setNames([]);
-        })
-        .finally(() => setLoading(false));
-    }, search ? 500 : 100); // Longer debounce for search
+  // Update loading states
+  useEffect(() => {
+    setLoading(namesSwrLoading);
+  }, [namesSwrLoading]);
 
-    return () => clearTimeout(timer);
-  }, [page, pageSize, sort, gender, search, startsWith, religion, names.length]);
+  useEffect(() => {
+    setFiltersLoading(filtersSwrLoading);
+  }, [filtersSwrLoading]);
 
   const handleReligionChange = (newReligion) => {
     setReligion(newReligion);

@@ -1,9 +1,10 @@
 // src/app/names/NamesClient.jsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import useSWR from 'swr';
 import {
   Search,
   Filter,
@@ -26,6 +27,46 @@ export default function NamesClient({ initialData, filterOptions, searchParams }
   const [isLoading, setIsLoading] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+
+  // Define a fetcher function for SWR
+  const fetcher = useCallback(async (url) => {
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error('Failed to fetch data');
+    }
+    return res.json();
+  }, []);
+
+  // Construct the API URL based on filters
+  const apiUrl = useMemo(() => {
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) params.set(key, value);
+    });
+    return `/api/names?${params.toString()}`;
+  }, [filters]);
+
+  // Use SWR for data fetching
+  const { data: swrData, error: swrError, isLoading: swrLoading } = useSWR(apiUrl, fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    dedupingInterval: 60000, // Deduplicate requests within 60 seconds
+  });
+
+  useEffect(() => {
+    if (swrData) {
+      setNames(swrData.data?.names || []);
+      setPagination(swrData.data?.pagination || {});
+    }
+  }, [swrData]);
+
+  useEffect(() => {
+    if (swrLoading) {
+      setIsLoading(true);
+    } else {
+      setIsLoading(false);
+    }
+  }, [swrLoading]);
 
   const [filters, setFilters] = useState({
     religion: searchParams.religion || 'islamic',
@@ -70,31 +111,13 @@ export default function NamesClient({ initialData, filterOptions, searchParams }
     router.push(`/names?${params.toString()}`, { scroll: false });
   };
 
-  const handleFilterChange = async (key, value) => {
+  const handleFilterChange = (key, value) => {
     const newFilters = { ...filters, [key]: value, page: '1' };
     setFilters(newFilters);
     updateURL(newFilters);
-    await fetchNames(newFilters);
   };
 
-  const fetchNames = async (currentFilters) => {
-    setIsLoading(true);
-    const params = new URLSearchParams();
-    Object.entries(currentFilters).forEach(([key, value]) => {
-      if (value) params.set(key, value);
-    });
 
-    try {
-      const response = await fetch(`http://localhost:5000/api/names?${params}`);
-      const data = await response.json();
-      setNames(data.data?.names || []);
-      setPagination(data.data?.pagination || {});
-    } catch (error) {
-      
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const clearFilters = () => {
     const defaultFilters = {
@@ -116,7 +139,6 @@ export default function NamesClient({ initialData, filterOptions, searchParams }
     };
     setFilters(defaultFilters);
     updateURL(defaultFilters);
-    fetchNames(defaultFilters);
   };
 
   const handlePageChange = (newPage) => {

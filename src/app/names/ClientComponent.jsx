@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, Filter, X, Loader2, Heart, Sparkles, BookOpen, Star, Users, Globe, ChevronRight, Zap, Gem, Palette, Tag } from 'lucide-react';
 import { fetchFilters, fetchNames } from '@/lib/api/names';
+import useSWR from 'swr';
 
 export default function BabyNamesClient({ initialData, initialReligion = 'islamic' }) {
   const router = useRouter();
@@ -30,6 +31,14 @@ export default function BabyNamesClient({ initialData, initialReligion = 'islami
 
   const [currentPage, setCurrentPage] = useState(1);
 
+  const fetcher = useCallback(async (url) => {
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error('Failed to fetch data');
+    }
+    return res.json();
+  }, []);
+
   const deduplicateAndClean = useCallback((items) => {
     if (!items) return [];
     const seen = new Set();
@@ -44,106 +53,70 @@ export default function BabyNamesClient({ initialData, initialReligion = 'islami
       .sort();
   }, []);
 
-  const loadFiltersFromCache = useCallback((religionKey) => {
-    if (typeof window === 'undefined') return null;
-    try {
-      const cached = localStorage.getItem(`filters_${religionKey}`);
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        const cacheAge = Date.now() - (parsed.timestamp || 0);
-        if (cacheAge < 24 * 60 * 60 * 1000) {
-          return parsed.data;
-        }
-      }
-    } catch (error) {
-      
-    }
-    return null;
-  }, []);
+  // Construct API URL for names
+  const namesApiUrl = useMemo(() => {
+    const params = new URLSearchParams({
+      page: currentPage,
+      limit: 20,
+      religion,
+      ...selectedFilters
+    });
+    return `/api/v1/names?${params.toString()}`;
+  }, [currentPage, religion, selectedFilters]);
 
-  const saveFiltersToCache = useCallback((religionKey, filtersData) => {
-    if (typeof window === 'undefined') return;
-    try {
-      localStorage.setItem(`filters_${religionKey}`, JSON.stringify({
-        data: filtersData,
-        timestamp: Date.now()
-      }));
-    } catch (error) {
-      
-    }
-  }, []);
+  // Use SWR for names data
+  const { data: namesSwrData, error: namesSwrError, isLoading: namesSwrLoading } = useSWR(namesApiUrl, fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    dedupingInterval: 60000, // Deduplicate requests within 60 seconds
+  });
 
-  const fetchFiltersData = useCallback(async () => {
-    const cachedFilters = loadFiltersFromCache(religion);
-    
-    if (cachedFilters) {
-      setFilters(cachedFilters);
-      setFiltersLoading(false);
-    
-      try {
-        const freshFiltersRaw = await fetchFilters(religion);
-        if (freshFiltersRaw) {
-          const freshFilters = {
-            origins: deduplicateAndClean(freshFiltersRaw.origins),
-            languages: deduplicateAndClean(freshFiltersRaw.languages),
-            categories: deduplicateAndClean(freshFiltersRaw.categories),
-            themes: deduplicateAndClean(freshFiltersRaw.themes),
-            lucky_days: deduplicateAndClean(freshFiltersRaw.lucky_days),
-            lucky_colors: deduplicateAndClean(freshFiltersRaw.lucky_colors),
-            lucky_stones: deduplicateAndClean(freshFiltersRaw.lucky_stones),
-            genders: deduplicateAndClean(freshFiltersRaw.genders)
-          };
-          setFilters(freshFilters);
-          saveFiltersToCache(religion, freshFilters);
-        }
-      } catch (error) {
-        
-      }
-    } else {
-      setFiltersLoading(true);
-      try {
-        const freshFiltersRaw = await fetchFilters(religion);
-        if (freshFiltersRaw) {
-          const freshFilters = {
-            origins: deduplicateAndClean(freshFiltersRaw.origins),
-            languages: deduplicateAndClean(freshFiltersRaw.languages),
-            categories: deduplicateAndClean(freshFiltersRaw.categories),
-            themes: deduplicateAndClean(freshFiltersRaw.themes),
-            lucky_days: deduplicateAndClean(freshFiltersRaw.lucky_days),
-            lucky_colors: deduplicateAndClean(freshFiltersRaw.lucky_colors),
-            lucky_stones: deduplicateAndClean(freshFiltersRaw.lucky_stones),
-            genders: deduplicateAndClean(freshFiltersRaw.genders)
-          };
-          setFilters(freshFilters);
-          saveFiltersToCache(religion, freshFilters);
-        }
-      } catch (error) {
-        
-      }
-      setFiltersLoading(false);
-    }
-  }, [religion, deduplicateAndClean, loadFiltersFromCache, saveFiltersToCache]);
+  // Construct API URL for filters
+  const filtersApiUrl = useMemo(() => {
+    return `/api/v1/filters/${religion}`;
+  }, [religion]);
 
-  const fetchNamesData = useCallback(async (page = 1) => {
-    setLoading(true);
-    try {
-      const namesData = await fetchNames({
-        page,
-        limit: 20,
-        religion,
-        ...selectedFilters
-      });
-    
-      if (namesData.success || namesData.data) {
-        setNames(namesData.data || []);
-        setPagination(namesData.pagination);
-        setCurrentPage(page);
-      }
-    } catch (error) {
-      
+  // Use SWR for filters data
+  const { data: filtersSwrData, error: filtersSwrError, isLoading: filtersSwrLoading } = useSWR(filtersApiUrl, fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    dedupingInterval: 86400000, // 24 hours deduplication for filters
+  });
+
+  // Update names and pagination when SWR data changes
+  useEffect(() => {
+    if (namesSwrData) {
+      setNames(namesSwrData.data || []);
+      setPagination(namesSwrData.pagination);
     }
-    setLoading(false);
-  }, [religion, selectedFilters]);
+  }, [namesSwrData]);
+
+  // Update filters when SWR data changes
+  useEffect(() => {
+    if (filtersSwrData) {
+      const freshFiltersRaw = filtersSwrData;
+      const freshFilters = {
+        origins: deduplicateAndClean(freshFiltersRaw.origins),
+        languages: deduplicateAndClean(freshFiltersRaw.languages),
+        categories: deduplicateAndClean(freshFiltersRaw.categories),
+        themes: deduplicateAndClean(freshFiltersRaw.themes),
+        lucky_days: deduplicateAndClean(freshFiltersRaw.lucky_days),
+        lucky_colors: deduplicateAndClean(freshFiltersRaw.lucky_colors),
+        lucky_stones: deduplicateAndClean(freshFiltersRaw.lucky_stones),
+        genders: deduplicateAndClean(freshFiltersRaw.genders)
+      };
+      setFilters(freshFilters);
+    }
+  }, [filtersSwrData, deduplicateAndClean]);
+
+  // Update loading states
+  useEffect(() => {
+    setLoading(namesSwrLoading);
+  }, [namesSwrLoading]);
+
+  useEffect(() => {
+    setFiltersLoading(filtersSwrLoading);
+  }, [filtersSwrLoading]);
 
   const handleFilterChange = useCallback((filterType, value) => {
     const newFilters = { ...selectedFilters, [filterType]: value };
@@ -151,9 +124,7 @@ export default function BabyNamesClient({ initialData, initialReligion = 'islami
     setCurrentPage(1);
   }, [selectedFilters]);
 
-  useEffect(() => {
-    fetchNamesData(currentPage);
-  }, [selectedFilters, religion, currentPage, fetchNamesData]);
+
 
   const handleReligionChange = useCallback((newReligion) => {
     setReligion(newReligion);
@@ -206,9 +177,7 @@ export default function BabyNamesClient({ initialData, initialReligion = 'islami
     }
   }, []);
 
-  useEffect(() => {
-    fetchFiltersData();
-  }, [fetchFiltersData]);
+
 
   const activeFiltersCount = useMemo(() => 
     Object.values(selectedFilters).filter(v => v).length, 

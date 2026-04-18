@@ -24,7 +24,7 @@ export default async function Image({ params }) {
 
   try {
     const response = await fetch(`${API_BASE}/api/v1/names/${religion}/${slug}`, {
-      next: { revalidate: 3600 }
+      next: { revalidate: 2592000 } // 1 month revalidate for OG image data
     });
     const data = await response.json();
     nameData = data.data;

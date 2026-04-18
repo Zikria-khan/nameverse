@@ -161,7 +161,7 @@ export default async function NamesDatabaseServer({ params, searchParams }) {
     
     // Added timeout and better error handling
     const response = await fetch(apiUrl, { 
-      next: { revalidate: 3600 },
+      next: { revalidate: 2592000 }, // 1 month revalidate for data
       signal: AbortSignal.timeout(30000) // 30 second timeout
     });
     

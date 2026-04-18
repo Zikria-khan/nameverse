@@ -173,7 +173,7 @@ export const fetchNameDetail = cache(async (religion, slug) => {
  * @param {number} options.limit - Results limit (default: 20)
  * @returns {Promise<Object>} Search results
  */
-export async function searchNames(query, options = {}) {
+export const searchNames = cache(async (query, options = {}) => {
   try {
     if (!query || query.trim().length < 2) {
       return {
@@ -200,15 +200,16 @@ export async function searchNames(query, options = {}) {
       query: data.query || query,
     };
   } catch (error) {
-
+    // Error fetching search results
     return {
       data: [],
       count: 0,
       success: false,
-      error: error.message,
+      message: 'Error fetching search results',
     };
   }
-}
+});
+
 
 /**
  * Legacy: Fetch names using old endpoint

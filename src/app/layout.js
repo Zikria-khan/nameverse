@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer/Footer";
 import AppInstallPopup from "./install";
 import SWRegister from "./sw"; // Register service worker
+import Script from 'next/script';
 import ErrorBoundary from "@/components/ErrorBoundary/ErrorBoundary";
 import ResourceHints from "@/components/Performance/ResourceHints";
 import PerformanceInit from "./performance";
@@ -11,6 +12,7 @@ import StructuredData from "@/components/SEO/StructuredData";
 import GoogleBotMeta from "@/components/SEO/GoogleBotMeta";
 import { AppProvider } from "@/contexts/AppContext";
 import LoadingWrapper from "@/components/LoadingAnimation/LoadingWrapper";
+import { Suspense } from 'react';
 
 // Use environment variable or default - will be overridden client-side if needed
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://nameverse.vercel.app";
@@ -138,25 +140,28 @@ export default function RootLayout({ children }) {
           }}
         />
         {/* Ahrefs analytics script */}
-        <script
+        <Script
           src="https://analytics.ahrefs.com/analytics.js"
           data-key="Xu6eED27Kx1ZuJhBcJDJsA"
-          async
-        ></script>
+          strategy="afterInteractive"
+        />
 
         {/* AdSense Script - for displaying ads on all pages */}
-        <script
+        <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1510675468129183"
           crossOrigin="anonymous"
-        ></script>
+          strategy="afterInteractive"
+        />
       </head>
 
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-gray-900`}>
         <ErrorBoundary>
           <AppProvider>
             <PerformanceInit />
-            <Navbar />
+            <Suspense fallback={<div>Loading Navbar...</div>}>
+              <Navbar />
+            </Suspense>
             {children}
             <Footer />
             <AppInstallPopup />
