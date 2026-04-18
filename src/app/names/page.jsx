@@ -3,10 +3,11 @@
 // Global Baby Names Page — ISR with Static Generation
 // ============================================
 
+import { cache } from 'react';
 import BabyNamesClient from './ClientComponent';
 import { fetchFilters, fetchNames } from '@/lib/api/names';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
 // ✅ ISR Configuration - Revalidate every 1 month
 export const revalidate = 2592000; // 1 month in seconds
@@ -168,8 +169,8 @@ export async function generateMetadata({ searchParams }) {
   };
 }
 
-// ✅ Fetch Data from API (with ISR caching)
-async function fetchInitialData(searchParams = {}) {
+// ✅ Fetch Data from API (with ISR caching) - Cached for deduplication
+const fetchInitialData = cache(async (searchParams = {}) => {
   try {
     // Get filters with ISR cache - this rarely changes
     const filters = await fetchFilters('islamic');
@@ -182,7 +183,7 @@ async function fetchInitialData(searchParams = {}) {
       gender: searchParams?.gender || '',
     };
 
-    // Fetch names with shorter revalidation for fresh data
+    // Fetch names with cached deduplication
     const namesData = await fetchNames(params);
 
     return {
@@ -191,7 +192,6 @@ async function fetchInitialData(searchParams = {}) {
       pagination: namesData.pagination || null,
     };
   } catch (error) {
-    
     // Return fallback data that allows the page to render
     return { 
       filters: null, 
@@ -199,7 +199,7 @@ async function fetchInitialData(searchParams = {}) {
       pagination: null 
     };
   }
-}
+});
 
 // ✅ Generate static params for popular filter combinations
 export async function generateStaticParams() {

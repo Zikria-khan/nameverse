@@ -14,9 +14,9 @@ export const metadata = {
     url: `${SITE_URL}/about`,
     type: 'website',
     images: [{
-      url: `${SITE_URL}/og-image.png`,
-      width: 1200,
-      height: 630,
+      url: `${SITE_URL}/logo.png`,
+      width: 512,
+      height: 512,
       alt: 'About Zakriya Khan'
     }]
   },

@@ -47,8 +47,8 @@ export default function HomePageClient() {
                 "logo": {
                   "@type": "ImageObject",
                   "url": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.com'}/logo.png`,
-                  "width": 200,
-                  "height": 60
+                  "width": 512,
+                  "height": 512
                 },
                 "sameAs": [
                   "https://www.facebook.com/nameverse",

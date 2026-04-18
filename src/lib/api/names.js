@@ -13,6 +13,7 @@
  */
 
 import { apiClient } from './client';
+import { cache } from 'react';
 
 /**
  * Fetch filters for a specific religion
@@ -20,7 +21,7 @@ import { apiClient } from './client';
  * @param {string} religion - Religion category (islamic, christian, hindu)
  * @returns {Promise<Object>} Filters object with genders, origins, letters
  */
-export async function fetchFilters(religion) {
+export const fetchFilters = cache(async (religion) => {
   try {
     if (!religion) {
       // Religion is required for fetching filters
@@ -58,7 +59,7 @@ export async function fetchFilters(religion) {
       totalNames: 0,
     };
   }
-}
+});
 
 /**
  * Fetch names with pagination and filtering
@@ -74,7 +75,7 @@ export async function fetchFilters(religion) {
  * @param {string} params.sort - Sort order (asc/desc)
  * @returns {Promise<Object>} Names data with pagination
  */
-export async function fetchNames(params = {}) {
+export const fetchNames = cache(async (params = {}) => {
   try {
     const { religion, page = 1, limit = 50, ...filters } = params;
 
@@ -124,7 +125,7 @@ export async function fetchNames(params = {}) {
       success: false,
     };
   }
-}
+});
 
 /**
  * Fetch single name by religion and slug
@@ -133,7 +134,7 @@ export async function fetchNames(params = {}) {
  * @param {string} slug - Name slug
  * @returns {Promise<Object|null>} Name details or null
  */
-export async function fetchNameDetail(religion, slug) {
+export const fetchNameDetail = cache(async (religion, slug) => {
   if (!religion || !slug) {
     return null;
   }
@@ -161,7 +162,7 @@ export async function fetchNameDetail(religion, slug) {
     // Silently handle all errors - they're handled by notFound() in the page
     return null;
   }
-}
+});
 
 /**
  * Search names across religions

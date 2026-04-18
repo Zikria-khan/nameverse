@@ -1,7 +1,8 @@
 // components/names/NameDetailClientSEO2026.jsx
 'use client';
 
-import { useState, useRef, useMemo, useCallback } from 'react';
+import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
+import useSWR from 'swr';
 import Link from 'next/link';
 import {
   ChevronDown,
@@ -58,27 +59,25 @@ export default function NameDetailClientSEO2026({ data, initialLanguage = 'engli
     themes: [],
     categories: []
   });
-  const [filterData, setFilterData] = useState(null);
   const [isFetchingFilters, setIsFetchingFilters] = useState(false);
 
-  // Fetch filter data for the current religion
-  useEffect(() => {
-    const fetchFilters = async () => {
-      setIsFetchingFilters(true);
-      try {
-        const response = await fetch(`https://namverse-api.vercel.app/api/v1/filters/${data.religion}`);
-        if (response.ok) {
-          const filters = await response.json();
-          setFilterData(filters.data);
-        }
-      } catch (error) {
-        console.error('Error fetching filters:', error);
-      } finally {
-        setIsFetchingFilters(false);
-      }
-    };
-    fetchFilters();
-  }, [data.religion]);
+  // Optimized Fetcher for SWR
+  const fetcher = useCallback((url) => fetch(url).then((res) => res.json()), []);
+
+  // Use SWR for filters with aggressive caching (1 day)
+  // This drastically reduces client-side requests and stays within free limits
+  const { data: filterResponse } = useSWR(
+    `https://namverse-api.vercel.app/api/v1/filters/${data.religion}`,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      dedupingInterval: 86400000, // 24 hours deduplication
+      focusThrottleInterval: 3600000, // 1 hour focus check
+    }
+  );
+
+  const filterData = filterResponse?.data || null;
 
   const audioRef = useRef(null);
 

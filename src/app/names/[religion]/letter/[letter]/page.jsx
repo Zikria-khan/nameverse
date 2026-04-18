@@ -60,7 +60,7 @@ export async function generateMetadata({ params, searchParams }) {
   const currentPage = parseInt(resolvedSearchParams?.page || 1);
 
   const canonicalUrl = `${SITE_URL}/names/${selectedReligion}/letter/${selectedLetter.toLowerCase()}`;
-  const ogImage = `${SITE_URL}/og-image.png`;
+  const ogImage = `${SITE_URL}/logo.png`;
 
   // Keywords cluster for next-level SEO
   const keywordsArray = [

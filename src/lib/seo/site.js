@@ -17,4 +17,4 @@ export function absoluteUrl(path) {
   return `${base}${p}`;
 }
 
-export const DEFAULT_OG_PATH = "/og-image.png";
+export const DEFAULT_OG_PATH = "/logo.png";

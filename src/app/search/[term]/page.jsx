@@ -1,11 +1,12 @@
+import { cache } from 'react';
 import { notFound } from 'next/navigation';
 import SearchResultsClient from './ClientComponent';
 import { searchNames } from '@/lib/api/names';
 
-const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com';
+const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
-// Fetch search results from API
-const fetchSearchResults = async (term) => {
+// Fetch search results from API - Cached for single-request deduplication
+const fetchSearchResults = cache(async (term) => {
   try {
     const namesResult = await searchNames(term.trim(), { limit: 50 });
     const names = namesResult.data || [];
@@ -19,14 +20,14 @@ const fetchSearchResults = async (term) => {
     console.error('Search fetch error:', error);
     return { names: [], totalNames: 0, totalResults: 0 };
   }
-};
+});
 
 // ---------------- Metadata ----------------
 export const generateMetadata = async ({ params }) => {
   const resolvedParams = await params;
   const { term } = resolvedParams;
   const decodedTerm = decodeURIComponent(term);
-  const { names, totalResults } = await fetchSearchResults(decodedTerm);
+  const { totalResults } = await fetchSearchResults(decodedTerm);
 
   return {
     title: `${decodedTerm} - Names | NameVerse`,
@@ -65,7 +66,7 @@ export async function generateStaticParams() {
   return popular.map((term) => ({ term: encodeURIComponent(term) }));
 }
 
-export const revalidate = 300; // ISR every 5 minutes
+export const revalidate = 86400; // 24 hours ISR (Search terms are mostly stable)
 
 // ---------------- Main Search Page ----------------
 export default async function SearchPage({ params }) {

@@ -22,7 +22,7 @@ export function generateNameProductSchema(name, religion, slug) {
     },
     category: `${name.religion || religion} Baby Names`,
     url: `https://nameverse.vercel.app/names/${religion}/${slug}`,
-    image: `https://nameverse.vercel.app/og-image.png`,
+    image: `https://nameverse.vercel.app/logo.png`,
     offers: {
       '@type': 'Offer',
       price: '0',
@@ -76,7 +76,7 @@ export function generateArticleSchema(article) {
     '@type': 'Article',
     headline: article.title,
     description: article.excerpt || article.subtitle || article.summary,
-    image: article.cover_image_url || 'https://nameverse.vercel.app/og-image.png',
+    image: article.cover_image_url || 'https://nameverse.vercel.app/logo.png',
     datePublished: article.createdAt || article.created_at,
     dateModified: article.updatedAt || article.updated_at || article.createdAt,
     author: {

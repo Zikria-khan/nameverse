@@ -51,9 +51,9 @@ export const metadata = {
     siteName: "NameVerse",
     images: [
       { 
-        url: `${siteUrl}/og-image.png`, 
-        width: 1200, 
-        height: 630, 
+        url: `${siteUrl}/logo.png`, 
+        width: 512, 
+        height: 512, 
         type: "image/png", 
         alt: "NameVerse — Baby Names & Meanings from Around the World" 
       },
@@ -67,7 +67,7 @@ export const metadata = {
     title: "Baby Names & Meanings — Islamic, Hindu, Christian | NameVerse",
     description:
       "Explore thousands of baby names by religion and origin — Islamic, Hindu, and Christian — with detailed meanings and numerology.",
-    images: [`${siteUrl}/og-image.png`],
+    images: [`${siteUrl}/logo.png`],
     creator: "@NameVerseOfficial",
     site: "@NameVerseOfficial",
   },

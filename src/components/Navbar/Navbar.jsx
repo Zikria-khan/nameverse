@@ -121,10 +121,15 @@ export default function Navbar() {
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 flex-shrink-0 group" onClick={closeMenu}>
               <div className="relative">
-                <div className="w-11 h-11 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-300">
-                  <Baby className="w-6 h-6 text-white" />
+                <div className="w-11 h-11 relative rounded-2xl overflow-hidden shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-300">
+                  <Image
+                    src="/logo.png"
+                    alt="NameVerse Logo"
+                    fill
+                    className="object-cover"
+                  />
                 </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 rounded-full flex items-center justify-center shadow-sm">
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 rounded-full flex items-center justify-center shadow-sm z-10">
                   <Sparkles className="w-2.5 h-2.5 text-white" />
                 </div>
               </div>

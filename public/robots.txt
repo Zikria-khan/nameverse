@@ -21,7 +21,8 @@ Allow: /public/
 # Block access to API endpoints (optional)
 # Disallow: /api/
 
-# Block access to search functionality to prevent crawl traps
+# Block access to search functionality to prevent crawl traps and function usage
+Disallow: /search/
 Disallow: /search?q=
 
 # Allow blog and guides

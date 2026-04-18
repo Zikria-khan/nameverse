@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import ReligiousNamesBrowser from './client';
 import { notFound } from 'next/navigation';
 import { fetchNames as fetchNamesAPI, fetchFilters as fetchFiltersAPI } from '@/lib/api/names';
@@ -5,10 +6,10 @@ import { fetchNames as fetchNamesAPI, fetchFilters as fetchFiltersAPI } from '@/
 // ==========================================
 // ISR CONFIGURATION
 // ==========================================
-export const revalidate = 60; // Revalidate every 60 seconds
+export const revalidate = 2592000; // 1 month ISR (Religion lists are static)
 
 const RELIGIONS = ['islamic', 'christian', 'hindu'];
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
 // ==========================================
 // GENERATE STATIC PARAMS
@@ -79,9 +80,9 @@ export async function generateMetadata({ params }) {
 }
 
 // ==========================================
-// SERVER-SIDE DATA FETCHING
+// SERVER-SIDE DATA FETCHING - Cached for deduplication
 // ==========================================
-async function fetchNames(religion, params = {}) {
+const fetchNames = cache(async (religion, params = {}) => {
   try {
     return await fetchNamesAPI({
       religion,
@@ -91,20 +92,17 @@ async function fetchNames(religion, params = {}) {
       ...params,
     });
   } catch (error) {
-    
     return { success: false, data: [], pagination: { totalPages: 1, totalCount: 0 } };
   }
-}
+});
 
-async function fetchFilters(religion) {
+const fetchFilters = cache(async (religion) => {
   try {
-    const filtersData = await fetchFiltersAPI(religion);
-    return { success: !!filtersData, filters: filtersData || {} };
+    return await fetchFiltersAPI(religion);
   } catch (error) {
-    
-    return { success: false, filters: {} };
+    return { genders: [], origins: [], letters: [] };
   }
-}
+});
 
 // ==========================================
 // THEME & VIEWPORT
