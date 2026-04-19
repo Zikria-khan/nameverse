@@ -1,18 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import Search from 'lucide-react/dist/esm/icons/search.js';
-import X from 'lucide-react/dist/esm/icons/x.js';
-import Loader2 from 'lucide-react/dist/esm/icons/loader-circle.js';
-import User from 'lucide-react/dist/esm/icons/user.js';
-import MapPin from 'lucide-react/dist/esm/icons/map-pin.js';
-import Heart from 'lucide-react/dist/esm/icons/heart.js';
-import Sparkles from 'lucide-react/dist/esm/icons/sparkles.js';
-import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right.js';
-import TrendingUp from 'lucide-react/dist/esm/icons/trending-up.js';
-import ExternalLink from 'lucide-react/dist/esm/icons/external-link.js';
-import BookOpen from 'lucide-react/dist/esm/icons/book-open.js';
-import FileText from 'lucide-react/dist/esm/icons/file-text.js';
+import { Search, X, LoaderCircle, User, MapPin, Heart, Sparkles, ChevronRight, TrendingUp, ExternalLink, BookOpen, FileText, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { searchNames } from '@/lib/api/names';
@@ -27,17 +16,43 @@ const UniversalSearch = () => {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [error, setError] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [recentSearches, setRecentSearches] = useState([]);
   const searchRef = useRef(null);
   const inputRef = useRef(null);
   const debounceRef = useRef(null);
   const router = useRouter();
+
+  // Load recent searches from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('recentSearches');
+    if (saved) {
+      try {
+        setRecentSearches(JSON.parse(saved).slice(0, 5));
+      } catch (e) {
+        console.error('Failed to load recent searches', e);
+      }
+    }
+  }, []);
+
+  // Save recent search
+  const saveRecentSearch = useCallback((searchTerm) => {
+    if (!searchTerm || searchTerm.trim().length < 2) return;
+    
+    setRecentSearches(prev => {
+      const filtered = prev.filter(s => s !== searchTerm);
+      const newSearches = [searchTerm, ...filtered].slice(0, 5);
+      localStorage.setItem('recentSearches', JSON.stringify(newSearches));
+      return newSearches;
+    });
+  }, []);
 
   // Religion color mapping
   const religionColors = {
     islamic: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', gradient: 'from-emerald-500 to-teal-600' },
     hindu: { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200', gradient: 'from-orange-500 to-red-600' },
     christian: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200', gradient: 'from-blue-500 to-indigo-600' },
-    buddhist: { bg: 'bg-yellow-50', text: 'text-yellow-700', border: 'border-yellow-200', gradient: 'from-yellow-500 to-orange-600' },
+    sikh: { bg: 'bg-yellow-50', text: 'text-yellow-700', border: 'border-yellow-200', gradient: 'from-yellow-500 to-orange-600' },
+    buddhist: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200', gradient: 'from-amber-500 to-orange-600' },
     jewish: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200', gradient: 'from-purple-500 to-fuchsia-600' },
     default: { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200', gradient: 'from-gray-500 to-slate-600' }
   };
@@ -66,13 +81,12 @@ const UniversalSearch = () => {
     setIsLoading(true);
 
     try {
-      // Search both names and articles in parallel
       const [namesResult, articlesResult] = await Promise.all([
         searchNames(searchQuery.trim(), { limit: 5 }),
         searchArticles(searchQuery.trim(), { limit: 5 })
       ]);
 
-      const names = namesResult.success ? (namesResult.data || []) : [];
+      const names = namesResult?.success ? (namesResult.data || []) : [];
       const articles = Array.isArray(articlesResult) ? articlesResult : [];
 
       setNameResults(names);
@@ -80,7 +94,7 @@ const UniversalSearch = () => {
 
       if (names.length > 0 || articles.length > 0) {
         setIsOpen(true);
-      } else {
+      } else if (!isLoading) {
         setError('No results found. Try different keywords.');
       }
     } catch (err) {
@@ -91,7 +105,7 @@ const UniversalSearch = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [isLoading]);
 
   // Debounced search
   useEffect(() => {
@@ -102,7 +116,7 @@ const UniversalSearch = () => {
     if (query.trim().length >= 2) {
       debounceRef.current = setTimeout(() => {
         fetchResults(query);
-      }, 250);
+      }, 300);
     } else {
       setNameResults([]);
       setArticleResults([]);
@@ -137,7 +151,7 @@ const UniversalSearch = () => {
 
   // Keyboard navigation
   const handleKeyDown = (e) => {
-    if (!isOpen) {
+    if (!isOpen && !recentSearches.length) {
       if (e.key === 'Enter' && query.trim()) {
         handleSearchSubmit(e);
       }
@@ -162,11 +176,8 @@ const UniversalSearch = () => {
       case 'Enter':
         e.preventDefault();
         if (selectedIndex >= 0 && allResults[selectedIndex]) {
-          if (selectedIndex < nameResults.length) {
-            handleResultClick(allResults[selectedIndex], 'name');
-          } else {
-            handleResultClick(allResults[selectedIndex], 'article');
-          }
+          const isName = selectedIndex < nameResults.length;
+          handleResultClick(allResults[selectedIndex], isName ? 'name' : 'article');
         } else if (query.trim()) {
           handleSearchSubmit(e);
         }
@@ -185,8 +196,9 @@ const UniversalSearch = () => {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (query.trim()) {
+      saveRecentSearch(query.trim());
       setIsOpen(false);
-      router.push(`/search/${encodeURIComponent(query.trim())}`);
+      router.push(`/search?q=${encodeURIComponent(query.trim())}`);
     }
   };
 
@@ -194,16 +206,23 @@ const UniversalSearch = () => {
   const handleResultClick = (result, type = 'name') => {
     setIsOpen(false);
     setSelectedIndex(-1);
+    saveRecentSearch(result.name || result.title);
 
     if (type === 'article') {
-      // Navigate to article page
       router.push(`/blog/${result.slug}`);
     } else {
-      // Navigate to name page
       const religion = result.religion?.toLowerCase() || 'global';
       const slug = result.slug || result.name?.toLowerCase().replace(/\s+/g, '-');
       router.push(`/names/${religion}/${slug}`);
     }
+  };
+
+  // Handle recent search click
+  const handleRecentSearchClick = (term) => {
+    setQuery(term);
+    saveRecentSearch(term);
+    setIsOpen(false);
+    router.push(`/search?q=${encodeURIComponent(term)}`);
   };
 
   // Clear search
@@ -217,6 +236,12 @@ const UniversalSearch = () => {
     setHasSearched(false);
     setIsLoading(false);
     inputRef.current?.focus();
+  };
+
+  // Clear all recent searches
+  const clearRecentSearches = () => {
+    setRecentSearches([]);
+    localStorage.removeItem('recentSearches');
   };
 
   // Get religion styling
@@ -234,7 +259,7 @@ const UniversalSearch = () => {
     
     return parts.map((part, index) =>
       regex.test(part) ? (
-        <mark key={index} className="bg-yellow-200 font-semibold px-0.5 rounded">
+        <mark key={index} className="bg-yellow-200 text-gray-900 font-semibold px-0.5 rounded">
           {part}
         </mark>
       ) : (
@@ -255,9 +280,15 @@ const UniversalSearch = () => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            onFocus={() => query.trim().length >= 2 && (hasResults || isLoading) && setIsOpen(true)}
-            placeholder="Search baby names..."
-            className="w-full pl-10 pr-10 sm:pl-12 sm:pr-12 py-2.5 sm:py-3 text-sm sm:text-base font-medium text-gray-900 placeholder-gray-500 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl sm:rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 shadow-sm hover:shadow-md focus:shadow-lg transition-all duration-200"
+            onFocus={() => {
+              if (query.trim().length >= 2 && (hasResults || isLoading)) {
+                setIsOpen(true);
+              } else if (recentSearches.length > 0 && !query) {
+                setIsOpen(true);
+              }
+            }}
+            placeholder="Search baby names, meanings, articles..."
+            className="w-full pl-9 pr-9 sm:pl-12 sm:pr-12 py-2 sm:py-2.5 text-sm sm:text-base font-medium text-gray-900 placeholder-gray-500 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl sm:rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 shadow-sm hover:shadow-md focus:shadow-lg transition-all duration-200"
             aria-label="Search for baby names"
             aria-autocomplete="list"
             aria-controls="search-results"
@@ -278,7 +309,7 @@ const UniversalSearch = () => {
                   className="p-1"
                   aria-label="Searching"
                 >
-                  <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 text-indigo-600 animate-spin" aria-hidden="true" />
+                  <LoaderCircle className="w-3 h-3 sm:w-4 sm:h-4 text-indigo-600 animate-spin" aria-hidden="true" />
                 </motion.div>
               )}
               {query && !isLoading && (
@@ -301,7 +332,7 @@ const UniversalSearch = () => {
 
       {/* Results Dropdown */}
       <AnimatePresence>
-        {isOpen && (query.trim().length >= 2 || hasSearched) && (
+        {isOpen && (
           <motion.div
             initial={{ opacity: 0, y: 8, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -310,192 +341,220 @@ const UniversalSearch = () => {
             id="search-results"
             role="listbox"
             aria-label="Search results"
-            className="absolute top-full left-0 right-0 mt-3 bg-white/95 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-2xl shadow-gray-400/20 overflow-hidden z-50 max-h-[70vh] overflow-y-auto"
+            className="absolute top-full left-0 right-0 mt-2 sm:mt-3 bg-white/95 backdrop-blur-xl border border-gray-200 rounded-xl sm:rounded-2xl shadow-2xl shadow-gray-400/20 overflow-hidden z-50 max-h-[80vh] overflow-y-auto"
           >
-            {error && !hasResults && !isLoading ? (
-              <div className="p-8 text-center" role="status" aria-live="polite">
-                <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                  <Search className="w-6 h-6 text-gray-400" aria-hidden="true" />
-                </div>
-                <p className="text-sm text-gray-600 font-medium mb-1">{error}</p>
-                <p className="text-xs text-gray-500">Try different keywords or check your connection</p>
-              </div>
-            ) : !hasResults && !isLoading ? (
-              <div className="p-8 text-center" role="status" aria-live="polite">
-                <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                  <Search className="w-6 h-6 text-gray-400" aria-hidden="true" />
-                </div>
-                <p className="text-sm text-gray-600 font-medium mb-1">No results found</p>
-                <p className="text-xs text-gray-500">Try adjusting your search terms</p>
-              </div>
-            ) : (
+            {/* Show recent searches when no query */}
+            {!query && recentSearches.length > 0 && (
               <div>
-                {/* Header */}
-                <div className="sticky top-0 bg-white/95 backdrop-blur-xl border-b border-gray-200 px-4 py-3 flex items-center justify-between z-10">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-gray-900">
-                      {totalResults} Result{totalResults !== 1 ? 's' : ''}
-                    </span>
-                    {nameResults.length > 0 && (
-                      <span className="text-xs text-gray-500">
-                        {nameResults.length} Name{nameResults.length !== 1 ? 's' : ''}
-                      </span>
-                    )}
-                    {articleResults.length > 0 && (
-                      <span className="text-xs text-gray-500">
-                        {articleResults.length} Article{articleResults.length !== 1 ? 's' : ''}
-                      </span>
-                    )}
-                    {isLoading && <Loader2 className="w-3 h-3 animate-spin text-indigo-600" />}
-                  </div>
-                  <p className="text-xs text-gray-500 hidden sm:block">
-                    <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs border border-gray-300">↑↓</kbd> Navigate
-                    <span className="mx-1">•</span>
-                    <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs border border-gray-300">↵</kbd> Select
-                  </p>
+                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Recent Searches</span>
+                  <button
+                    onClick={clearRecentSearches}
+                    className="text-xs text-gray-400 hover:text-red-500 transition-colors"
+                  >
+                    Clear all
+                  </button>
                 </div>
-
-                {/* Results List */}
-                <div className="py-2" role="list">
-                  {nameResults.map((result, index) => {
-                    const religionStyle = getReligionStyle(result.religion);
-                    const genderInfo = getGenderIcon(result.gender);
-                    const GenderIcon = genderInfo.icon;
-                    const isSelected = selectedIndex === index;
-
-                    return (
-                      <motion.button
-                        key={result._id}
-                        initial={{ opacity: 0, x: -8 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.02 }}
-                        onClick={() => handleResultClick(result, 'name')}
-                        onMouseEnter={() => setSelectedIndex(index)}
-                        className={`w-full px-4 py-3 flex items-start gap-3 transition-all duration-200 border-l-4 group ${
-                          isSelected
-                            ? `${religionStyle.bg.replace('50', '100')} ${religionStyle.border} shadow-inner`
-                            : 'border-transparent hover:bg-gray-50/80'
-                        }`}
-                        role="option"
-                        aria-selected={isSelected}
-                      >
-                        {/* Name Icon Badge */}
-                        <div className={`flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br ${religionStyle.gradient} flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-200 ${isSelected ? 'scale-110' : ''}`}>
-                          <span className="text-white font-bold text-base">
-                            {result.name?.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-
-                        {/* Name Content */}
-                        <div className="flex-1 text-left min-w-0">
-                          <div className="flex items-start justify-between gap-2 mb-1">
-                            <h3 className="font-semibold text-gray-900 text-base truncate">
-                              {highlightText(result.name, query)}
-                            </h3>
-                            <ChevronRight className={`w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5 group-hover:text-gray-600 transition-all duration-200 ${isSelected ? 'translate-x-1' : ''}`} aria-hidden="true" />
-                          </div>
-                          
-                          <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-                            {highlightText(result.short_meaning || result.meaning, query)}
-                          </p>
-
-                          {/* Name Metadata */}
-                          <div className="flex flex-wrap items-center gap-1.5">
-                            <span className={`inline-flex items-center px-2.5 py-1 ${religionStyle.bg} ${religionStyle.text} text-xs font-semibold rounded-lg border ${religionStyle.border}`}>
-                              {result.religion || 'Global'}
-                            </span>
-                            <span className={`inline-flex items-center gap-1 px-2.5 py-1 ${genderInfo.bg} text-gray-700 text-xs font-semibold rounded-lg`}>
-                              <GenderIcon className={`w-3 h-3 ${genderInfo.color}`} aria-hidden="true" />
-                              {result.gender || 'Unisex'}
-                            </span>
-                            {result.origin && (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg">
-                                <MapPin className="w-3 h-3 text-gray-500" aria-hidden="true" />
-                                {result.origin}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </motion.button>
-                    );
-                  })}
-
-                  {/* Article Results */}
-                  {articleResults.map((article, index) => {
-                    const articleIndex = nameResults.length + index;
-                    const isSelected = selectedIndex === articleIndex;
-
-                    return (
-                      <motion.button
-                        key={article.id || article.slug}
-                        initial={{ opacity: 0, x: -8 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: articleIndex * 0.02 }}
-                        onClick={() => handleResultClick(article, 'article')}
-                        onMouseEnter={() => setSelectedIndex(articleIndex)}
-                        className={`w-full px-4 py-3 flex items-start gap-3 transition-all duration-200 border-l-4 group ${
-                          isSelected
-                            ? 'bg-purple-50 border-purple-200 shadow-inner'
-                            : 'border-transparent hover:bg-gray-50/80'
-                        }`}
-                        role="option"
-                        aria-selected={isSelected}
-                      >
-                        {/* Article Icon Badge */}
-                        <div className={`flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-200 ${isSelected ? 'scale-110' : ''}`}>
-                          <FileText className="w-5 h-5 text-white" aria-hidden="true" />
-                        </div>
-
-                        {/* Article Content */}
-                        <div className="flex-1 text-left min-w-0">
-                          <div className="flex items-start justify-between gap-2 mb-1">
-                            <h3 className="font-semibold text-gray-900 text-base truncate">
-                              {highlightText(article.title, query)}
-                            </h3>
-                            <ChevronRight className={`w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5 group-hover:text-gray-600 transition-all duration-200 ${isSelected ? 'translate-x-1' : ''}`} aria-hidden="true" />
-                          </div>
-
-                          <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-                            {highlightText(article.excerpt || article.subtitle || article.summary, query)}
-                          </p>
-
-                          {/* Article Metadata */}
-                          <div className="flex flex-wrap items-center gap-1.5">
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-lg border border-purple-200">
-                              <BookOpen className="w-3 h-3" aria-hidden="true" />
-                              Article
-                            </span>
-                            {article.category && (
-                              <span className="inline-flex items-center px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg">
-                                {article.category}
-                              </span>
-                            )}
-                            {article.read_time_minutes && (
-                              <span className="inline-flex items-center px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg">
-                                {article.read_time_minutes} min read
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </motion.button>
-                    );
-                  })}
-                </div>
-
-                {/* View All Footer */}
-                {hasResults && (
-                  <div className="sticky bottom-0 bg-gradient-to-t from-white via-white to-transparent border-t border-gray-200 px-4 py-3">
+                <div className="py-2">
+                  {recentSearches.map((term, index) => (
                     <button
-                      onClick={handleSearchSubmit}
-                      className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]"
+                      key={index}
+                      onClick={() => handleRecentSearchClick(term)}
+                      className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 transition-colors group"
                     >
-                      <TrendingUp className="w-4 h-4" aria-hidden="true" />
-                      <span>View All Results for "{query}"</span>
-                      <ExternalLink className="w-4 h-4" aria-hidden="true" />
+                      <div className="w-8 h-8 rounded-lg bg-gray-100 group-hover:bg-indigo-100 flex items-center justify-center transition-colors">
+                        <TrendingUp className="w-4 h-4 text-gray-500 group-hover:text-indigo-600" />
+                      </div>
+                      <span className="text-sm text-gray-700 group-hover:text-indigo-600">{term}</span>
                     </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Search results */}
+            {query.trim().length >= 2 && (
+              <>
+                {error && !hasResults && !isLoading ? (
+                  <div className="p-8 text-center" role="status" aria-live="polite">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                      <Search className="w-6 h-6 text-gray-400" aria-hidden="true" />
+                    </div>
+                    <p className="text-sm text-gray-600 font-medium mb-1">{error}</p>
+                    <p className="text-xs text-gray-500">Try different keywords or check your spelling</p>
+                  </div>
+                ) : !hasResults && !isLoading ? (
+                  <div className="p-8 text-center" role="status" aria-live="polite">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                      <Search className="w-6 h-6 text-gray-400" aria-hidden="true" />
+                    </div>
+                    <p className="text-sm text-gray-600 font-medium mb-1">No results found for "{query}"</p>
+                    <p className="text-xs text-gray-500">Try adjusting your search terms</p>
+                  </div>
+                ) : (
+                  <div>
+                    {/* Header */}
+                    <div className="sticky top-0 bg-white/95 backdrop-blur-xl border-b border-gray-200 px-4 py-3 flex items-center justify-between z-10">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold text-gray-900">
+                          {totalResults} Result{totalResults !== 1 ? 's' : ''}
+                        </span>
+                        {nameResults.length > 0 && (
+                          <span className="text-xs text-gray-500">
+                            {nameResults.length} Name{nameResults.length !== 1 ? 's' : ''}
+                          </span>
+                        )}
+                        {articleResults.length > 0 && (
+                          <span className="text-xs text-gray-500">
+                            {articleResults.length} Article{articleResults.length !== 1 ? 's' : ''}
+                          </span>
+                        )}
+                        {isLoading && <LoaderCircle className="w-3 h-3 animate-spin text-indigo-600" />}
+                      </div>
+                      <p className="text-xs text-gray-500 hidden sm:block">
+                        <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs border border-gray-300">↑↓</kbd> Navigate
+                        <span className="mx-1">•</span>
+                        <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs border border-gray-300">↵</kbd> Select
+                      </p>
+                    </div>
+
+                    {/* Results List */}
+                    <div className="py-2" role="list">
+                      {nameResults.map((result, index) => {
+                        const religionStyle = getReligionStyle(result.religion);
+                        const genderInfo = getGenderIcon(result.gender);
+                        const GenderIcon = genderInfo.icon;
+                        const isSelected = selectedIndex === index;
+
+                        return (
+                          <motion.button
+                            key={result._id || index}
+                            initial={{ opacity: 0, x: -8 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: Math.min(index * 0.02, 0.2) }}
+                            onClick={() => handleResultClick(result, 'name')}
+                            onMouseEnter={() => setSelectedIndex(index)}
+                            className={`w-full px-4 py-3 flex items-start gap-3 transition-all duration-200 border-l-4 group ${
+                              isSelected
+                                ? `${religionStyle.bg.replace('50', '100')} ${religionStyle.border} shadow-inner`
+                                : 'border-transparent hover:bg-gray-50/80'
+                            }`}
+                            role="option"
+                            aria-selected={isSelected}
+                          >
+                            <div className={`flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br ${religionStyle.gradient} flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-200 ${isSelected ? 'scale-110' : ''}`}>
+                              <span className="text-white font-bold text-base">
+                                {result.name?.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+
+                            <div className="flex-1 text-left min-w-0">
+                              <div className="flex items-start justify-between gap-2 mb-1">
+                                <h3 className="font-semibold text-gray-900 text-base truncate">
+                                  {highlightText(result.name, query)}
+                                </h3>
+                                <ChevronRight className={`w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5 group-hover:text-gray-600 transition-all duration-200 ${isSelected ? 'translate-x-1' : ''}`} aria-hidden="true" />
+                              </div>
+                              
+                              <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+                                {highlightText(result.short_meaning || result.meaning, query)}
+                              </p>
+
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                <span className={`inline-flex items-center px-2.5 py-1 ${religionStyle.bg} ${religionStyle.text} text-xs font-semibold rounded-lg border ${religionStyle.border}`}>
+                                  {result.religion || 'Global'}
+                                </span>
+                                <span className={`inline-flex items-center gap-1 px-2.5 py-1 ${genderInfo.bg} text-gray-700 text-xs font-semibold rounded-lg`}>
+                                  <GenderIcon className={`w-3 h-3 ${genderInfo.color}`} aria-hidden="true" />
+                                  {result.gender || 'Unisex'}
+                                </span>
+                                {result.origin && (
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg">
+                                    <MapPin className="w-3 h-3 text-gray-500" aria-hidden="true" />
+                                    {result.origin}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </motion.button>
+                        );
+                      })}
+
+                      {/* Article Results */}
+                      {articleResults.map((article, index) => {
+                        const articleIndex = nameResults.length + index;
+                        const isSelected = selectedIndex === articleIndex;
+
+                        return (
+                          <motion.button
+                            key={article.id || article.slug || index}
+                            initial={{ opacity: 0, x: -8 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: Math.min(articleIndex * 0.02, 0.2) }}
+                            onClick={() => handleResultClick(article, 'article')}
+                            onMouseEnter={() => setSelectedIndex(articleIndex)}
+                            className={`w-full px-4 py-3 flex items-start gap-3 transition-all duration-200 border-l-4 group ${
+                              isSelected
+                                ? 'bg-purple-50 border-purple-200 shadow-inner'
+                                : 'border-transparent hover:bg-gray-50/80'
+                            }`}
+                            role="option"
+                            aria-selected={isSelected}
+                          >
+                            <div className={`flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-200 ${isSelected ? 'scale-110' : ''}`}>
+                              <FileText className="w-5 h-5 text-white" aria-hidden="true" />
+                            </div>
+
+                            <div className="flex-1 text-left min-w-0">
+                              <div className="flex items-start justify-between gap-2 mb-1">
+                                <h3 className="font-semibold text-gray-900 text-base truncate">
+                                  {highlightText(article.title, query)}
+                                </h3>
+                                <ChevronRight className={`w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5 group-hover:text-gray-600 transition-all duration-200 ${isSelected ? 'translate-x-1' : ''}`} aria-hidden="true" />
+                              </div>
+
+                              <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+                                {highlightText(article.excerpt || article.subtitle || article.summary, query)}
+                              </p>
+
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-lg border border-purple-200">
+                                  <BookOpen className="w-3 h-3" aria-hidden="true" />
+                                  Article
+                                </span>
+                                {article.category && (
+                                  <span className="inline-flex items-center px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg">
+                                    {article.category}
+                                  </span>
+                                )}
+                                {article.read_time_minutes && (
+                                  <span className="inline-flex items-center px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg">
+                                    {article.read_time_minutes} min read
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </motion.button>
+                        );
+                      })}
+                    </div>
+
+                    {/* View All Footer */}
+                    {hasResults && (
+                      <div className="sticky bottom-0 bg-gradient-to-t from-white via-white to-transparent border-t border-gray-200 px-4 py-3">
+                        <button
+                          onClick={handleSearchSubmit}
+                          className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]"
+                        >
+                          <TrendingUp className="w-4 h-4" aria-hidden="true" />
+                          <span>View All Results for "{query}"</span>
+                          <ExternalLink className="w-4 h-4" aria-hidden="true" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
-              </div>
+              </>
             )}
           </motion.div>
         )}

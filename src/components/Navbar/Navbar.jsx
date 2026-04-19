@@ -1,22 +1,24 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, Sparkles, Heart, User, BookOpen, Info, ChevronDown } from 'lucide-react';
+import { Menu, X, Sparkles, Heart, User, BookOpen, Info, ChevronDown, Search, Star, TrendingUp } from 'lucide-react';
 import UniversalSearch from './searchBar';
 
 /**
- * NameVerse Navbar Component
- * - Responsive design (Mobile/Desktop)
- * - Integrated Universal Search
- * - Scroll-aware styling
- * - Hydration-safe rendering
+ * NameVerse Navbar Component - Premium UX
+ * - Mega menu dropdowns
+ * - Smooth animations
+ * - Responsive design
+ * - Search integration
  */
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const dropdownTimeoutRef = useRef(null);
 
   // Handle mount state to prevent hydration mismatch
   useEffect(() => {
@@ -37,6 +39,7 @@ const Navbar = () => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
         setIsOpen(false);
+        setActiveDropdown(null);
       }
     };
     window.addEventListener('resize', handleResize);
@@ -46,13 +49,14 @@ const Navbar = () => {
   // Close mobile menu when Escape key is pressed
   useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === 'Escape') {
         setIsOpen(false);
+        setActiveDropdown(null);
       }
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen]);
+  }, []);
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
@@ -66,34 +70,81 @@ const Navbar = () => {
     };
   }, [isOpen]);
 
+  const handleDropdownEnter = (name) => {
+    if (dropdownTimeoutRef.current) {
+      clearTimeout(dropdownTimeoutRef.current);
+    }
+    setActiveDropdown(name);
+  };
+
+  const handleDropdownLeave = () => {
+    dropdownTimeoutRef.current = setTimeout(() => {
+      setActiveDropdown(null);
+    }, 150);
+  };
+
   const navLinks = [
     {
       name: 'Names',
       href: '/names',
       icon: Sparkles,
+      megaMenu: true,
       subLinks: [
-        { name: 'All Names', href: '/names' },
-        { name: 'Islamic Names', href: '/names/islamic' },
-        { name: 'Hindu Names', href: '/names/hindu' },
-        { name: 'Christian Names', href: '/names/christian' },
-        { name: 'Search', href: '/search' },
-      ],
+        {
+          category: 'By Religion',
+          items: [
+            { name: 'All Names', href: '/names', icon: Star, description: 'Explore all baby names' },
+            { name: 'Islamic Names', href: '/names/islamic', icon: Sparkles, description: 'Muslim baby names' },
+            { name: 'Hindu Names', href: '/names/hindu', icon: Heart, description: 'Hindu baby names' },
+            { name: 'Christian Names', href: '/names/christian', icon: BookOpen, description: 'Christian baby names' },
+            { name: 'Sikh Names', href: '/names/sikh', icon: User, description: 'Sikh baby names' },
+          ]
+        },
+        {
+          category: 'Popular',
+          items: [
+            { name: 'Trending Names', href: '/names/trending', icon: TrendingUp, description: 'Most popular right now' },
+            { name: 'Unique Names', href: '/names/unique', icon: Star, description: 'Rare and beautiful names' },
+            { name: 'Modern Names', href: '/names/modern', icon: Sparkles, description: 'Contemporary choices' },
+            { name: 'Traditional Names', href: '/names/traditional', icon: BookOpen, description: 'Classic timeless names' },
+          ]
+        },
+        {
+          category: 'Resources',
+          items: [
+            { name: 'Name Generator', href: '/tools/name-generator', icon: Search, description: 'Find perfect names' },
+            { name: 'Name Lists', href: '/lists', icon: Star, description: 'Curated collections' },
+            { name: 'Search', href: '/search', icon: Search, description: 'Advanced search' },
+          ]
+        }
+      ]
     },
-    { name: 'Blog', href: '/blog', icon: BookOpen },
+    { 
+      name: 'Blog', 
+      href: '/blog', 
+      icon: BookOpen,
+      subLinks: [
+        { name: 'Latest Articles', href: '/blog', description: 'Newest posts' },
+        { name: 'Naming Guides', href: '/blog/category/guides', description: 'Expert advice' },
+        { name: 'Name Meanings', href: '/blog/category/meanings', description: 'Deep dives' },
+        { name: 'Parenting Tips', href: '/blog/category/parenting', description: 'Helpful insights' },
+      ]
+    },
     {
       name: 'More',
       href: '/about',
       icon: Info,
       subLinks: [
-        { name: 'About', href: '/about' },
-        { name: 'Naming Guide', href: '/guides/expert-naming-guide' },
-        { name: 'Privacy', href: '/privacy' },
-        { name: 'Terms', href: '/terms' },
-      ],
+        { name: 'About Us', href: '/about', description: 'Our story' },
+        { name: 'Naming Guide', href: '/guides/expert-naming-guide', description: 'Complete guide' },
+        { name: 'Contact', href: '/contact', description: 'Get in touch' },
+        { name: 'Privacy Policy', href: '/privacy', description: 'How we protect data' },
+        { name: 'Terms of Service', href: '/terms', description: 'Terms & conditions' },
+      ]
     },
   ];
 
-  // Don't render interactive elements until mounted to prevent hydration mismatch
+  // Don't render interactive elements until mounted
   if (!mounted) {
     return (
       <nav className="sticky top-0 z-[100] bg-white py-3">
@@ -125,13 +176,13 @@ const Navbar = () => {
           {/* Logo Section */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="relative w-10 h-10 overflow-hidden rounded-xl bg-indigo-50 flex items-center justify-center transition-transform group-hover:rotate-6 group-hover:scale-110">
+              <div className="relative w-10 h-10 overflow-hidden rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center transition-all group-hover:rotate-6 group-hover:scale-110 shadow-md group-hover:shadow-lg">
                 <Image
                   src="/logo.png"
                   alt="NameVerse Logo"
                   width={36}
                   height={36}
-                  className="object-contain"
+                  className="object-contain brightness-0 invert"
                   priority
                 />
               </div>
@@ -141,42 +192,97 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Desktop Search - Hidden on mobile, shown on tablet+ */}
-          <div className="hidden md:flex flex-1 max-w-md">
+          {/* Desktop Search - Responsive sizing */}
+          <div className="hidden md:flex flex-1 max-w-md lg:max-w-lg">
             <UniversalSearch />
           </div>
 
-          {/* Desktop Navigation Links */}
+          {/* Desktop Navigation Links with Enhanced Dropdowns */}
           <div className="hidden lg:flex items-center space-x-1">
             {navLinks.map((link) => (
-              <div key={link.name} className="relative group">
+              <div 
+                key={link.name} 
+                className="relative"
+                onMouseEnter={() => handleDropdownEnter(link.name)}
+                onMouseLeave={handleDropdownLeave}
+              >
                 {link.subLinks ? (
                   <>
                     <button
                       type="button"
-                      className="inline-flex items-center gap-1 px-4 py-2 rounded-lg text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 font-semibold transition-all duration-200"
-                      aria-expanded="false"
+                      className={`inline-flex items-center gap-1 px-4 py-2 rounded-xl text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 font-semibold transition-all duration-200 ${
+                        activeDropdown === link.name ? 'text-indigo-600 bg-indigo-50' : ''
+                      }`}
+                      aria-expanded={activeDropdown === link.name}
                       aria-haspopup="true"
                     >
                       {link.name}
-                      <ChevronDown className="w-4 h-4 transition-transform duration-200 group-hover:rotate-180" />
+                      <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${
+                        activeDropdown === link.name ? 'rotate-180' : ''
+                      }`} />
                     </button>
-                    <div className="pointer-events-none opacity-0 group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 absolute left-0 top-full mt-2 min-w-[220px] rounded-3xl border border-gray-100 bg-white shadow-xl p-3 z-50">
-                      {link.subLinks.map((subLink) => (
-                        <Link
-                          key={subLink.name}
-                          href={subLink.href}
-                          className="block px-4 py-3 rounded-2xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200"
-                        >
-                          {subLink.name}
-                        </Link>
-                      ))}
-                    </div>
+
+                    {/* Mega Menu Dropdown */}
+                    {activeDropdown === link.name && (
+                      <div className="absolute left-0 top-full mt-2 w-screen max-w-4xl rounded-2xl bg-white shadow-2xl border border-gray-100 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+                        {link.megaMenu ? (
+                          <div className="grid grid-cols-3 gap-6 p-6">
+                            {link.subLinks.map((section) => (
+                              <div key={section.category} className="space-y-3">
+                                <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center gap-2">
+                                  <div className="w-1 h-4 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-full" />
+                                  {section.category}
+                                </h3>
+                                <div className="space-y-2">
+                                  {section.items.map((item) => {
+                                    const Icon = item.icon;
+                                    return (
+                                      <Link
+                                        key={item.name}
+                                        href={item.href}
+                                        className="flex items-start gap-3 p-3 rounded-xl hover:bg-indigo-50 transition-all duration-200 group"
+                                      >
+                                        <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-gray-100 group-hover:bg-indigo-100 flex items-center justify-center transition-all">
+                                          <Icon className="w-4 h-4 text-gray-600 group-hover:text-indigo-600" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                          <p className="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
+                                            {item.name}
+                                          </p>
+                                          <p className="text-xs text-gray-500">{item.description}</p>
+                                        </div>
+                                      </Link>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="min-w-[260px] py-2">
+                            {link.subLinks.map((subLink) => (
+                              <Link
+                                key={subLink.name}
+                                href={subLink.href}
+                                className="block px-6 py-3 hover:bg-indigo-50 transition-all duration-200"
+                              >
+                                <div className="font-semibold text-gray-900 hover:text-indigo-600">
+                                  {subLink.name}
+                                </div>
+                                {subLink.description && (
+                                  <p className="text-xs text-gray-500 mt-0.5">{subLink.description}</p>
+                                )}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </>
                 ) : (
                   <Link
                     href={link.href}
-                    className="px-4 py-2 rounded-lg text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 font-semibold transition-all duration-200"
+                    className="px-4 py-2 rounded-xl text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 font-semibold transition-all duration-200"
                   >
                     {link.name}
                   </Link>
@@ -185,11 +291,21 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Right side buttons */}
-          <div className="hidden lg:flex items-center gap-2">
+          {/* Right side CTA Buttons */}
+          <div className="hidden lg:flex items-center gap-3">
+            <Link
+              href="/favorites"
+              className="p-2 rounded-xl text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all duration-200 relative group"
+              aria-label="Favorites"
+            >
+              <Heart className="w-5 h-5 group-hover:scale-110 transition-transform" />
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center">
+                0
+              </span>
+            </Link>
             <Link
               href="/names"
-              className="px-5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-indigo-200 transition-all duration-200 hover:scale-105"
+              className="px-5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-indigo-200 transition-all duration-200 hover:scale-105 active:scale-95"
             >
               Explore Names
             </Link>
@@ -197,8 +313,8 @@ const Navbar = () => {
 
           {/* Mobile Controls */}
           <div className="flex lg:hidden items-center gap-2">
-            {/* Mobile Search - Only shown on very small screens where main search is hidden */}
-            <div className="md:hidden w-32 xs:w-40">
+            {/* Mobile Search - Responsive width */}
+            <div className="w-40 xs:w-48 sm:w-64 md:hidden">
               <UniversalSearch />
             </div>
             
@@ -214,7 +330,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Slide-down Menu with overlay */}
+      {/* Mobile Slide-down Menu with Enhanced UX */}
       {isOpen && (
         <>
           {/* Backdrop */}
@@ -225,38 +341,75 @@ const Navbar = () => {
           />
           
           {/* Menu Panel */}
-          <div className="absolute top-full left-0 w-full bg-white shadow-2xl z-[103] lg:hidden animate-in slide-in-from-top-2 duration-200 max-h-[calc(100vh-64px)] overflow-y-auto">
-            <div className="px-4 pt-2 pb-8 space-y-4">
+          <div className="absolute top-full left-0 w-full bg-white shadow-2xl z-[103] lg:hidden animate-in slide-in-from-top-2 duration-300 max-h-[calc(100vh-64px)] overflow-y-auto">
+            <div className="px-4 pt-2 pb-8 space-y-2">
               {navLinks.map((link) => (
-                <div key={link.name} className="space-y-1">
+                <div key={link.name} className="space-y-2">
                   <Link
                     href={link.href}
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-4 px-4 py-4 text-lg font-bold text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-2xl transition-all"
+                    className="flex items-center justify-between px-4 py-4 text-lg font-bold text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-2xl transition-all group"
                   >
-                    <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center">
-                      <link.icon className="w-5 h-5" />
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <link.icon className="w-5 h-5 text-indigo-600" />
+                      </div>
+                      {link.name}
                     </div>
-                    {link.name}
+                    <ChevronDown className="w-5 h-5 text-gray-400 rotate-180" />
                   </Link>
+                  
                   {link.subLinks && (
                     <div className="space-y-1 pl-14">
-                      {link.subLinks.map((subLink) => (
-                        <Link
-                          key={subLink.name}
-                          href={subLink.href}
-                          onClick={() => setIsOpen(false)}
-                          className="block px-4 py-3 rounded-2xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors duration-200"
-                        >
-                          {subLink.name}
-                        </Link>
-                      ))}
+                      {link.subLinks.map((subLink) => {
+                        // Handle both array and object structures
+                        if (Array.isArray(link.subLinks)) {
+                          // For simple subLinks array
+                          return (
+                            <Link
+                              key={subLink.name}
+                              href={subLink.href}
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-3 rounded-xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors duration-200"
+                            >
+                              <div className="font-medium">{subLink.name}</div>
+                              {subLink.description && (
+                                <div className="text-xs text-gray-500 mt-0.5">{subLink.description}</div>
+                              )}
+                            </Link>
+                          );
+                        } else if (subLink.items) {
+                          // For mega menu structure
+                          return subLink.items.map((item) => (
+                            <Link
+                              key={item.name}
+                              href={item.href}
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-3 rounded-xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors duration-200"
+                            >
+                              <div className="font-medium">{item.name}</div>
+                              {item.description && (
+                                <div className="text-xs text-gray-500 mt-0.5">{item.description}</div>
+                              )}
+                            </Link>
+                          ));
+                        }
+                        return null;
+                      })}
                     </div>
                   )}
                 </div>
               ))}
 
-              <div className="mt-6 pt-6 border-t border-gray-100">
+              <div className="mt-6 pt-6 border-t border-gray-100 space-y-3">
+                <Link
+                  href="/favorites"
+                  onClick={() => setIsOpen(false)}
+                  className="w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-2xl font-bold shadow-lg active:scale-[0.98] transition-all"
+                >
+                  <Heart className="w-5 h-5 fill-white" />
+                  Favorites
+                </Link>
                 <Link
                   href="/names"
                   onClick={() => setIsOpen(false)}
