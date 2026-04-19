@@ -156,7 +156,7 @@ export default function RootLayout({ children }) {
       </head>
 
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-gray-900`}>
-        <ErrorBoundary>
+        <div id="temp-wrapper">
           <AppProvider>
             <PerformanceInit />
             <Suspense fallback={<div>Loading Navbar...</div>}>
@@ -167,7 +167,7 @@ export default function RootLayout({ children }) {
             <AppInstallPopup />
             <SWRegister />
           </AppProvider>
-        </ErrorBoundary>
+        </div>
       </body>
     </html>
   );

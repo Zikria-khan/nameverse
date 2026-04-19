@@ -1,7 +1,18 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Search, X, Loader2, User, MapPin, Heart, Sparkles, ChevronRight, TrendingUp, ExternalLink, BookOpen, FileText } from 'lucide-react';
+import Search from 'lucide-react/dist/esm/icons/search.js';
+import X from 'lucide-react/dist/esm/icons/x.js';
+import Loader2 from 'lucide-react/dist/esm/icons/loader-circle.js';
+import User from 'lucide-react/dist/esm/icons/user.js';
+import MapPin from 'lucide-react/dist/esm/icons/map-pin.js';
+import Heart from 'lucide-react/dist/esm/icons/heart.js';
+import Sparkles from 'lucide-react/dist/esm/icons/sparkles.js';
+import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right.js';
+import TrendingUp from 'lucide-react/dist/esm/icons/trending-up.js';
+import ExternalLink from 'lucide-react/dist/esm/icons/external-link.js';
+import BookOpen from 'lucide-react/dist/esm/icons/book-open.js';
+import FileText from 'lucide-react/dist/esm/icons/file-text.js';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { searchNames } from '@/lib/api/names';

@@ -84,14 +84,12 @@ const nextConfig = {
   experimental: {
     // optimizeCss: true, // Disabled - requires critters package
     optimizePackageImports: [
-      'lucide-react', 
       '@radix-ui/react-dropdown-menu',
       '@radix-ui/react-scroll-area',
       '@radix-ui/react-slot',
       '@heroicons/react',
       'framer-motion',
-      'lodash',
-      'lucide-react'
+      'lodash'
     ],
   },
 
