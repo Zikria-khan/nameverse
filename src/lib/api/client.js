@@ -122,7 +122,7 @@ export const apiClient = axios.create({
   timeout: env.api.timeout,
   headers: {
     'Content-Type': 'application/json',
-    'Accept-Encoding': 'gzip, deflate, br',
+    // 'Accept-Encoding' is not allowed in browser environments and is handled automatically by Axios/Fetch.
   },
   // Enable compression
   decompress: true,

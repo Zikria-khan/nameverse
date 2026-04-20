@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { BookOpen, Heart, Clock, ArrowLeft, Share2, Calendar, User, Tag, CheckCircle, Star, Sparkles, ArrowRight } from 'lucide-react';
 import blogPostsData from '../../../../public/data/blog-posts.json';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
 // Generate metadata for SEO
 export async function generateMetadata({ params }) {
@@ -282,7 +282,7 @@ export default function GuidePage({ params }) {
           <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-3xl p-8 text-white text-center">
             <h2 className="text-2xl font-bold mb-4">Ready to Find the Perfect Name?</h2>
             <p className="text-purple-100 mb-6">
-              Explore our database of 65,000+ baby names with meanings, origins, and numerology.
+              Explore our database of 60,000+ baby names with meanings, origins, and numerology.
             </p>
             <Link 
               href="/names"

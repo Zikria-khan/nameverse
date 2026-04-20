@@ -99,20 +99,20 @@ const CulturalImportance = () => {
     '@type': 'Article',
     headline: 'The Deep Cultural Meaning Behind Every Baby Name',
     description: 'Discover verified baby names with meanings across Islamic, Hindu, Christian, and global traditions.',
-    image: 'https://nameverse.com/og-image-cultural-importance.jpg',
+    image: 'https://nameverse.vercel.app/logo.png',
     datePublished: '2024-01-15',
     dateModified: new Date().toISOString(),
     author: {
       '@type': 'Organization',
       name: 'NameVerse Baby Names',
-      url: 'https://nameverse.com'
+      url: 'https://nameverse.vercel.app'
     },
     publisher: {
       '@type': 'Organization',
       name: 'NameVerse Baby Names',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://nameverse.com/logo.png',
+        url: 'https://nameverse.vercel.app/logo.png',
         width: 200,
         height: 60
       }
@@ -132,7 +132,7 @@ const CulturalImportance = () => {
         <meta itemProp="description" content="Discover verified baby names across Islamic, Hindu, Christian, and global traditions with cultural significance." />
         <meta itemProp="author" content="NameVerse Baby Names" />
         <meta itemProp="datePublished" content="2024-01-15" />
-        <meta itemProp="image" content="https://nameverse.com/og-image-cultural-importance.jpg" />
+        <meta itemProp="image" content="https://nameverse.vercel.app/logo.png" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">

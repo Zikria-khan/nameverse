@@ -2,7 +2,7 @@
  * Single source of truth for public site URL (no trailing slash).
  */
 export function getSiteUrl() {
-  return (process.env.NEXT_PUBLIC_SITE_URL || "https://nameverse.com").replace(
+  return (process.env.NEXT_PUBLIC_SITE_URL || "https://nameverse.vercel.app").replace(
     /\/$/,
     ""
   );

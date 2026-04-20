@@ -61,7 +61,7 @@ export async function generateMetadata({ params }) {
       siteName: 'NameVerse',
       images: [
         {
-          url: `${SITE_URL}/og-image-${religion}.png`,
+          url: `${SITE_URL}/logo.png`,
           width: 1200,
           height: 630,
           alt: `${religionTitle} Baby Names with Meanings`,
@@ -72,7 +72,7 @@ export async function generateMetadata({ params }) {
       card: 'summary_large_image',
       title: metadata.title,
       description: metadata.description,
-      images: [`${SITE_URL}/og-image-${religion}.png`],
+      images: [`${SITE_URL}/logo.png`],
     },
     robots: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
     authors: [{ name: 'NameVerse Team' }],
@@ -215,6 +215,18 @@ export default async function ReligionNamesPage({ params }) {
     : fallbackCounts[religion] || 0;
   const initialFilters = filtersData.success ? filtersData.filters || {} : {};
 
+  const seoDescriptions = {
+    islamic: 'Discover authentic Islamic baby names inspired by Quranic verses, Arabic heritage, and meaningful spiritual traditions.',
+    christian: 'Explore Christian baby names with Biblical roots, saint connections, and timeless meanings for modern families.',
+    hindu: 'Find Hindu baby names drawn from Sanskrit, Vedic traditions, and cultural heritage with devotional significance.'
+  };
+
+  const seoExamples = {
+    islamic: 'Aaliyah, Yusuf, Noor, Ibrahim, Fatima',
+    christian: 'Grace, Gabriel, Mary, Joseph, Sophia',
+    hindu: 'Aarav, Priya, Aditi, Arjun, Saanvi'
+  };
+
   const structuredData = generateStructuredData(religion, initialNames, initialTotalCount);
 
   return (
@@ -257,7 +269,36 @@ export default async function ReligionNamesPage({ params }) {
             </div>
           </div>
         </div>
-        
+
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="bg-white rounded-3xl border border-gray-200 p-8 shadow-sm">
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">
+              {religionTitle} Baby Names for Every Family
+            </h2>
+            <div className="prose prose-lg max-w-none text-gray-700 space-y-5">
+              <p>{seoDescriptions[religion]} Our {religionTitle.toLowerCase()} names collection includes over <strong>{initialTotalCount.toLocaleString()} names</strong> backed by trusted meanings, origins, and heritage notes.</p>
+              <p>Use the search tools to filter by gender, starting letter, meaning, or cultural inspiration and find names like {seoExamples[religion]}, all rooted in {religionTitle} tradition.</p>
+              <p>Each entry includes clear origins, verified meanings, and cultural context to support your family in choosing a meaningful name.</p>
+              <ul>
+                <li>Comprehensive Christian name collections for boys, girls, and unisex options</li>
+                <li>Verified Biblical, Hebrew, Greek, and saint-inspired names</li>
+                <li>Easy search and filtering for meaningful name discovery</li>
+              </ul>
+            </div>
+
+            <div className="mt-10 grid gap-4 md:grid-cols-2">
+              <div className="bg-gray-50 rounded-2xl p-5 border border-gray-200">
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">Why choose NameVerse?</h3>
+                <p className="text-gray-700 leading-relaxed">Our Christian names are curated for authenticity, spiritual depth, and modern relevance so your child's name carries meaning for years to come.</p>
+              </div>
+              <div className="bg-gray-50 rounded-2xl p-5 border border-gray-200">
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">How to use this page</h3>
+                <p className="text-gray-700 leading-relaxed">Refine your search by gender, alphabet, and meaning; then explore each name profile for scripture connections, pronunciation tips, and origin details.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <ReligiousNamesBrowser
           initialReligion={religion}
           initialNames={initialNames}

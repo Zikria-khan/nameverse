@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Heart, Star, BookOpen, Sparkles, Cross } from 'lucide-react';
 import namesData from '../../../../public/data/christian-boy-names.json';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
 // ==========================================
 // METADATA - World Class SEO
@@ -22,7 +22,7 @@ export const metadata = {
     siteName: 'NameVerse',
     images: [
       {
-        url: `${SITE_URL}/og-image-christian.png`,
+        url: `${SITE_URL}/logo.png`,
         width: 1200,
         height: 630,
         alt: 'Christian Boy Names with Meanings - NameVerse',
@@ -33,7 +33,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: '100+ Christian Boy Names with Meanings | Biblical Baby Boy Names',
     description: 'Discover 100+ beautiful Christian boy names with meanings, origins & lucky numbers.',
-    images: [`${SITE_URL}/og-image-christian.png`],
+    images: [`${SITE_URL}/logo.png`],
   },
   robots: { 
     index: true, 

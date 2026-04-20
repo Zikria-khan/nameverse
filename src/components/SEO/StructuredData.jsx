@@ -33,7 +33,7 @@ export default function StructuredData({
     "sameAs": [
       // Add social media URLs here if needed
     ],
-    "description": "NameVerse - Discover 65,000+ baby names with meanings from Islamic, Hindu, and Christian traditions."
+    "description": "NameVerse - Discover 60,000+ baby names with meanings from Islamic, Hindu, and Christian traditions."
   } : null;
 
   // Website Schema

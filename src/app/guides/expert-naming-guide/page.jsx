@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { BookOpen, Heart, Star, ArrowRight, Sparkles, Award, CheckCircle, Users, Globe } from 'lucide-react';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
 export const metadata = {
   title: 'Expert Baby Naming Guide | How to Choose the Perfect Name | NameVerse',
@@ -145,7 +145,7 @@ export default function ExpertNamingGuidePage() {
           <section className="text-center bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Ready to Find the Perfect Name?</h2>
             <p className="text-gray-600 mb-6">
-              Explore our database of 65,000+ baby names with meanings, origins, and numerology.
+              Explore our database of 60,000+ baby names with meanings, origins, and numerology.
             </p>
             <Link 
               href="/names"

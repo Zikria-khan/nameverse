@@ -23,30 +23,30 @@ export default function HomePageClient() {
             "@graph": [
               {
                 "@type": "WebSite",
-                "@id": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.com'}/#website`,
-                "url": process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.com',
+                "@id": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app'}/#website`,
+                "url": process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app',
                 "name": "NameVerse - Baby Names with Meanings",
                 "description": "60,000+ verified baby names from Islamic, Hindu & Christian traditions with meanings in English, Urdu, Arabic & Hindi",
                 "publisher": {
-                  "@id": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.com'}/#organization`
+                  "@id": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app'}/#organization`
                 },
                 "potentialAction": {
                   "@type": "SearchAction",
                   "target": {
                     "@type": "EntryPoint",
-                    "urlTemplate": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.com'}/search?q={search_term_string}`
+                    "urlTemplate": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app'}/search?q={search_term_string}`
                   },
                   "query-input": "required name=search_term_string"
                 }
               },
               {
                 "@type": "Organization",
-                "@id": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.com'}/#organization`,
+                "@id": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app'}/#organization`,
                 "name": "NameVerse",
-                "url": process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.com',
+                "url": process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app',
                 "logo": {
                   "@type": "ImageObject",
-                  "url": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.com'}/logo.png`,
+                  "url": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app'}/logo.png`,
                   "width": 512,
                   "height": 512
                 },
@@ -58,14 +58,14 @@ export default function HomePageClient() {
               },
               {
                 "@type": "WebPage",
-                "@id": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.com'}/#webpage`,
-                "url": process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.com',
-                "name": "60,000+ Baby Names with Meanings | Islamic, Hindu, Christian Names 2025",
+                "@id": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app'}/#webpage`,
+                "url": process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app',
+                "name": "60,000+ Baby Names with Meanings | Islamic, Hindu, Christian Names 2026",
                 "isPartOf": {
-                  "@id": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.com'}/#website`
+                  "@id": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app'}/#website`
                 },
                 "about": {
-                  "@id": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.com'}/#organization`
+                  "@id": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app'}/#organization`
                 },
                 "description": "Find 60,000+ baby names with meanings in English, Urdu, Arabic & Hindi. Explore Islamic, Hindu & Christian names with origins and pronunciation guides."
               },
@@ -78,7 +78,7 @@ export default function HomePageClient() {
                     "position": 1,
                     "item": {
                       "@type": "Thing",
-                      "@id": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.com'}/names/islamic`,
+                      "@id": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app'}/names/islamic`,
                       "name": "Islamic Baby Names",
                       "description": "25,000+ Islamic baby names with Quranic references and meanings in Urdu & Arabic"
                     }
@@ -88,7 +88,7 @@ export default function HomePageClient() {
                     "position": 2,
                     "item": {
                       "@type": "Thing",
-                      "@id": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.com'}/names/hindu`,
+                      "@id": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app'}/names/hindu`,
                       "name": "Hindu Baby Names",
                       "description": "20,000+ Hindu baby names from Sanskrit with meanings in Hindi & English"
                     }
@@ -98,7 +98,7 @@ export default function HomePageClient() {
                     "position": 3,
                     "item": {
                       "@type": "Thing",
-                      "@id": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.com'}/names/christian`,
+                      "@id": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app'}/names/christian`,
                       "name": "Christian Baby Names",
                       "description": "15,000+ Christian baby names with Biblical references and meanings"
                     }
@@ -141,7 +141,7 @@ export default function HomePageClient() {
                     "@type": "ListItem",
                     "position": 1,
                     "name": "Home",
-                    "item": process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.com'
+                    "item": process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app'
                   }
                 ]
               }

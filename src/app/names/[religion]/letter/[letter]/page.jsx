@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 
 export const revalidate = 2592000; // 1 month ISR (names data is static)
 
-const DEFAULT_OG_IMAGE = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com'}/default-og.png`;
+const DEFAULT_OG_IMAGE = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app'}/logo.png`;
 
 // Fallback data for static generation when API is unreachable
 const FALLBACK_NAMES = [
@@ -56,7 +56,7 @@ export async function generateMetadata({ params, searchParams }) {
   }
 
   const selectedLetter = letter.toUpperCase();
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
   const currentPage = parseInt(resolvedSearchParams?.page || 1);
 
   const canonicalUrl = `${SITE_URL}/names/${selectedReligion}/letter/${selectedLetter.toLowerCase()}`;
@@ -136,7 +136,7 @@ export default async function NamesDatabaseServer({ params, searchParams }) {
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:5000/api';
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
   const selectedReligion = resolvedParams?.religion || 'islamic';
   const letter = resolvedParams?.letter;

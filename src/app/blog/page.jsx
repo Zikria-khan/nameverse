@@ -176,7 +176,7 @@ export default function BlogPage() {
             Ready to Find the Perfect Name?
           </h2>
           <p className="text-gray-600 mb-8">
-            Explore our database of 65,000+ baby names with detailed meanings and origins.
+            Explore our database of 60,000+ baby names with detailed meanings and origins.
           </p>
           <Link 
             href="/names"

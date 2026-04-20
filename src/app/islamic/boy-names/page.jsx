@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Heart, Star, BookOpen, Sparkles, Moon } from 'lucide-react';
 import namesData from '../../../../public/data/islamic-boy-names.json';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
 // ==========================================
 // METADATA - World Class SEO
@@ -22,7 +22,7 @@ export const metadata = {
     siteName: 'NameVerse',
     images: [
       {
-        url: `${SITE_URL}/og-image-islamic.png`,
+        url: `${SITE_URL}/logo.png`,
         width: 1200,
         height: 630,
         alt: 'Islamic Boy Names with Meanings - NameVerse',
@@ -33,7 +33,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: '150+ Islamic Boy Names with Meanings | Muslim Baby Boy Names',
     description: 'Discover 150+ beautiful Islamic boy names with meanings, origins & lucky numbers.',
-    images: [`${SITE_URL}/og-image-islamic.png`],
+    images: [`${SITE_URL}/logo.png`],
   },
   robots: { 
     index: true, 

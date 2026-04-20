@@ -19,7 +19,7 @@
 import { apiClient } from './client';
 import { env } from '@/config/env';
 
-const API_VERSION = '/api/v1';
+const API_VERSION = env.api.version || '/api/v1';
 const API_BASE = env.api.baseUrl;
 const DEFAULT_COVER_IMAGE = '/logo.png';
 
@@ -263,25 +263,44 @@ export async function getArticleBySlug(slug) {
  * @returns {Promise<Array>} articles
  */
 export async function searchArticles(keyword, options = {}) {
+  const params = {
+    q: keyword,
+    ...options,
+  };
+
+  const searchPaths = [
+    `${API_VERSION}/articles/search`,
+    '/api/articles/search',
+    '/api/v1/articles/search',
+  ].filter((path, index, self) => self.indexOf(path) === index);
+
   try {
-    const params = {
-      q: keyword,
-      ...options,
-    };
+    for (const path of searchPaths) {
+      const response = await apiClient.get(path, { params });
 
-    const { data } = await apiClient.get(`${API_VERSION}/articles/search`, { params });
+      if (response.status >= 400) {
+        continue;
+      }
 
-    const articles = data.success ? data.data : [];
-    return articles.map(transformArticle);
+      const articles = Array.isArray(response.data)
+        ? response.data
+        : response.data?.data || [];
+
+      if (Array.isArray(articles)) {
+        return articles.map(transformArticle);
+      }
+    }
   } catch (error) {
-    const q = (keyword || '').toLowerCase();
-    const items = FALLBACK_ARTICLES.filter(a => (
-      (a.title || '').toLowerCase().includes(q) ||
-      (a.subtitle || '').toLowerCase().includes(q) ||
-      (a.excerpt || '').toLowerCase().includes(q)
-    ));
-    return items.map(transformArticle);
+    // Fall through to fallback logic below
   }
+
+  const q = (keyword || '').toLowerCase();
+  const items = FALLBACK_ARTICLES.filter(a => (
+    (a.title || '').toLowerCase().includes(q) ||
+    (a.subtitle || '').toLowerCase().includes(q) ||
+    (a.excerpt || '').toLowerCase().includes(q)
+  ));
+  return items.map(transformArticle);
 }
 
 /**

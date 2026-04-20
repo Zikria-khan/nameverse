@@ -371,7 +371,7 @@ export default async function BlogPostPage({ params }) {
               Ready to Find the Perfect Name?
             </h2>
             <p className="text-gray-600 mb-6">
-              Explore our database of 65,000+ baby names with meanings, origins, and numerology.
+              Explore our database of 60,000+ baby names with meanings, origins, and numerology.
             </p>
             <Link 
               href="/names"

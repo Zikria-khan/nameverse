@@ -1,11 +1,11 @@
 import HomePageClient from "../components/HomePage/Homepage";
 
 // ✅ Read domain from .env
-const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || "https://yourdomain.com";
+const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || "https://nameverse.vercel.app";
 
 // World-class SEO metadata with comprehensive keyword targeting
 export const metadata = {
-  title: "60,000+ Baby Names with Meanings | Islamic, Hindu, Christian Names 2025 | NameVerse",
+  title: "60,000+ Baby Names with Meanings | Islamic, Hindu, Christian Names 2026 | NameVerse",
   description:
     "Find 60,000+ baby names with meanings in English, Urdu, Arabic & Hindi. Explore Islamic, Hindu & Christian names with origins and pronunciation guides.",
   keywords: [
@@ -32,14 +32,14 @@ export const metadata = {
     url: DOMAIN + "/",
     type: "website",
     siteName: "NameVerse",
-    images: [{ url: DOMAIN + "/og-image.jpg", width: 1200, height: 630, alt: "NameVerse - Baby Names with Meanings from Islamic, Hindu & Christian Traditions" }],
+    images: [{ url: DOMAIN + "/logo.png", width: 1200, height: 630, alt: "NameVerse - Baby Names & Meanings" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "60,000+ Baby Names with Meanings | NameVerse",
     description:
       "Discover your baby's perfect name from verified Islamic, Hindu & Christian traditions with complete meanings and cultural significance.",
-    images: [DOMAIN + "/og-image.jpg"],
+    images: [DOMAIN + "/logo.png"],
   },
   alternates: {
     canonical: DOMAIN + "/",

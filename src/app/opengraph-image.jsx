@@ -128,7 +128,7 @@ export default async function Image() {
           }}
         >
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ fontSize: 48, fontWeight: 'bold', color: 'white' }}>65,000+</div>
+            <div style={{ fontSize: 48, fontWeight: 'bold', color: 'white' }}>60,000+</div>
             <div style={{ fontSize: 20, color: 'rgba(255, 255, 255, 0.8)' }}>Baby Names</div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

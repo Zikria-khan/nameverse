@@ -17,9 +17,10 @@ export default function SearchResultsClient({
   const router = useRouter();
 
   const totalResults = totalNames;
+  const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
   const dynamicTitle = `${searchTerm} - Names | NameVerse`;
   const dynamicDescription = `Discover ${totalResults} name results for ${searchTerm}. Expert meanings, origins, and inspiration for your search.`;
-  const canonicalURL = `https://yourdomain.com/search/${encodeURIComponent(searchTerm)}`;
+  const canonicalURL = `${DOMAIN}/search/${encodeURIComponent(searchTerm)}`;
 
   const [viewMode, setViewMode] = useState('grid');
   const [isPending, startTransition] = useTransition();
@@ -63,8 +64,8 @@ export default function SearchResultsClient({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://yourdomain.com" },
-      { "@type": "ListItem", position: 2, name: "Search", item: "https://yourdomain.com/search" },
+      { "@type": "ListItem", position: 1, name: "Home", item: DOMAIN },
+      { "@type": "ListItem", position: 2, name: "Search", item: `${DOMAIN}/search` },
       { "@type": "ListItem", position: 3, name: searchTerm, item: canonicalURL }
     ]
   };
@@ -95,9 +96,11 @@ export default function SearchResultsClient({
         <meta property="og:description" content={dynamicDescription} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={canonicalURL} />
+        <meta property="og:image" content={`${DOMAIN}/logo.png`} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={dynamicTitle} />
         <meta name="twitter:description" content={dynamicDescription} />
+        <meta name="twitter:image" content={`${DOMAIN}/logo.png`} />
         <link rel="canonical" href={canonicalURL} />
       </Head>
       <Script id="faq-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
