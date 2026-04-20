@@ -21,6 +21,7 @@ import { env } from '@/config/env';
 
 const API_VERSION = '/api/v1';
 const API_BASE = env.api.baseUrl;
+const DEFAULT_COVER_IMAGE = '/logo.png';
 
 const FALLBACK_ARTICLES = [
   {
@@ -31,7 +32,7 @@ const FALLBACK_ARTICLES = [
     author: 'NameVerse Editorial',
     category: 'Islamic',
     tags: ['Islamic', 'Names'],
-    cover_image_url: '/article/top-100-islamic-names.jpg',
+    cover_image_url: DEFAULT_COVER_IMAGE,
     excerpt: 'Explore the top 100 Islamic names with their meanings and origins.',
     content: '## Introduction\nDiscover meaningful Islamic names.\n\n## Highlights\nTop names and meanings.',
     read_time_minutes: 8,
@@ -49,7 +50,7 @@ const FALLBACK_ARTICLES = [
     author: 'NameVerse Editorial',
     category: 'Christian',
     tags: ['Christian', 'Names'],
-    cover_image_url: '/article/top-100-christian-names.jpg',
+    cover_image_url: DEFAULT_COVER_IMAGE,
     excerpt: 'From classic to modern, explore Christian names and meanings.',
     content: '## Overview\nA guide to Christian names.\n\n## Favorites\nPopular selections.',
     read_time_minutes: 7,
@@ -66,7 +67,7 @@ const FALLBACK_ARTICLES = [
     author: 'Tech Writer',
     category: 'Technology',
     tags: ['AI', 'Productivity'],
-    cover_image_url: '/article/top-10-popular-ai-tools-2025.jpg',
+    cover_image_url: DEFAULT_COVER_IMAGE,
     excerpt: 'A roundup of the most popular AI tools this year.',
     content: '## Tools\nList of top AI tools.\n\n## Tips\nHow to use them effectively.',
     read_time_minutes: 6,
@@ -83,7 +84,7 @@ const FALLBACK_ARTICLES = [
     author: 'Career Coach',
     category: 'Careers',
     tags: ['Remote', 'Jobs'],
-    cover_image_url: '/article/top-10-remote-jobs-2025-guide.jpg',
+    cover_image_url: DEFAULT_COVER_IMAGE,
     excerpt: 'Find the best remote jobs and how to get them.',
     content: '## Roles\nRemote-friendly roles.\n\n## How To Apply\nSteps and tips.',
     read_time_minutes: 5,
@@ -100,7 +101,7 @@ const FALLBACK_ARTICLES = [
     author: 'NameVerse Editorial',
     category: 'Islamic',
     tags: ['Islamic', 'Demographics'],
-    cover_image_url: '/article/zero-percent-muslim-population-countries.jpg',
+    cover_image_url: DEFAULT_COVER_IMAGE,
     excerpt: 'Explore countries with minimal Muslim populations.',
     content: '## Data\nDemographic overview.\n\n## Insights\nKey observations.',
     read_time_minutes: 4,
@@ -126,8 +127,8 @@ function transformArticle(article) {
     seo_title: article.seo_title,
     seo_description: article.seo_description,
     seo_keywords: article.seo_keywords || [],
-    cover_image_url: article.cover_image_url,
-    image: article.cover_image_url, // Alias for compatibility
+    cover_image_url: article.cover_image_url || DEFAULT_COVER_IMAGE,
+    image: article.cover_image_url || DEFAULT_COVER_IMAGE, // Alias for compatibility
     excerpt: article.excerpt,
     summary: article.excerpt, // Alias for compatibility
     content: article.content,

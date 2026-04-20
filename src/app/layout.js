@@ -1,4 +1,3 @@
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer/Footer";
@@ -16,18 +15,6 @@ import { Suspense } from 'react';
 
 // Use environment variable or default - will be overridden client-side if needed
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://nameverse.vercel.app";
-
-// ✅ Font optimization
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-  display: "swap",
-});
 
 // ✅ Global SEO Metadata
 export const metadata = {
@@ -155,7 +142,7 @@ export default function RootLayout({ children }) {
         />
       </head>
 
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-gray-900`}>
+      <body className="antialiased bg-white text-gray-900">
         <div id="temp-wrapper">
           <AppProvider>
             <PerformanceInit />

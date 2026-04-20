@@ -57,6 +57,19 @@ const nextConfig = {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin'
           },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, s-maxage=0, must-revalidate',
+          },
+        ],
+      },
+      {
+        source: '/_next/data/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, s-maxage=0, must-revalidate',
+          },
         ],
       },
       {
@@ -76,6 +89,29 @@ const nextConfig = {
             value: 'public, max-age=31536000, immutable',
           },
         ],
+      },
+      {
+        source: '/_next/image/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
+  },
+
+  // Rewrite missing article image requests to a known placeholder
+  async rewrites() {
+    return [
+      {
+        source: '/article/:path*',
+        destination: '/logo.png',
+      },
+      {
+        source: '/images/articles/:path*',
+        destination: '/logo.png',
       },
     ];
   },

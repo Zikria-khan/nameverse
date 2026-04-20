@@ -17,6 +17,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const [mobileOpenSection, setMobileOpenSection] = useState(null);
   const dropdownTimeoutRef = useRef(null);
 
   // Handle mount state to prevent hydration mismatch
@@ -39,6 +40,7 @@ const Navbar = () => {
       if (window.innerWidth >= 1024) {
         setIsOpen(false);
         setActiveDropdown(null);
+        setMobileOpenSection(null);
       }
     };
     window.addEventListener('resize', handleResize);
@@ -51,21 +53,43 @@ const Navbar = () => {
       if (e.key === 'Escape') {
         setIsOpen(false);
         setActiveDropdown(null);
+        setMobileOpenSection(null);
       }
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
   }, []);
 
-  // Prevent body scroll when mobile menu is open
+  const scrollPositionRef = useRef(0);
+
+  // Prevent body scroll when mobile menu is open, while preserving page position
   useEffect(() => {
     if (isOpen) {
+      scrollPositionRef.current = window.scrollY || window.pageYOffset;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollPositionRef.current}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
       document.body.style.overflow = 'hidden';
+      document.body.style.width = '100%';
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.overflow = '';
+      document.body.style.width = '';
+      window.scrollTo(0, scrollPositionRef.current);
     }
+
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.overflow = '';
+      document.body.style.width = '';
+      window.scrollTo(0, scrollPositionRef.current);
     };
   }, [isOpen]);
 
@@ -88,28 +112,41 @@ const Navbar = () => {
     }
   };
 
-  // Simplified navigation links - only what you have
+  // Simplified navigation links - only pages that exist in this app
   const navLinks = [
     {
       name: 'Names',
       href: '/names',
       icon: Sparkles,
+    },
+    {
+      name: 'Islamic',
+      href: '/names/islamic',
+      icon: Sparkles,
       subLinks: [
-        { name: 'All Names', href: '/names' },
-        { name: 'Islamic Names', href: '/names/islamic' },
-        { name: 'Hindu Names', href: '/names/hindu' },
-        { name: 'Christian Names', href: '/names/christian' },
-        { name: 'Search Names', href: '/search' },
+        { name: 'Islamic All Names', href: '/names/islamic' },
+        { name: 'Islamic Boy Names', href: '/islamic/boy-names' },
+        { name: 'Islamic Girl Names', href: '/islamic/girl-names' },
       ]
     },
-    { 
-      name: 'Blog', 
-      href: '/blog', 
-      icon: BookOpen,
+    {
+      name: 'Hindu',
+      href: '/names/hindu',
+      icon: Sparkles,
       subLinks: [
-        { name: 'Latest Posts', href: '/blog' },
-        { name: 'Naming Guides', href: '/blog/guides' },
-        { name: 'Name Meanings', href: '/blog/meanings' },
+        { name: 'Hindu All Names', href: '/names/hindu' },
+        { name: 'Hindu Boy Names', href: '/hindu/boy-names' },
+        { name: 'Hindu Girl Names', href: '/hindu/girl-names' },
+      ]
+    },
+    {
+      name: 'Christian',
+      href: '/names/christian',
+      icon: Sparkles,
+      subLinks: [
+        { name: 'Christian All Names', href: '/names/christian' },
+        { name: 'Christian Boy Names', href: '/christian/boy-names' },
+        { name: 'Christian Girl Names', href: '/christian/girl-names' },
       ]
     },
     {
@@ -117,6 +154,8 @@ const Navbar = () => {
       href: '/about',
       icon: Info,
       subLinks: [
+        { name: 'Search', href: '/search' },
+        { name: 'Blog', href: '/blog' },
         { name: 'About Us', href: '/about' },
         { name: 'Naming Guide', href: '/guides/expert-naming-guide' },
         { name: 'Privacy Policy', href: '/privacy' },
@@ -154,25 +193,25 @@ const Navbar = () => {
           
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="relative w-10 h-10 overflow-hidden rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center transition-all group-hover:scale-110 shadow-md">
-                <Image
-                  src="/logo.png"
-                  alt="NameVerse Logo"
-                  width={36}
-                  height={36}
-                  className="object-contain brightness-0 invert"
-                  priority
-                />
-              </div>
-              <span className="text-xl md:text-2xl font-black tracking-tight bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                NameVerse
-              </span>
-            </Link>
+              <Link href="/" title="Go to NameVerse home" aria-label="NameVerse Home" className="flex items-center gap-2 group logo4">
+                <div className="relative w-10 h-10 overflow-hidden rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center transition-all group-hover:scale-110 shadow-md logo4">
+                  <Image
+                    src="/logo.png"
+                    alt="NameVerse Logo"
+                    width={36}
+                    height={36}
+                    className="object-contain"
+                    priority
+                  />
+                </div>
+                <span className="text-xl md:text-2xl font-black tracking-tight bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                  NameVerse
+                </span>
+              </Link>
           </div>
 
           {/* Desktop Search */}
-          <div className="hidden md:flex flex-1 max-w-md">
+          <div className="hidden lg:flex flex-1 max-w-md">
             <UniversalSearch />
           </div>
 
@@ -246,10 +285,6 @@ const Navbar = () => {
 
           {/* Mobile Controls */}
           <div className="flex lg:hidden items-center gap-2">
-            <div className="w-40 sm:w-56 md:hidden">
-              <UniversalSearch />
-            </div>
-            
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="p-2 rounded-xl text-gray-600 hover:bg-gray-100 active:scale-90 transition-all"
@@ -269,33 +304,71 @@ const Navbar = () => {
             onClick={() => setIsOpen(false)}
           />
           
-          <div className="absolute top-full left-0 right-0 bg-white shadow-2xl z-[103] lg:hidden animate-in slide-in-from-top-2 duration-300 max-h-[calc(100vh-64px)] overflow-y-auto">
-            <div className="py-2">
+          <div className="fixed inset-x-0 top-0 bottom-0 bg-white shadow-2xl z-[103] lg:hidden animate-in slide-in-from-top-2 duration-300 overflow-y-auto">
+            <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200">
+              <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-xl">
+                  <Image src="/logo.png" alt="NameVerse logo" width={32} height={32} className="object-contain" />
+                </div>
+                <div>
+                  <p className="text-base font-bold text-gray-900">NameVerse</p>
+                  <p className="text-xs text-gray-500">Names, meanings & guides</p>
+                </div>
+              </Link>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="p-2 rounded-2xl text-gray-600 hover:bg-gray-100 transition-all"
+                aria-label="Close navigation menu"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="px-4 py-4 space-y-4">
+              <div className="rounded-3xl border border-gray-100 bg-slate-50 p-4">
+                <p className="text-sm font-semibold text-gray-700">Quick Links</p>
+                <p className="mt-1 text-xs text-gray-500">Tap a section to explore fast.</p>
+              </div>
+
               {navLinks.map((link) => (
-                <div key={link.name} className="border-b border-gray-50">
+                <div key={link.name} className="rounded-3xl border border-gray-100 overflow-hidden">
                   {link.subLinks ? (
                     <>
-                      <div className="px-4 py-4 flex items-center justify-between">
+                      <button
+                        type="button"
+                        onClick={() => setMobileOpenSection((current) => current === link.name ? null : link.name)}
+                        className="w-full px-4 py-4 flex items-center justify-between gap-3 text-left"
+                        aria-expanded={mobileOpenSection === link.name}
+                      >
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
+                          <div className="w-11 h-11 rounded-2xl bg-indigo-50 flex items-center justify-center">
                             <link.icon className="w-5 h-5 text-indigo-600" />
                           </div>
-                          <span className="font-semibold text-gray-800">{link.name}</span>
+                          <div>
+                            <p className="font-semibold text-gray-900">{link.name}</p>
+                            <p className="text-xs text-gray-500">Explore curated sections</p>
+                          </div>
                         </div>
-                        <ChevronDown className="w-5 h-5 text-gray-400" />
-                      </div>
-                      <div className="pl-14 pb-2 space-y-1">
-                        {link.subLinks.map((subLink) => (
-                          <Link
-                            key={subLink.name}
-                            href={subLink.href}
-                            onClick={() => setIsOpen(false)}
-                            className="block py-3 text-gray-600 hover:text-indigo-600 transition-colors"
-                          >
-                            {subLink.name}
-                          </Link>
-                        ))}
-                      </div>
+                        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${mobileOpenSection === link.name ? 'rotate-180' : ''}`} />
+                      </button>
+
+                      {mobileOpenSection === link.name && (
+                        <div className="space-y-1 border-t border-gray-100 bg-white px-4 pb-4">
+                          {link.subLinks.map((subLink) => (
+                            <Link
+                              key={subLink.name}
+                              href={subLink.href}
+                              onClick={() => {
+                                setIsOpen(false);
+                                setMobileOpenSection(null);
+                              }}
+                              className="block rounded-2xl px-3 py-3 text-sm text-gray-700 hover:bg-indigo-50 transition-colors"
+                            >
+                              {subLink.name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
                     </>
                   ) : (
                     <Link
@@ -303,23 +376,32 @@ const Navbar = () => {
                       onClick={() => setIsOpen(false)}
                       className="flex items-center gap-3 px-4 py-4"
                     >
-                      <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
+                      <div className="w-11 h-11 rounded-2xl bg-indigo-50 flex items-center justify-center">
                         <link.icon className="w-5 h-5 text-indigo-600" />
                       </div>
-                      <span className="font-semibold text-gray-800">{link.name}</span>
+                      <div>
+                        <p className="font-semibold text-gray-900">{link.name}</p>
+                        <p className="text-xs text-gray-500">Visit {link.name}</p>
+                      </div>
                     </Link>
                   )}
                 </div>
               ))}
 
-              {/* Mobile CTA */}
-              <div className="p-4 mt-4">
+              <div className="grid gap-3 py-2">
                 <Link
                   href="/names"
                   onClick={() => setIsOpen(false)}
-                  className="w-full flex items-center justify-center py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold shadow-lg"
+                  className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-4 text-sm font-semibold text-white shadow-lg shadow-indigo-100"
                 >
                   Browse All Names
+                </Link>
+                <Link
+                  href="/blog"
+                  onClick={() => setIsOpen(false)}
+                  className="inline-flex items-center justify-center rounded-2xl border border-gray-200 px-4 py-4 text-sm font-semibold text-gray-800 hover:bg-gray-50"
+                >
+                  Read Guides
                 </Link>
               </div>
             </div>

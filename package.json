@@ -6,7 +6,12 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start -H 0.0.0.0 -p 3000",
-    "lint": "next lint"
+    "lint": "next lint",
+    "clear-next-cache": "rimraf .next",
+    "clear-all-cache": "rimraf .next node_modules/.cache",
+    "dev:clean": "npm run clear-all-cache && next dev",
+    "rebuild": "npm run clear-all-cache && next build",
+    "reset": "npm run clear-all-cache && npm run dev"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -43,6 +48,7 @@
     "@tailwindcss/postcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.4.5",
+    "rimraf": "^6.1.3",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.6"
   }
