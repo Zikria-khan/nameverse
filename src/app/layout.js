@@ -103,6 +103,13 @@ export default function RootLayout({ children }) {
         <meta name="color-scheme" content="light dark" />
         <meta name="application-name" content="NameVerse" />
         <meta name="content-language" content="en" />
+        <meta name="theme-color" content="#4F46E5" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-title" content="NameVerse" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <link rel="apple-touch-icon" href="/apple-touch.png" />
+        <link rel="manifest" href="/manifest.json" />
         <meta name="ahrefs-site-verification" content="650afaf6635223ff618a281883a22b69b937a121e933b19907debeca67754cd4" />
 
         {/* ✅ Performance: Resource Hints */}
