@@ -1,13 +1,15 @@
 import HomePageClient from "../components/HomePage/Homepage";
+import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
 
 // ✅ Read domain from .env
 const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || "https://nameverse.vercel.app";
 
 // World-class SEO metadata with comprehensive keyword targeting
 export const metadata = {
-  title: "60,000+ Baby Names with Meanings | NameVerse",
-  description:
-    "Find 60,000+ baby names with meanings in English, Urdu, Arabic & Hindi. Explore Islamic, Hindu & Christian names with origins and pronunciation guides.",
+  title: validateMetaTitle("60,000+ Baby Names with Meanings | NameVerse"),
+  description: validateMetaDescription(
+    "Find 60,000+ baby names with meanings in English, Urdu, Arabic & Hindi. Explore Islamic, Hindu & Christian names with origins and pronunciation guides."
+  ),
   keywords: [
     "baby names with meanings",
     "baby boy names 2026",
@@ -26,9 +28,10 @@ export const metadata = {
     "baby name generator"
   ].join(', '),
   openGraph: {
-    title: "60,000+ Baby Names with Meanings | NameVerse",
-    description:
-      "Find your baby's perfect name from verified Islamic, Hindu & Christian names with complete meanings, cultural origins, and pronunciation guides.",
+    title: validateMetaTitle("60,000+ Baby Names with Meanings | NameVerse"),
+    description: validateMetaDescription(
+      "Find your baby's perfect name from verified Islamic, Hindu & Christian names with complete meanings, cultural origins, and pronunciation guides."
+    ),
     url: DOMAIN + "/",
     type: "website",
     siteName: "NameVerse",
@@ -36,9 +39,10 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "60,000+ Baby Names with Meanings | NameVerse",
-    description:
-      "Discover your baby's perfect name from verified Islamic, Hindu & Christian traditions with complete meanings and cultural significance.",
+    title: validateMetaTitle("60,000+ Baby Names with Meanings | NameVerse"),
+    description: validateMetaDescription(
+      "Discover your baby's perfect name from verified Islamic, Hindu & Christian traditions with complete meanings and cultural significance."
+    ),
     images: [DOMAIN + "/logo.png"],
   },
   alternates: {

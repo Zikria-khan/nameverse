@@ -1,6 +1,14 @@
+import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
+
 export const metadata = {
-  title: 'Privacy Policy | NameVerse — Protecting Your Personal Information',
-  description: 'Read the NameVerse Privacy Policy. We are committed to protecting your privacy and explaining how we handle your data when you use our baby names database.',
+  title: validateMetaTitle('Privacy Policy | NameVerse — Protecting Your Personal Information'),
+  description: validateMetaDescription('Read the NameVerse Privacy Policy. We are committed to protecting your privacy and explaining how we handle your data when you use our baby names database service.'),
+  alternates: {
+    canonical: `${SITE_URL}/privacy`,
+    languages: { en: `${SITE_URL}/privacy`, 'x-default': `${SITE_URL}/privacy` },
+  },
 };
 
 export default function PrivacyPage() {

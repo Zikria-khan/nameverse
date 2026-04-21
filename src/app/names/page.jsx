@@ -6,6 +6,7 @@
 import { cache } from 'react';
 import BabyNamesClient from './ClientComponent';
 import { fetchFilters, fetchNames } from '@/lib/api/names';
+import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
@@ -130,17 +131,20 @@ export async function generateMetadata({ searchParams }) {
   ].join(', ');
 
   const canonicalUrl = `${SITE_URL}/names`;
+  const validatedTitle = validateMetaTitle(title);
+  const validatedDescription = validateMetaDescription(description);
 
   return {
-    title,
-    description,
+    title: validatedTitle,
+    description: validatedDescription,
     keywords,
     alternates: {
       canonical: canonicalUrl,
+      languages: { en: canonicalUrl, 'x-default': canonicalUrl },
     },
     openGraph: {
-      title,
-      description,
+      title: validatedTitle,
+      description: validatedDescription,
       url: canonicalUrl,
       siteName: "NameVerse — Baby Names & Meanings",
       type: "website",

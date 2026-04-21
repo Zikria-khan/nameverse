@@ -1,6 +1,7 @@
 import NamesDatabaseClient from './NameClientComponent';
 import React from 'react';
 import { notFound } from 'next/navigation';
+import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
 
 export const revalidate = 2592000; // 1 month ISR (names data is static)
 
@@ -107,9 +108,12 @@ export async function generateMetadata({ params, searchParams }) {
     `baby names with letter ${selectedLetter}`
   ];
 
+  const validatedTitle = validateMetaTitle(`${selectedReligion.charAt(0).toUpperCase() + selectedReligion.slice(1)} Names Starting with "${selectedLetter}" | Baby Names Database`);
+  const validatedDescription = validateMetaDescription(`Discover the most popular ${selectedReligion} baby names starting with "${selectedLetter}". Browse meanings, origins, genders, pronunciation, and cultural significance. Perfect names for your baby.`);
+
   return {
-    title: `${selectedReligion.charAt(0).toUpperCase() + selectedReligion.slice(1)} Names Starting with "${selectedLetter}" | Baby Names Database`,
-    description: `Discover the most popular ${selectedReligion} baby names starting with "${selectedLetter}". Browse meanings, origins, genders, pronunciation, and cultural significance. Perfect names for your baby.`,
+    title: validatedTitle,
+    description: validatedDescription,
     keywords: keywordsArray.join(', '),
     alternates: {
       canonical: canonicalUrl,
@@ -117,15 +121,15 @@ export async function generateMetadata({ params, searchParams }) {
     },
     openGraph: {
       type: 'website',
-      title: `Top ${selectedReligion} Names Starting with "${selectedLetter}"`,
-      description: `Explore thousands of ${selectedReligion} baby names starting with "${selectedLetter}" including meanings, origins, and cultural significance.`,
+      title: validateMetaTitle(`Top ${selectedReligion} Names Starting with "${selectedLetter}"`),
+      description: validateMetaDescription(`Explore thousands of ${selectedReligion} baby names starting with "${selectedLetter}" including meanings, origins, and cultural significance.`),
       url: canonicalUrl,
       images: [{ url: ogImage || DEFAULT_OG_IMAGE, width: 1200, height: 630, alt: `${selectedReligion} names starting with ${selectedLetter}` }]
     },
     twitter: {
       card: 'summary_large_image',
-      title: `Top ${selectedReligion} Names Starting with "${selectedLetter}"`,
-      description: `Explore ${selectedReligion} baby names starting with "${selectedLetter}". Meanings, origins, and more.`,
+      title: validateMetaTitle(`Top ${selectedReligion} Names Starting with "${selectedLetter}"`),
+      description: validateMetaDescription(`Explore ${selectedReligion} baby names starting with "${selectedLetter}". Meanings, origins, and more.`),
       images: [ogImage || DEFAULT_OG_IMAGE]
     },
     robots: { index: true, follow: true },
@@ -135,7 +139,7 @@ export async function generateMetadata({ params, searchParams }) {
 export default async function NamesDatabaseServer({ params, searchParams }) {
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:5000/api';
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'https://name-meaning-site-backend.vercel.app/api/v1';
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
   const selectedReligion = resolvedParams?.religion || 'islamic';
@@ -156,13 +160,14 @@ export default async function NamesDatabaseServer({ params, searchParams }) {
   let isFallback = false;
 
   try {
-    // Fixed the API endpoint to match the backend routes
-    const apiUrl = `${API_BASE}/names/${selectedReligion}/letter/${selectedLetter.toLowerCase()}?limit=${perPage}&page=${currentPage}`;
-    
-    // Added timeout and better error handling
-    const response = await fetch(apiUrl, { 
+    const apiUrlBase = `${API_BASE}/names/${selectedReligion}/letter/${selectedLetter.toLowerCase()}`;
+    const apiUrl = currentPage > 1
+      ? `${apiUrlBase}?limit=${perPage}&page=${currentPage}`
+      : apiUrlBase;
+
+    const response = await fetch(apiUrl, {
       next: { revalidate: 2592000 }, // 1 month revalidate for data
-      signal: AbortSignal.timeout(30000) // 30 second timeout
+      signal: AbortSignal.timeout(30000), // 30 second timeout
     });
     
     if (response.ok) {

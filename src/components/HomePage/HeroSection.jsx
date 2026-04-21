@@ -66,10 +66,7 @@ const HeroSection = () => {
             </div>
 
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
-              Baby Names 2026 | 
-              <span className="block bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mt-2">
-                60,000+ Islamic, Hindu & Christian Baby Names
-              </span>
+              Baby Names 2026 — 60,000+ Islamic, Hindu & Christian Names
             </h1>
 
             <p className="mt-4 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2 leading-relaxed">

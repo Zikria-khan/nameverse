@@ -3,6 +3,22 @@
  */
 
 /**
+ * Validate meta title length (up to 60 characters)
+ * @param {string} title - Meta title to validate
+ * @returns {string} Validated title
+ */
+export function validateMetaTitle(title) {
+  if (!title) return 'NameVerse — Baby Names & Meanings';
+
+  const cleaned = title.trim();
+  if (cleaned.length <= 60) return cleaned;
+
+  const truncated = cleaned.substring(0, 57);
+  const lastSpace = truncated.lastIndexOf(' ');
+  return lastSpace > 0 ? `${truncated.substring(0, lastSpace)}...` : `${truncated}...`;
+}
+
+/**
  * Validate meta description length (160-300 characters)
  * @param {string} description - Meta description to validate
  * @returns {string} Validated meta description

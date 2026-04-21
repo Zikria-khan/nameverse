@@ -2,6 +2,7 @@ import { cache } from 'react';
 import ReligiousNamesBrowser from './client';
 import { notFound } from 'next/navigation';
 import { fetchNames as fetchNamesAPI, fetchFilters as fetchFiltersAPI } from '@/lib/api/names';
+import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
 
 // ==========================================
 // ISR CONFIGURATION
@@ -46,16 +47,20 @@ export async function generateMetadata({ params }) {
 
   const metadata = metadataMap[religion] || metadataMap.islamic;
 
+  const validatedTitle = validateMetaTitle(metadata.title);
+  const validatedDescription = validateMetaDescription(metadata.description);
+
   return {
-    title: metadata.title,
-    description: metadata.description,
+    title: validatedTitle,
+    description: validatedDescription,
     keywords: metadata.keywords,
     alternates: {
       canonical: `${SITE_URL}/names/${religion}`,
+      languages: { en: `${SITE_URL}/names/${religion}`, 'x-default': `${SITE_URL}/names/${religion}` }
     },
     openGraph: {
-      title: `${religionTitle} Baby Names - Complete Database`,
-      description: metadata.description,
+      title: validateMetaTitle(`${religionTitle} Baby Names - Complete Database`),
+      description: validatedDescription,
       type: 'website',
       url: `${SITE_URL}/names/${religion}`,
       siteName: 'NameVerse',
@@ -70,8 +75,8 @@ export async function generateMetadata({ params }) {
     },
     twitter: {
       card: 'summary_large_image',
-      title: metadata.title,
-      description: metadata.description,
+      title: validatedTitle,
+      description: validatedDescription,
       images: [`${SITE_URL}/logo.png`],
     },
     robots: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },

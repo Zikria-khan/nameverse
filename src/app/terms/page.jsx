@@ -1,6 +1,14 @@
+import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
+
 export const metadata = {
-  title: 'Terms of Service | NameVerse — Use Our Names Database Responsibly',
-  description: 'Understand the terms and conditions of using NameVerse. Learn about our data usage, licensing, and user responsibilities for our baby names service.',
+  title: validateMetaTitle('Terms of Service | NameVerse — Use Our Names Database Responsibly'),
+  description: validateMetaDescription('Understand the terms and conditions of using NameVerse. Learn about our data usage, licensing, and user responsibilities for our baby names service.'),
+  alternates: {
+    canonical: `${SITE_URL}/terms`,
+    languages: { en: `${SITE_URL}/terms`, 'x-default': `${SITE_URL}/terms` },
+  },
 };
 
 export default function TermsPage() {
@@ -94,8 +102,7 @@ export default function TermsPage() {
             <p className="leading-relaxed">
               If you have any questions about these Terms of Service, please contact us at:
               <br />
-              Email: support@nameverse.com
-            </p>
+              Email: coding4443@gmail.com            </p>
           </section>
         </div>
       </div>

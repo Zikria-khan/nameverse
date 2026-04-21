@@ -2,6 +2,7 @@ import { cache } from 'react';
 import { notFound } from 'next/navigation';
 import SearchResultsClient from './ClientComponent';
 import { searchNames } from '@/lib/api/names';
+import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
 
 const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
@@ -29,9 +30,11 @@ export const generateMetadata = async ({ params }) => {
   const decodedTerm = decodeURIComponent(term);
   const { totalResults } = await fetchSearchResults(decodedTerm);
 
+  const canonicalUrl = `${DOMAIN}/search/${encodeURIComponent(decodedTerm)}`;
+
   return {
-    title: `${decodedTerm} - Names | NameVerse`,
-    description: `Discover ${totalResults} results for ${decodedTerm}. Expert meanings and origins for your search.`,
+    title: validateMetaTitle(`${decodedTerm} - Names | NameVerse`),
+    description: validateMetaDescription(`Discover ${totalResults} results for ${decodedTerm}. Expert meanings and origins for your search.`),
     keywords: [
       decodedTerm,
       `${decodedTerm} names`,
@@ -44,19 +47,19 @@ export const generateMetadata = async ({ params }) => {
     ].join(', '),
     authors: [{ name: 'NameVerse' }],
     openGraph: {
-      title: `${decodedTerm} - Names`,
-      description: `Discover ${totalResults} results for ${decodedTerm}`,
+      title: validateMetaTitle(`${decodedTerm} - Names`),
+      description: validateMetaDescription(`Discover ${totalResults} results for ${decodedTerm}`),
       type: 'website',
-      url: `${DOMAIN}/search/${encodeURIComponent(decodedTerm)}`,
+      url: canonicalUrl,
       siteName: 'NameVerse',
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${decodedTerm} - Names`,
-      description: `Discover ${totalResults} results for ${decodedTerm}`,
+      title: validateMetaTitle(`${decodedTerm} - Names`),
+      description: validateMetaDescription(`Discover ${totalResults} results for ${decodedTerm}`),
     },
     robots: { index: true, follow: true },
-    alternates: { canonical: `${DOMAIN}/search/${encodeURIComponent(decodedTerm)}` },
+    alternates: { canonical: canonicalUrl, languages: { en: canonicalUrl, 'x-default': canonicalUrl } },
   };
 };
 

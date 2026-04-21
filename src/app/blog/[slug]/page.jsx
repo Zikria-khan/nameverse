@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { validateMetaTitle } from '@/lib/seo/meta-helpers';
+import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
 import { BookOpen, Heart, Clock, ArrowLeft, Share2, Calendar, User, Tag, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
 import blogPostsData from '../../../../public/data/blog-posts.json';
 
@@ -16,20 +16,25 @@ export async function generateMetadata({ params }) {
 
   return {
     title: validateMetaTitle(`${post.title} | NameVerse`),
-    description: post.excerpt,
+    description: validateMetaDescription(post.excerpt),
     keywords: post.seoKeywords || post.tags.join(', '),
     alternates: {
       canonical: `${SITE_URL}/blog/${post.id}`,
+      languages: { en: `${SITE_URL}/blog/${post.id}`, 'x-default': `${SITE_URL}/blog/${post.id}` }
     },
     openGraph: {
-      title: post.title,
-      description: post.excerpt,
+      title: validateMetaTitle(post.title),
+      description: validateMetaDescription(post.excerpt),
       type: 'article',
       url: `${SITE_URL}/blog/${post.id}`,
       publishedTime: post.publishDate,
       modifiedTime: post.lastUpdated,
       authors: [post.author],
       tags: post.tags,
+    },
+    twitter: {
+      title: validateMetaTitle(post.title),
+      description: validateMetaDescription(post.excerpt),
     },
     robots: { index: true, follow: true },
   };

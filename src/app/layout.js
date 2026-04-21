@@ -9,6 +9,7 @@ import ResourceHints from "@/components/Performance/ResourceHints";
 import PerformanceInit from "./performance";
 import StructuredData from "@/components/SEO/StructuredData";
 import GoogleBotMeta from "@/components/SEO/GoogleBotMeta";
+import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
 import { AppProvider } from "@/contexts/AppContext";
 import LoadingWrapper from "@/components/LoadingAnimation/LoadingWrapper";
 import { Suspense } from 'react';
@@ -19,11 +20,12 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://nameverse.vercel.ap
 // ✅ Global SEO Metadata
 export const metadata = {
   title: {
-    default: "NameVerse — Baby Names 2026 | Muslim, Hindu & Christian",
+    default: validateMetaTitle("Baby Names 2026 — Islamic, Hindu & Christian"),
     template: "%s | NameVerse"
   },
-  description:
-    "Explore 60,000+ baby names with meanings, origins, and numerology. Discover Islamic, Hindu, and Christian names in Urdu, Arabic, Hindi & English. Find Quranic, Biblical, Sanskrit names & modern baby names A–Z. Use our baby name generator for unique suggestions.",
+  description: validateMetaDescription(
+    "Explore 60,000+ baby names with meanings, origins, and numerology. Discover Islamic, Hindu, and Christian names in Urdu, Arabic, Hindi & English."
+  ),
   keywords:
     "baby names, baby names 2026, baby names a to z, baby names muslim, muslim baby names list, baby names girl, baby boy names 2026, baby names muslim boy, name meanings, name meanings in urdu, name meanings in islam, baby names with meanings, unique baby names, modern baby names, islamic boy names from quran, hindu girl names meaning love, christian baby names with meanings, nameverse meaning, nameverse website, baby name generator, name suggestions, muslim baby names list, hindu baby names list, christian baby names list, Arabic baby names, Urdu baby names, meaning of names list, religious baby names, Quranic names, Biblical names, Sanskrit names, trending baby names, popular baby names 2026, baby names cool, baby name ideas, name numerology, baby names inspiration, popular baby names list, top baby names 2026",
   robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
@@ -33,9 +35,10 @@ export const metadata = {
   metadataBase: new URL(siteUrl),
   alternates: { canonical: siteUrl, languages: { en: siteUrl, 'x-default': siteUrl } },
   openGraph: {
-    title: "NameVerse — Baby Names & Meanings (Islamic, Hindu, Christian, Modern)",
-    description:
-      "Discover baby names with meanings, origins, and numerology across religions — Islam, Hinduism, Christianity — in English, Urdu, Arabic & Hindi.",
+    title: validateMetaTitle("NameVerse — Baby Names & Meanings for Islamic, Hindu & Christian Families"),
+    description: validateMetaDescription(
+      "Discover baby names with meanings, origins, and numerology across Islamic, Hindu, and Christian traditions in English, Urdu, Arabic & Hindi."
+    ),
     url: siteUrl,
     siteName: "NameVerse",
     images: [
@@ -53,9 +56,10 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Baby Names & Meanings — Islamic, Hindu, Christian | NameVerse",
-    description:
-      "Explore thousands of baby names by religion and origin — Islamic, Hindu, and Christian — with detailed meanings and numerology.",
+    title: validateMetaTitle("Baby Names & Meanings — Islamic, Hindu, Christian | NameVerse"),
+    description: validateMetaDescription(
+      "Explore thousands of baby names by religion and origin — Islamic, Hindu, and Christian — with detailed meanings and numerology."
+    ),
     images: [`${siteUrl}/logo.png`],
     creator: "@NameVerseOfficial",
     site: "@NameVerseOfficial",

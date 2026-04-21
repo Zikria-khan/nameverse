@@ -20,6 +20,8 @@ Implemented targeted frontend fixes to address the attached SEO issue report. Ch
 - Added explicit `width` and `height` attributes to key image elements in `src/components/LoadingAnimation/LoadingAnimation.jsx` and `src/components/HomePage/articlegrid.jsx`.
 - Added `validateMetaTitle` support for name detail metadata generation in `src/lib/seo/name-page-seo.jsx`.
 - Added title validation for blog post metadata in `src/app/blog/[slug]/page.jsx`.
+- Added page title and meta description validation across search, names, and static informational pages.
+- Improved homepage hero H1 wording for better SEO and readability.
 
 ## Notes
 - These changes improve metadata consistency and help reduce SEO warnings for page titles, hreflang, image sizing, and security headers.
