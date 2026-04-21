@@ -67,6 +67,8 @@ function normalizeGender(gender) {
 // ==========================================
 
 const NameCard = memo(function NameCard({ name, onFavorite, isFavorite, religion }) {
+  const router = useRouter();
+  const url = `/names/${religion}/${name.slug}`;
   const genderColors = {
     male: 'bg-blue-50 text-blue-700 border-blue-200',
     female: 'bg-pink-50 text-pink-700 border-pink-200',
@@ -76,8 +78,21 @@ const NameCard = memo(function NameCard({ name, onFavorite, isFavorite, religion
 
   const normalized = normalizeGender(name.gender);
 
+  const handleCardKeyDown = (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      router.push(url);
+    }
+  };
+
   return (
-    <article className="bg-white rounded-xl p-4 border border-gray-200 hover:border-gray-400 hover:shadow-xl transition-all duration-300 group">
+    <article
+      onClick={() => router.push(url)}
+      onKeyDown={handleCardKeyDown}
+      role="button"
+      tabIndex={0}
+      className="bg-white rounded-xl p-4 border border-gray-200 hover:border-gray-400 hover:shadow-xl transition-all duration-300 group cursor-pointer"
+    >
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex-1 min-w-0">
           <a href={`/names/${religion}/${name.slug}`} className="block group-hover:scale-105 transition-transform duration-200">

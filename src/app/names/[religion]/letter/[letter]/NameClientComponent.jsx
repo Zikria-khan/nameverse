@@ -158,13 +158,29 @@ export default function NamesDatabaseClient({
 
   const currentReligion = religions.find(r => r.value === selectedReligion);
 
-  const NameCard = React.memo(({ name }) => (
-    <article className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 hover:shadow-lg hover:border-indigo-300 transition-all duration-300 cursor-pointer group transform hover:-translate-y-1">
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-bold text-gray-900 mb-1.5 truncate group-hover:text-indigo-600 transition-colors">
-            {name.name}
-          </h3>
+  const NameCard = React.memo(({ name }) => {
+    const nameUrl = `/names/${selectedReligion}/${name.slug || (name.name || '').toLowerCase()}`;
+
+    const handleCardKeyDown = (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        router.push(nameUrl);
+      }
+    };
+
+    return (
+      <article
+        onClick={() => router.push(nameUrl)}
+        onKeyDown={handleCardKeyDown}
+        role="button"
+        tabIndex={0}
+        className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 hover:shadow-lg hover:border-indigo-300 transition-all duration-300 cursor-pointer group transform hover:-translate-y-1"
+      >
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-lg font-bold text-gray-900 mb-1.5 truncate group-hover:text-indigo-600 transition-colors">
+              {name.name}
+            </h3>
           <p className="text-sm font-semibold text-indigo-600 mb-2 line-clamp-1">
             {name.short_meaning}
           </p>
@@ -183,7 +199,10 @@ export default function NamesDatabaseClient({
           </div>
         </div>
         <button
-          onClick={(e) => toggleFavorite(name._id || name.name, e)}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleFavorite(name._id || name.name, e);
+          }}
           className="p-2 rounded-full hover:bg-red-50 flex-shrink-0 transition-colors"
           aria-label="Add to favorites"
         >

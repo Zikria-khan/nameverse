@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Heart, BookOpen, ArrowRight, Star, Search, RefreshCw, Sparkles, Zap, Crown, Flame } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -46,6 +47,7 @@ const TRENDING_NAMES = {
 };
 
 export default function TrendingNames() {
+  const router = useRouter();
   const [selectedReligion, setSelectedReligion] = useState("islamic");
   const [favorites, setFavorites] = useState([]);
 
@@ -70,7 +72,7 @@ export default function TrendingNames() {
       'christianity': 'christian',
     };
     const religion = religionMap[name.religion?.toLowerCase()] || selectedReligion || 'islamic';
-    window.location.href = `/names/${religion}/${name.slug}`;
+    router.push(`/names/${religion}/${name.slug}`);
   };
 
   const activeFilter = religionFilters.find(f => f.value === selectedReligion) || religionFilters[0];
@@ -126,7 +128,16 @@ export default function TrendingNames() {
             return (
               <div
                 key={name._id}
-                className="bg-white rounded-xl border-2 border-gray-200 hover:border-transparent hover:shadow-xl transition-all duration-300 overflow-hidden hover:-translate-y-2 group"
+                onClick={() => handleViewDetails(name)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    handleViewDetails(name);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                className="bg-white rounded-xl border-2 border-gray-200 hover:border-transparent hover:shadow-xl transition-all duration-300 overflow-hidden hover:-translate-y-2 group cursor-pointer"
                 style={{
                   animationDelay: `${index * 50}ms`
                 }}
@@ -144,7 +155,10 @@ export default function TrendingNames() {
                         <p className="text-sm text-gray-500 mt-0.5">{name.origin}</p>
                       </div>
                       <button
-                        onClick={() => toggleFavorite(name._id)}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          toggleFavorite(name._id);
+                        }}
                         className={`
                           p-2 rounded-lg transition-all flex-shrink-0
                           ${isFavorite 
