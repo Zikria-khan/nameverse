@@ -40,7 +40,7 @@ export const env = {
 
   // API Configuration
   api: {
-    baseUrl: (process.env.NEXT_PUBLIC_API_BASE || 'https://namverse-api.vercel.app').replace(/\/+$/, ''),
+    baseUrl: (process.env.NEXT_PUBLIC_API_BASE || 'https://name-meaning-site-backend.vercel.app').replace(/\/+$/, ''),
     // Increased timeout for build processes
     timeout: parseInt(process.env.NEXT_PUBLIC_API_TIMEOUT || '60000', 10),
     version: '', // No API version prefix

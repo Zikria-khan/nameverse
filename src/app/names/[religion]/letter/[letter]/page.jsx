@@ -160,7 +160,7 @@ export default async function NamesDatabaseServer({ params, searchParams }) {
   let isFallback = false;
 
   try {
-    const apiUrlBase = `${API_BASE}/names/${selectedReligion}/letter/${selectedLetter.toLowerCase()}`;
+    const apiUrlBase = `${API_BASE}/names/${selectedReligion}/letter/${selectedLetter.toUpperCase()}`;
     const apiUrl = currentPage > 1
       ? `${apiUrlBase}?limit=${perPage}&page=${currentPage}`
       : apiUrlBase;

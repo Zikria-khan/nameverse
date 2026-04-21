@@ -40,6 +40,7 @@ export default function NamesDatabaseClient({
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [genderFilter, setGenderFilter] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
+  const [perPage, setPerPage] = useState(perPageDefault);
 
   // Define a fetcher function for SWR
   const fetcher = useCallback(async (url) => {
@@ -52,16 +53,15 @@ export default function NamesDatabaseClient({
 
   // Construct the API URL based on filters
   const apiUrl = useMemo(() => {
+    const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'https://name-meaning-site-backend.vercel.app';
     const params = new URLSearchParams({
-      religion: selectedReligion,
-      letter: selectedLetter.toLowerCase(),
       page: currentPage,
       limit: perPage,
       sort: sortBy,
       ...(genderFilter !== 'all' && { gender: genderFilter }),
       ...(searchTerm && { search: searchTerm }),
     });
-    return `/api/v1/names/${selectedReligion}/letter/${selectedLetter.toLowerCase()}?${params.toString()}`;
+    return `${apiBase}/api/v1/names/${selectedReligion}/letter/${selectedLetter.toUpperCase()}?${params.toString()}`;
   }, [selectedReligion, selectedLetter, currentPage, perPage, sortBy, genderFilter, searchTerm]);
 
   // Use SWR for data fetching
@@ -74,6 +74,7 @@ export default function NamesDatabaseClient({
   const names = swrData?.data?.names || initialNames;
   const totalResults = swrData?.data?.pagination?.totalCount || initialTotal;
   const isLoading = swrLoading;
+  const filteredNames = useMemo(() => names, [names]);
 
   const religions = useMemo(() => [
     { value: 'islamic', label: 'Islamic', icon: Star, color: 'from-emerald-500 to-teal-600' },
@@ -96,14 +97,14 @@ export default function NamesDatabaseClient({
   const handleReligionChange = useCallback((religion) => {
     startTransition(() => {
       setSelectedReligion(religion);
-      router.push(`/names/${religion}/${selectedLetter.toLowerCase()}`);
+      router.push(`/names/${religion}/letter/${selectedLetter.toLowerCase()}`);
     });
   }, [selectedLetter, router, startTransition]);
 
   const handleLetterChange = useCallback((letter) => {
     startTransition(() => {
       setSelectedLetter(letter);
-      router.push(`/names/${selectedReligion}/${letter.toLowerCase()}`);
+      router.push(`/names/${selectedReligion}/letter/${letter.toLowerCase()}`);
     });
   }, [selectedReligion, router, startTransition]);
 
