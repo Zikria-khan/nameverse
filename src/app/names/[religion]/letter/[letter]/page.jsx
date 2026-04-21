@@ -139,7 +139,8 @@ export async function generateMetadata({ params, searchParams }) {
 export default async function NamesDatabaseServer({ params, searchParams }) {
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'https://name-meaning-site-backend.vercel.app/api/v1';
+  const API_BASE_ROOT = (process.env.NEXT_PUBLIC_API_BASE || 'https://name-meaning-site-backend.vercel.app').replace(/\/+$|\/api\/v1$/i, '');
+  const API_BASE = API_BASE_ROOT.endsWith('/api/v1') ? API_BASE_ROOT : `${API_BASE_ROOT}/api/v1`;
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
   const selectedReligion = resolvedParams?.religion || 'islamic';
@@ -152,7 +153,7 @@ export default async function NamesDatabaseServer({ params, searchParams }) {
 
   const selectedLetter = letter.toUpperCase();
   const currentPage = parseInt(resolvedSearchParams?.page || 1);
-  const perPage = parseInt(resolvedSearchParams?.perPage || 50);
+  const perPage = parseInt(resolvedSearchParams?.perPage || 100);
   const sortBy = resolvedSearchParams?.sort || 'popularity';
 
   let names = [];
@@ -160,7 +161,9 @@ export default async function NamesDatabaseServer({ params, searchParams }) {
   let isFallback = false;
 
   try {
-    const apiUrlBase = `${API_BASE}/names/${selectedReligion}/letter/${selectedLetter.toUpperCase()}`;
+    const apiUrlBase = API_BASE.endsWith('/api/v1')
+      ? `${API_BASE}/names/${selectedReligion}/letter/${selectedLetter.toUpperCase()}`
+      : `${API_BASE}/api/v1/names/${selectedReligion}/letter/${selectedLetter.toUpperCase()}`;
     const apiUrl = `${apiUrlBase}?limit=${perPage}&page=${currentPage}&sort=${sortBy}`;
 
     const response = await fetch(apiUrl, {
@@ -267,13 +270,6 @@ export default async function NamesDatabaseServer({ params, searchParams }) {
           perPageDefault={perPage}
           initialSort={sortBy}
           isFallback={isFallback}
-
-          initialReligion={selectedReligion}
-          initialLetter={selectedLetter}
-          initialPage={currentPage}
-          perPageDefault={perPage}
-          initialSort={sortBy}
-          isFallback={isFallback} // Pass fallback status to client
         />
       </div>
     </>

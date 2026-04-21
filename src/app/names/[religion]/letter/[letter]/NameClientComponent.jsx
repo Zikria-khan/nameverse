@@ -13,7 +13,7 @@ export default function NamesDatabaseClient({
   initialReligion = "islamic",
   initialLetter = "A",
   initialPage = 1,
-  perPageDefault = 20,
+  perPageDefault = 100,
   initialSort = "popularity",
   selectedReligion: propReligion,
   selectedLetter: propLetter,
@@ -53,7 +53,8 @@ export default function NamesDatabaseClient({
 
   // Construct the API URL based on filters
   const apiUrl = useMemo(() => {
-    const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'https://name-meaning-site-backend.vercel.app';
+    const apiBaseRoot = (process.env.NEXT_PUBLIC_API_BASE || 'https://name-meaning-site-backend.vercel.app').replace(/\/+$|\/api\/v1$/i, '');
+    const apiRoot = apiBaseRoot.endsWith('/api/v1') ? apiBaseRoot : `${apiBaseRoot}/api/v1`;
     const params = new URLSearchParams({
       page: currentPage,
       limit: perPage,
@@ -61,7 +62,7 @@ export default function NamesDatabaseClient({
       ...(genderFilter !== 'all' && { gender: genderFilter }),
       ...(searchTerm && { search: searchTerm }),
     });
-    return `${apiBase}/api/v1/names/${selectedReligion}/letter/${selectedLetter.toUpperCase()}?${params.toString()}`;
+    return `${apiRoot}/names/${selectedReligion}/letter/${selectedLetter.toUpperCase()}?${params.toString()}`;
   }, [selectedReligion, selectedLetter, currentPage, perPage, sortBy, genderFilter, searchTerm]);
 
   // Use SWR for data fetching
@@ -72,7 +73,7 @@ export default function NamesDatabaseClient({
   });
 
   const names = swrData?.data?.names || initialNames;
-  const totalResults = swrData?.data?.pagination?.totalCount || initialTotal;
+  const totalResults = swrData?.data?.pagination?.totalCount || swrData?.data?.pagination?.total || initialTotal;
   const isLoading = swrLoading;
   const filteredNames = useMemo(() => names, [names]);
   const topSearchKeywords = useMemo(() => [
@@ -229,7 +230,7 @@ export default function NamesDatabaseClient({
                     {selectedReligion.charAt(0).toUpperCase() + selectedReligion.slice(1)} Names Starting with {selectedLetter}
                   </h1>
                   <p className="text-sm text-gray-600 mt-1">
-                    Browse {totalResults.toLocaleString()} trusted {selectedReligion} names beginning with {selectedLetter}.
+                    Showing up to {perPage} names from {totalResults.toLocaleString()} total {selectedReligion} names beginning with {selectedLetter}.
                   </p>
                 </div>
               </div>
