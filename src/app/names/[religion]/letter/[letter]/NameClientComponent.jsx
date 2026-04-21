@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useMemo, useCallback, useEffect, useTransition } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   Search, ChevronLeft, ChevronRight, Star, Heart, Globe, Sparkles, BookOpen, Tag, ArrowUp, Loader2, Filter, SlidersHorizontal, X
@@ -16,7 +17,8 @@ export default function NamesDatabaseClient({
   initialSort = "popularity",
   selectedReligion: propReligion,
   selectedLetter: propLetter,
-  totalResults: propTotalResults
+  totalResults: propTotalResults,
+  isFallback = false,
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -36,8 +38,6 @@ export default function NamesDatabaseClient({
   const [searchTerm, setSearchTerm] = useState('');
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [favorites, setFavorites] = useState(new Set());
-  const [displayedCount, setDisplayedCount] = useState(perPageDefault);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [genderFilter, setGenderFilter] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
   const [perPage, setPerPage] = useState(perPageDefault);
@@ -75,6 +75,13 @@ export default function NamesDatabaseClient({
   const totalResults = swrData?.data?.pagination?.totalCount || initialTotal;
   const isLoading = swrLoading;
   const filteredNames = useMemo(() => names, [names]);
+  const topSearchKeywords = useMemo(() => [
+    `${selectedReligion} names starting with ${selectedLetter}`,
+    `popular ${selectedReligion} names with ${selectedLetter}`,
+    `best ${selectedLetter} baby names`,
+    `${selectedLetter} letter baby names`,
+    `${selectedReligion} baby names list`
+  ], [selectedReligion, selectedLetter]);
 
   const religions = useMemo(() => [
     { value: 'islamic', label: 'Islamic', icon: Star, color: 'from-emerald-500 to-teal-600' },
@@ -144,7 +151,7 @@ export default function NamesDatabaseClient({
   }, [names]);
 
   const hasMoreToLoad = false; // No more client-side loading
-  const totalPages = Math.ceil(totalResults / perPage);
+  const totalPages = Math.max(1, Math.ceil(totalResults / perPage));
 
 
 
@@ -199,9 +206,9 @@ export default function NamesDatabaseClient({
           ))}
           <span className="text-xs text-indigo-600 ml-1.5 font-bold">4.0</span>
         </div>
-        <button className="px-4 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg text-xs font-semibold hover:shadow-lg transition-all transform hover:scale-105">
+        <Link href={`/names/${selectedReligion}/${name.slug || (name.name || '').toLowerCase()}`} className="px-4 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg text-xs font-semibold hover:shadow-lg transition-all transform hover:scale-105">
           View Details
-        </button>
+        </Link>
       </div>
     </article>
   ));
@@ -213,35 +220,35 @@ export default function NamesDatabaseClient({
         <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-md">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
             <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-3">
-                <div className={`p-2 bg-gradient-to-br ${currentReligion?.color} rounded-xl shadow-lg`}>
-                  <BookOpen className="w-5 h-5 text-white" />
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                <div className={`p-3 rounded-2xl shadow-lg ${currentReligion?.color}`}>
+                  <BookOpen className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h1 className={`text-lg font-bold bg-gradient-to-r ${currentReligion?.color} bg-clip-text text-transparent`}>
-                    {selectedReligion.charAt(0).toUpperCase() + selectedReligion.slice(1)} Names
+                  <h1 className={`text-xl sm:text-2xl font-bold bg-gradient-to-r ${currentReligion?.color} bg-clip-text text-transparent`}>
+                    {selectedReligion.charAt(0).toUpperCase() + selectedReligion.slice(1)} Names Starting with {selectedLetter}
                   </h1>
-                  <p className="text-xs text-gray-600">
-                    {filteredNames.length.toLocaleString()} of {totalResults.toLocaleString()} names
+                  <p className="text-sm text-gray-600 mt-1">
+                    Browse {totalResults.toLocaleString()} trusted {selectedReligion} names beginning with {selectedLetter}.
                   </p>
                 </div>
               </div>
 
               {/* Desktop Search & Filter */}
-              <div className="hidden md:flex items-center gap-2">
+              <div className="hidden md:flex items-center gap-3">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <input
                     type="search"
-                    placeholder="Search names..."
+                    placeholder="Search by name or meaning"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 rounded-xl border border-gray-300 bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 w-64 text-sm shadow-sm"
+                    className="pl-10 pr-4 py-2 rounded-2xl border border-gray-300 bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 w-72 text-sm shadow-sm"
                   />
                 </div>
                 <button
                   onClick={() => setShowFilters(!showFilters)}
-                  className={`p-2 rounded-xl border transition-all ${showFilters ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'}`}
+                  className={`p-2 rounded-2xl border transition-all ${showFilters ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'}`}
                 >
                   <SlidersHorizontal className="w-4 h-4" />
                 </button>
@@ -268,6 +275,14 @@ export default function NamesDatabaseClient({
           </div>
         </header>
 
+        {isFallback && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
+            <div className="rounded-2xl bg-yellow-50 border border-yellow-200 p-4 text-sm text-yellow-900">
+              <strong className="font-semibold">Limited results shown:</strong> using fallback data while the letter API warms up. The list will update automatically when the backend responds.
+            </div>
+          </div>
+        )}
+
         {/* Mobile Search & Filter */}
         <div className="md:hidden px-4 pt-4">
           <div className="flex gap-2">
@@ -275,10 +290,10 @@ export default function NamesDatabaseClient({
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
                 type="search"
-                placeholder="Search names..."
+                placeholder="Search names or meanings"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-300 bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm shadow-sm"
+                className="w-full pl-10 pr-4 py-2 rounded-2xl border border-gray-300 bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-sm shadow-sm"
               />
             </div>
             <button
@@ -293,6 +308,22 @@ export default function NamesDatabaseClient({
         {/* Enhanced Filters Section */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
           <div className="bg-white rounded-2xl shadow-md border border-gray-200 p-4 transition-all">
+            {/* Top search keywords */}
+            <div className="mb-4">
+              <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-[0.2em] mb-3">Top searches for this letter</h2>
+              <div className="flex flex-wrap gap-2">
+                {topSearchKeywords.map((keyword) => (
+                  <button
+                    key={keyword}
+                    onClick={() => setSearchTerm(keyword)}
+                    className="rounded-full bg-indigo-50 text-indigo-700 px-3 py-1 text-xs font-semibold transition hover:bg-indigo-100"
+                  >
+                    {keyword}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Gender Filter (Always Visible) */}
             {showFilters && (
               <div className="mb-4 pb-4 border-b border-gray-200">
@@ -324,13 +355,13 @@ export default function NamesDatabaseClient({
                 <Tag className="w-4 h-4 text-indigo-600" />
                 Select Letter
               </label>
-              <div className="grid grid-cols-13 sm:grid-cols-13 gap-2">
+              <div className="grid grid-cols-7 sm:grid-cols-10 gap-2">
                 {alphabet.map((letter) => (
                   <button
                     key={letter}
                     onClick={() => handleLetterChange(letter)}
                     disabled={isPending}
-                    className={`aspect-square rounded-xl font-bold text-sm transition-all transform disabled:opacity-50 ${
+                    className={`aspect-square rounded-2xl font-bold text-sm transition-all transform disabled:opacity-50 ${
                       selectedLetter === letter
                         ? `bg-gradient-to-br ${currentReligion?.color} text-white shadow-lg scale-110`
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-105'

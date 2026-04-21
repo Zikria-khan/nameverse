@@ -152,7 +152,7 @@ export default async function NamesDatabaseServer({ params, searchParams }) {
 
   const selectedLetter = letter.toUpperCase();
   const currentPage = parseInt(resolvedSearchParams?.page || 1);
-  const perPage = parseInt(resolvedSearchParams?.perPage || 20);
+  const perPage = parseInt(resolvedSearchParams?.perPage || 50);
   const sortBy = resolvedSearchParams?.sort || 'popularity';
 
   let names = [];
@@ -161,9 +161,7 @@ export default async function NamesDatabaseServer({ params, searchParams }) {
 
   try {
     const apiUrlBase = `${API_BASE}/names/${selectedReligion}/letter/${selectedLetter.toUpperCase()}`;
-    const apiUrl = currentPage > 1
-      ? `${apiUrlBase}?limit=${perPage}&page=${currentPage}`
-      : apiUrlBase;
+    const apiUrl = `${apiUrlBase}?limit=${perPage}&page=${currentPage}&sort=${sortBy}`;
 
     const response = await fetch(apiUrl, {
       next: { revalidate: 2592000 }, // 1 month revalidate for data
@@ -172,13 +170,18 @@ export default async function NamesDatabaseServer({ params, searchParams }) {
     
     if (response.ok) {
       const data = await response.json();
-      if (data.success) {
-        names = data.data?.names || data.data || [];
-        totalResults = data.data?.pagination?.totalCount || data.data?.total || 0;
+      if (data.success || data.data) {
+        const payload = data.data || data;
+        if (Array.isArray(payload)) {
+          names = payload;
+          totalResults = payload.length;
+        } else {
+          names = payload.names || payload || [];
+          totalResults = payload.pagination?.totalCount || payload.total || names.length || 0;
+        }
       }
     } else {
       // Use fallback data when API returns an error
-      
       names = FALLBACK_NAMES;
       totalResults = FALLBACK_NAMES.length;
       isFallback = true;
@@ -258,6 +261,13 @@ export default async function NamesDatabaseServer({ params, searchParams }) {
         <NamesDatabaseClient
           initialNames={names}
           initialTotal={totalResults}
+          initialReligion={selectedReligion}
+          initialLetter={selectedLetter}
+          initialPage={currentPage}
+          perPageDefault={perPage}
+          initialSort={sortBy}
+          isFallback={isFallback}
+
           initialReligion={selectedReligion}
           initialLetter={selectedLetter}
           initialPage={currentPage}
