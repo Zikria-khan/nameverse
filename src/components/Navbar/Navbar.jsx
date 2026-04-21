@@ -159,8 +159,7 @@ const Navbar = () => {
         { name: 'About Us', href: '/about' },
         { name: 'Naming Guide', href: '/guides/expert-naming-guide' },
         { name: 'Privacy Policy', href: '/privacy' },
-{ name: 'Terms of Service', href: '/terms' },
-      { name: 'Get Name by Letter', href: '/names/by-letter' },
+        { name: 'Terms of Service', href: '/terms' },
       ]
     },
   ];
