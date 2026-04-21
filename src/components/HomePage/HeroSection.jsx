@@ -66,14 +66,17 @@ const HeroSection = () => {
             </div>
 
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
-              Baby Names 2026
+              Baby Names 2026 | 
               <span className="block bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mt-2">
-                60,000+ Islamic, Hindu & Christian Names with Meanings
+                60,000+ Islamic, Hindu & Christian Baby Names
               </span>
             </h1>
 
-            <p className="mt-4 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2">
+            <p className="mt-4 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2 leading-relaxed">
               Discover 60,000+ verified baby names with meanings. Find Quranic, Biblical, Sanskrit & modern names for boys and girls in English, Urdu, Arabic & Hindi. A-Z listings with origins & numerology.
+            </p>
+            <p className="mt-4 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2 leading-relaxed">
+              Search thousands of meaningful baby names by faith, language, and origin. NameVerse helps families choose authentic Islamic, Hindu, and Christian names with trusted meanings, cultural notes, and pronunciation guidance.
             </p>
           </div>
 

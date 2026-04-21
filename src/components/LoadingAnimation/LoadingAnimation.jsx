@@ -55,6 +55,8 @@ export default function LoadingAnimation({ onComplete }) {
             <img
               src="/logo.png"
               alt="NameVerse Logo"
+              width="96"
+              height="96"
               className="w-full h-full object-contain drop-shadow-2xl animate-float"
             />
             <div className="absolute -inset-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-xl animate-pulse" />

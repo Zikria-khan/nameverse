@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { validateMetaTitle } from '@/lib/seo/meta-helpers';
 import { BookOpen, Heart, Clock, ArrowLeft, Share2, Calendar, User, Tag, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
 import blogPostsData from '../../../../public/data/blog-posts.json';
 
@@ -14,7 +15,7 @@ export async function generateMetadata({ params }) {
   }
 
   return {
-    title: `${post.title} | NameVerse`,
+    title: validateMetaTitle(`${post.title} | NameVerse`),
     description: post.excerpt,
     keywords: post.seoKeywords || post.tags.join(', '),
     alternates: {

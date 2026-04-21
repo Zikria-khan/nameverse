@@ -54,8 +54,12 @@ const nextConfig = {
             value: '1; mode=block'
           },
           {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self' https: data:; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://analytics.ahrefs.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; connect-src 'self' https://analytics.ahrefs.com; font-src 'self' data:; frame-ancestors 'self'; object-src 'none'; base-uri 'self';",
+          },
+          {
             key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin'
+            value: 'strict-origin-when-cross-origin'
           },
           {
             key: 'Cache-Control',

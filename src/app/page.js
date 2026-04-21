@@ -5,7 +5,7 @@ const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || "https://nameverse.vercel.app
 
 // World-class SEO metadata with comprehensive keyword targeting
 export const metadata = {
-  title: "60,000+ Baby Names with Meanings | Islamic, Hindu, Christian Names 2026 | NameVerse",
+  title: "60,000+ Baby Names with Meanings | NameVerse",
   description:
     "Find 60,000+ baby names with meanings in English, Urdu, Arabic & Hindi. Explore Islamic, Hindu & Christian names with origins and pronunciation guides.",
   keywords: [
@@ -26,7 +26,7 @@ export const metadata = {
     "baby name generator"
   ].join(', '),
   openGraph: {
-    title: "60,000+ Baby Names with Meanings | Islamic, Hindu & Christian",
+    title: "60,000+ Baby Names with Meanings | NameVerse",
     description:
       "Find your baby's perfect name from verified Islamic, Hindu & Christian names with complete meanings, cultural origins, and pronunciation guides.",
     url: DOMAIN + "/",

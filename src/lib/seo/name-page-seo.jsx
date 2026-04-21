@@ -1,6 +1,6 @@
 // lib/seo/name-page-seo-enhanced.jsx
 import { getSiteUrl } from '@/lib/seo/site';
-import { validateMetaDescription, generateNameMetaDescription } from '@/lib/seo/meta-helpers';
+import { validateMetaTitle, validateMetaDescription, generateNameMetaDescription } from '@/lib/seo/meta-helpers';
 import { generateNameProductSchema, generateFAQSchema } from '@/lib/seo/structured-data';
 import { generateNameFAQ } from '@/lib/seo/content-helpers';
 
@@ -207,6 +207,7 @@ export function generateNamePageMetadata(data, religion, slug) {
   } else if (data.lucky_stone) {
     title = titleVariations[2];
   }
+  title = validateMetaTitle(title);
 
   const ogTitle = `${titleName} - ${religionTitle} Name Meaning, Origin & Lucky Number`;
   const twitterTitle = `${titleName} Name Meaning | ${religionTitle}`;

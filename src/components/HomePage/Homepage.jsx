@@ -60,7 +60,7 @@ export default function HomePageClient() {
                 "@type": "WebPage",
                 "@id": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app'}/#webpage`,
                 "url": process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app',
-                "name": "60,000+ Baby Names with Meanings | Islamic, Hindu, Christian Names 2026",
+                "name": "60,000+ Baby Names with Meanings | NameVerse",
                 "isPartOf": {
                   "@id": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app'}/#website`
                 },

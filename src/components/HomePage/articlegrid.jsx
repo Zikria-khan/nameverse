@@ -64,6 +64,8 @@ const ArticleCard = ({ article, index }) => {
           <img
             src={article.cover_image_url}
             alt={article.title}
+            width="1200"
+            height="384"
             onError={() => setImageError(true)}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             loading="lazy"

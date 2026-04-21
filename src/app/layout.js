@@ -19,7 +19,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://nameverse.vercel.ap
 // ✅ Global SEO Metadata
 export const metadata = {
   title: {
-    default: "NameVerse — Baby Names 2026 & Meanings | Muslim, Hindu, Christian",
+    default: "NameVerse — Baby Names 2026 | Muslim, Hindu & Christian",
     template: "%s | NameVerse"
   },
   description:
@@ -31,7 +31,7 @@ export const metadata = {
   creator: "NameVerse",
   publisher: "NameVerse",
   metadataBase: new URL(siteUrl),
-  alternates: { canonical: siteUrl, languages: { "en-US": siteUrl } },
+  alternates: { canonical: siteUrl, languages: { en: siteUrl, 'x-default': siteUrl } },
   openGraph: {
     title: "NameVerse — Baby Names & Meanings (Islamic, Hindu, Christian, Modern)",
     description:
@@ -98,7 +98,7 @@ export default function RootLayout({ children }) {
       <head>
         <meta name="color-scheme" content="light dark" />
         <meta name="application-name" content="NameVerse" />
-        <meta name="content-language" content="en-US" />
+        <meta name="content-language" content="en" />
         <meta name="ahrefs-site-verification" content="650afaf6635223ff618a281883a22b69b937a121e933b19907debeca67754cd4" />
 
         {/* ✅ Performance: Resource Hints */}
