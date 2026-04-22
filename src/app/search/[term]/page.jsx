@@ -58,7 +58,7 @@ export const generateMetadata = async ({ params }) => {
       title: validateMetaTitle(`${decodedTerm} - Names`),
       description: validateMetaDescription(`Discover ${totalResults} results for ${decodedTerm}`),
     },
-    robots: { index: true, follow: true },
+    robots: { index: false, follow: true },
     alternates: { canonical: canonicalUrl, languages: { en: canonicalUrl, 'x-default': canonicalUrl } },
   };
 };

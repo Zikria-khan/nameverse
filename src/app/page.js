@@ -4,6 +4,57 @@ import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpe
 // ✅ Read domain from .env
 const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || "https://nameverse.vercel.app";
 
+const homepageStructuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${DOMAIN}/#website`,
+      "url": DOMAIN,
+      "name": "NameVerse - Baby Names with Meanings",
+      "description": "60,000+ verified baby names from Islamic, Hindu & Christian traditions with meanings in English, Urdu, Arabic & Hindi",
+      "publisher": {
+        "@id": `${DOMAIN}/#organization`
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": `${DOMAIN}/search?q={search_term_string}`
+        },
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "Organization",
+      "@id": `${DOMAIN}/#organization`,
+      "name": "NameVerse",
+      "url": DOMAIN,
+      "logo": {
+        "@type": "ImageObject",
+        "url": `${DOMAIN}/logo.png`,
+        "width": 512,
+        "height": 512,
+        "caption": "NameVerse - Baby Names & Meanings"
+      },
+      "description": "NameVerse - Discover 60,000+ baby names with meanings from Islamic, Hindu, and Christian traditions."
+    },
+    {
+      "@type": "WebPage",
+      "@id": `${DOMAIN}/#webpage`,
+      "url": DOMAIN,
+      "name": "60,000+ Baby Names with Meanings | NameVerse",
+      "isPartOf": {
+        "@id": `${DOMAIN}/#website`
+      },
+      "about": {
+        "@id": `${DOMAIN}/#organization`
+      },
+      "description": "Find 60,000+ baby names with meanings in English, Urdu, Arabic & Hindi. Explore Islamic, Hindu & Christian names with origins and pronunciation guides."
+    }
+  ]
+};
+
 // World-class SEO metadata with comprehensive keyword targeting
 export const metadata = {
   title: validateMetaTitle("60,000+ Baby Names with Meanings | NameVerse"),
@@ -75,5 +126,13 @@ export function generateViewport() {
 }
 
 export default function Page() {
-  return <HomePageClient />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageStructuredData) }}
+      />
+      <HomePageClient />
+    </>
+  );
 }

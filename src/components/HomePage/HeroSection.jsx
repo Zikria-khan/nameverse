@@ -1,5 +1,3 @@
-'use client';
-
 import { Globe, Heart, Award, BookOpen, Languages, CheckCircle, Star, ArrowRight, Sparkles, Zap } from 'lucide-react';
 import SearchBar from './SearchSection';
 import Link from 'next/link';
@@ -140,6 +138,23 @@ const HeroSection = () => {
                   </Link>
                 );
               })}
+            </div>
+          </div>
+
+          {/* Brand keyword content */}
+          <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-8 mt-8 mb-8">
+            <div className="max-w-3xl mx-auto text-center">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">
+                Find the right name with faith-based meaning and cultural accuracy
+              </h2>
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+                Explore Islamic baby names with Urdu and Arabic meanings, Hindu baby names rooted in Sanskrit and Vedic tradition, and Christian baby names inspired by the Bible. Use NameVerse to search names by religion, gender, origin, meaning, and numerology.
+              </p>
+              <div className="mt-4 flex flex-wrap justify-center gap-2 text-sm">
+                <a href="/names/islamic" className="rounded-full bg-emerald-50 text-emerald-700 px-4 py-2 border border-emerald-100 hover:bg-emerald-100 transition">Islamic Names</a>
+                <a href="/names/hindu" className="rounded-full bg-orange-50 text-orange-700 px-4 py-2 border border-orange-100 hover:bg-orange-100 transition">Hindu Names</a>
+                <a href="/names/christian" className="rounded-full bg-blue-50 text-blue-700 px-4 py-2 border border-blue-100 hover:bg-blue-100 transition">Christian Names</a>
+              </div>
             </div>
           </div>
 

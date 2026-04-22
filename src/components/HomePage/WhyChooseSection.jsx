@@ -1,6 +1,3 @@
-'use client';
-
-import React from 'react';
 import Link from 'next/link';
 import { Shield, Globe, BookCheck, Users, CheckCircle2, ArrowRight, Trophy, Zap } from 'lucide-react';
 

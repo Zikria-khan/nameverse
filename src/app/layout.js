@@ -2,7 +2,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer/Footer";
 import AppInstallPopup from "./install";
-import SWRegister from "./sw"; // Register service worker
+import SWRegister from "./sw"; // Disable service worker and clear old caches
 import Script from 'next/script';
 import ErrorBoundary from "@/components/ErrorBoundary/ErrorBoundary";
 import ResourceHints from "@/components/Performance/ResourceHints";
@@ -143,7 +143,7 @@ export default function RootLayout({ children }) {
         <Script
           src="https://analytics.ahrefs.com/analytics.js"
           data-key="Xu6eED27Kx1ZuJhBcJDJsA"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
 
         {/* AdSense Script - for displaying ads on all pages */}
@@ -151,7 +151,7 @@ export default function RootLayout({ children }) {
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1510675468129183"
           crossOrigin="anonymous"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
       </head>
 

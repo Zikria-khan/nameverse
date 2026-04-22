@@ -91,7 +91,6 @@ export default function SearchResultsClient({
         <meta name="description" content={dynamicDescription} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
-        <meta name="robots" content="index, follow" />
         <meta property="og:title" content={dynamicTitle} />
         <meta property="og:description" content={dynamicDescription} />
         <meta property="og:type" content="website" />
