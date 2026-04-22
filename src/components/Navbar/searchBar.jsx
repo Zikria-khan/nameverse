@@ -86,15 +86,19 @@ const UniversalSearch = () => {
         searchArticles(searchQuery.trim(), { limit: 5 })
       ]);
 
-      const names = namesResult?.success ? (namesResult.data || []) : [];
-      const articles = Array.isArray(articlesResult) ? articlesResult : [];
+      const names = Array.isArray(namesResult?.data) ? namesResult.data : [];
+      const articles = Array.isArray(articlesResult)
+        ? articlesResult
+        : Array.isArray(articlesResult?.data)
+          ? articlesResult.data
+          : [];
 
       setNameResults(names);
       setArticleResults(articles);
 
       if (names.length > 0 || articles.length > 0) {
         setIsOpen(true);
-      } else if (!isLoading) {
+      } else {
         setError('No results found. Try different keywords.');
       }
     } catch (err) {
@@ -105,7 +109,7 @@ const UniversalSearch = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading]);
+  }, []);
 
   // Debounced search
   useEffect(() => {
