@@ -251,9 +251,21 @@ const UniversalSearch = () => {
             ref={inputRef}
             type="text"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              // Show dropdown immediately when typing with 2+ chars
+              if (e.target.value.trim().length >= 2) {
+                setIsOpen(true);
+              }
+            }}
             onKeyDown={handleKeyDown}
-            onFocus={() => query.trim().length >= 2 && (hasResults || isLoading) && setIsOpen(true)}
+            onFocus={() => {
+              if (query.trim().length >= 2 && (hasResults || isLoading)) {
+                setIsOpen(true);
+              } else if (query.trim().length >= 2) {
+                setIsOpen(true);
+              }
+            }}
             placeholder="Search baby names..."
             className="w-full pl-12 pr-12 py-4 text-base font-medium text-gray-900 placeholder-gray-500 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl focus:outline-none focus:ring-3 focus:ring-indigo-500/20 focus:border-indigo-500 shadow-sm hover:shadow-md transition-all duration-200"
             aria-label="Search for baby names"

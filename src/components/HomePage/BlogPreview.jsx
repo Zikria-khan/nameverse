@@ -35,8 +35,9 @@ export default function BlogPreview() {
         <Link
           href="/blog"
           className="text-sm text-blue-600 hover:underline"
+          aria-label="View all blog posts"
         >
-          View All
+          View all blog posts
         </Link>
       </div>
       <div className="grid gap-4">

@@ -71,6 +71,24 @@ export function middleware(request) {
   }
 
   // ==========================================
+  // NORMALIZE UPPERCASE PATHS TO LOWERCASE
+  // ==========================================
+  const shouldSkipLowercase = [
+    '/_next',
+    '/api',
+    '/static',
+    '/robots.txt',
+    '/sitemap.xml',
+    '/favicon.ico',
+  ].some(prefix => pathname.startsWith(prefix));
+
+  if (pathname !== '/' && /[A-Z]/.test(pathname) && !shouldSkipLowercase) {
+    const newUrl = new URL(request.url);
+    newUrl.pathname = pathname.toLowerCase();
+    return NextResponse.redirect(newUrl, 301);
+  }
+
+  // ==========================================
   // REMOVE TRAILING SLASHES (except root)
   // ==========================================
   if (pathname !== '/' && pathname.endsWith('/')) {
@@ -86,11 +104,5 @@ export function middleware(request) {
 // MIDDLEWARE CONFIGURATION
 // ==========================================
 export const config = {
-  matcher: [
-    /*
-     * Optimized matcher to only run on name-related routes
-     * This reduces Edge Function invocations for static pages
-     */
-    '/names/:path*',
-  ],
+  matcher: ['/:path*'],
 };

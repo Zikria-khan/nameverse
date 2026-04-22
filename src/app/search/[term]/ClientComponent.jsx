@@ -1,7 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
-import Head from 'next/head';
 import Script from 'next/script';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -70,14 +68,6 @@ export default function SearchResultsClient({
     ]
   };
 
-  useEffect(() => {
-    const link = document.createElement('link');
-    link.rel = 'canonical';
-    link.href = canonicalURL;
-    document.head.appendChild(link);
-    return () => document.head.removeChild(link);
-  }, [canonicalURL]);
-
   const seoParagraphs = useMemo(() => [
     `Discover ${searchTerm} names with clear meanings, cultural origins, and pronunciation guides — perfect for new parents and curious minds.`,
     `Browse popular, modern, and unique ${searchTerm} name suggestions, curated lists, and gender-specific options to help you find the ideal name quickly.`,
@@ -86,22 +76,6 @@ export default function SearchResultsClient({
 
   return (
     <>
-      <Head>
-        <title>{dynamicTitle}</title>
-        <meta name="description" content={dynamicDescription} />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
-        <meta property="og:title" content={dynamicTitle} />
-        <meta property="og:description" content={dynamicDescription} />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={canonicalURL} />
-        <meta property="og:image" content={`${DOMAIN}/logo.png`} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={dynamicTitle} />
-        <meta name="twitter:description" content={dynamicDescription} />
-        <meta name="twitter:image" content={`${DOMAIN}/logo.png`} />
-        <link rel="canonical" href={canonicalURL} />
-      </Head>
       <Script id="faq-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <Script id="breadcrumb-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       

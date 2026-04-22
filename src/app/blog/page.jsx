@@ -159,8 +159,9 @@ export default function BlogPage() {
                   <Link 
                     href={`/blog/${post.id}`}
                     className="flex-shrink-0 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
+                    aria-label={`Read more about ${post.title}`}
                   >
-                    Read more
+                    Read more about {post.title}
                   </Link>
                 </div>
               </article>

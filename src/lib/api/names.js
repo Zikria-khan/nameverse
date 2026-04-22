@@ -173,41 +173,113 @@ export const fetchNameDetail = cache(async (religion, slug) => {
  * @param {number} options.limit - Results limit (default: 20)
  * @returns {Promise<Object>} Search results
  */
+// Local fallback - load JSON files for offline search
+let localNameCache = null;
+
+async function loadLocalNames() {
+  if (localNameCache) return localNameCache;
+  
+  const [islamicBoys, islamicGirls, hinduBoys, hinduGirls, christianBoys, christianGirls] = await Promise.all([
+    fetch('/data/islamic-boy-names.json').then(r => r.json()).catch(() => []),
+    fetch('/data/islamic-girl-names.json').then(r => r.json()).catch(() => []),
+    fetch('/data/hindu-boy-names.json').then(r => r.json()).catch(() => []),
+    fetch('/data/hindu-girl-names.json').then(r => r.json()).catch(() => []),
+    fetch('/data/christian-boy-names.json').then(r => r.json()).catch(() => []),
+    fetch('/data/christian-girl-names.json').then(r => r.json()).catch(() => []),
+  ]);
+
+  const all = [
+    ...islamicBoys.map(n => ({ ...n, religion: 'islamic', gender: 'male' })),
+    ...islamicGirls.map(n => ({ ...n, religion: 'islamic', gender: 'female' })),
+    ...hinduBoys.map(n => ({ ...n, religion: 'hindu', gender: 'male' })),
+    ...hinduGirls.map(n => ({ ...n, religion: 'hindu', gender: 'female' })),
+    ...christianBoys.map(n => ({ ...n, religion: 'christian', gender: 'male' })),
+    ...christianGirls.map(n => ({ ...n, religion: 'christian', gender: 'female' })),
+  ];
+
+  // Add slug if missing
+  localNameCache = all.map(n => ({
+    ...n,
+    slug: n.slug || n.name?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+    short_meaning: n.meaning,
+  }));
+  
+  return localNameCache;
+}
+
+// Fuse.js for local search
+let Fuse;
+async function localSearch(query, limit = 20) {
+  const names = await loadLocalNames();
+  if (!Fuse) {
+    const FuseModule = await import('fuse.js');
+    Fuse = new FuseModule.default(names, {
+      keys: ['name', 'meaning', 'origin'],
+      threshold: 0.3,
+      includeScore: true,
+    });
+  }
+  Fuse.setCollection(names);
+  const results = Fuse.search(query, { limit });
+  return results.map(r => r.item);
+}
+
 export const searchNames = cache(async (query, options = {}) => {
-  try {
-    if (!query || query.trim().length < 2) {
-      return {
-        data: [],
-        count: 0,
-        success: false,
-        message: 'Query must be at least 2 characters',
-      };
-    }
-
-    const params = {
-      q: query.trim(),
-      limit: options.limit || 20,
-      ...(options.religion && { religion: options.religion }),
-    };
-
-    const { data } = await apiClient.get('/api/v1/search', { params });
-
-    return {
-      data: data.data || [],
-      count: data.count || 0,
-      pagination: data.pagination || null,
-      success: data.success !== false,
-      query: data.query || query,
-    };
-  } catch (error) {
-    // Error fetching search results
+  if (!query || query.trim().length < 2) {
     return {
       data: [],
       count: 0,
       success: false,
-      message: 'Error fetching search results',
+      message: 'Query must be at least 2 characters',
     };
   }
+
+  const limit = options.limit || 20;
+  const params = {
+    q: query.trim(),
+    limit,
+    ...(options.religion && { religion: options.religion }),
+  };
+
+  try {
+    const { data } = await apiClient.get('/api/v1/search', { params });
+    
+    if (data.success && data.data?.length > 0) {
+      return {
+        data: data.data,
+        count: data.count || 0,
+        pagination: data.pagination || null,
+        success: true,
+        query: data.query || query,
+      };
+    }
+  } catch (error) {
+    // Continue to local fallback
+  }
+
+  // Try local search as fallback
+  try {
+    const localResults = await localSearch(query.trim(), limit);
+    if (localResults.length > 0) {
+      return {
+        data: localResults,
+        count: localResults.length,
+        pagination: { total: localResults.length, limit, page: 1 },
+        success: true,
+        query,
+        isLocalFallback: true,
+      };
+    }
+  } catch (localError) {
+    // Local also failed
+  }
+
+  return {
+    data: [],
+    count: 0,
+    success: false,
+    message: 'No results found',
+  };
 });
 
 

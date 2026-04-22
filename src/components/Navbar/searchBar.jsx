@@ -282,12 +282,20 @@ const UniversalSearch = () => {
             ref={inputRef}
             type="text"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              // Show dropdown immediately when typing with 2+ chars
+              if (e.target.value.trim().length >= 2) {
+                setIsOpen(true);
+              }
+            }}
             onKeyDown={handleKeyDown}
             onFocus={() => {
               if (query.trim().length >= 2 && (hasResults || isLoading)) {
                 setIsOpen(true);
               } else if (recentSearches.length > 0 && !query) {
+                setIsOpen(true);
+              } else if (query.trim().length >= 2) {
                 setIsOpen(true);
               }
             }}
