@@ -181,56 +181,60 @@ export default function NamesDatabaseClient({
             <h3 className="text-lg font-bold text-gray-900 mb-1.5 truncate group-hover:text-indigo-600 transition-colors">
               {name.name}
             </h3>
-          <p className="text-sm font-semibold text-indigo-600 mb-2 line-clamp-1">
-            {name.short_meaning}
-          </p>
-          <div className="flex items-center gap-2 mt-2 flex-wrap">
-            <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
-              name.gender === 'male' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
-              name.gender === 'female' ? 'bg-pink-100 text-pink-700 border border-pink-200' :
-              'bg-purple-100 text-purple-700 border border-purple-200'
-            }`}>
-              {name.gender}
-            </span>
-            <span className="text-xs text-gray-600 flex items-center gap-1 bg-gray-100 px-2.5 py-1 rounded-full">
-              <Globe className="w-3 h-3" />
-              {name.origin}
-            </span>
+            <p className="text-sm font-semibold text-indigo-600 mb-2 line-clamp-1">
+              {name.short_meaning}
+            </p>
+            <div className="flex items-center gap-2 mt-2 flex-wrap">
+              <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+                name.gender === 'male' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
+                name.gender === 'female' ? 'bg-pink-100 text-pink-700 border border-pink-200' :
+                'bg-purple-100 text-purple-700 border border-purple-200'
+              }`}>
+                {name.gender}
+              </span>
+              <span className="text-xs text-gray-600 flex items-center gap-1 bg-gray-100 px-2.5 py-1 rounded-full">
+                <Globe className="w-3 h-3" />
+                {name.origin}
+              </span>
+            </div>
           </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleFavorite(name._id || name.name, e);
+            }}
+            className="p-2 rounded-full hover:bg-red-50 flex-shrink-0 transition-colors"
+            aria-label="Add to favorites"
+          >
+            <Heart className={`w-5 h-5 transition-all ${favorites.has(name._id || name.name) ? 'fill-red-500 text-red-500 scale-110' : 'text-gray-300 hover:text-red-400'}`} />
+          </button>
         </div>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleFavorite(name._id || name.name, e);
-          }}
-          className="p-2 rounded-full hover:bg-red-50 flex-shrink-0 transition-colors"
-          aria-label="Add to favorites"
-        >
-          <Heart className={`w-5 h-5 transition-all ${favorites.has(name._id || name.name) ? 'fill-red-500 text-red-500 scale-110' : 'text-gray-300 hover:text-red-400'}`} />
-        </button>
-      </div>
 
-      {name.long_meaning && (
-        <p className="text-xs text-gray-600 leading-relaxed mb-3 line-clamp-2">
-          {name.long_meaning}
-        </p>
-      )}
+        {name.long_meaning && (
+          <p className="text-xs text-gray-600 leading-relaxed mb-3 line-clamp-2">
+            {name.long_meaning}
+          </p>
+        )}
 
-      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-        <div className="flex items-center gap-0.5">
-          {[...Array(5)].map((_, i) => (
-            <Star
-              key={i}
-              className={`w-3.5 h-3.5 ${i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
-            />
-          ))}
-          <span className="text-xs text-indigo-600 ml-1.5 font-bold">4.0</span>
+        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+          <div className="flex items-center gap-0.5">
+            {[...Array(5)].map((_, i) => (
+              <Star
+                key={i}
+                className={`w-3.5 h-3.5 ${i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+              />
+            ))}
+            <span className="text-xs text-indigo-600 ml-1.5 font-bold">4.0</span>
+          </div>
+          <Link
+            href={nameUrl}
+            className="px-4 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg text-xs font-semibold hover:shadow-lg transition-all transform hover:scale-105"
+          >
+            View Details
+          </Link>
         </div>
-        <Link href={`/names/${selectedReligion}/${name.slug || (name.name || '').toLowerCase()}`} className="px-4 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg text-xs font-semibold hover:shadow-lg transition-all transform hover:scale-105">
-          View Details
-        </Link>
-      </div>
-    </article>
+      </article>
+    );
   });
 
   return (
