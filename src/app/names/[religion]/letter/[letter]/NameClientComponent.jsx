@@ -231,7 +231,7 @@ export default function NamesDatabaseClient({
         </Link>
       </div>
     </article>
-  ));
+  });
 
   return (
     <>
