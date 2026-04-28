@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { Search, Sparkles, TrendingUp } from 'lucide-react';
 
@@ -40,7 +42,7 @@ const AlphabetNavigation = () => {
             return (
               <Link
                 key={letter}
-                href={`/names/islamic/letter/${letter.toLowerCase()}`}
+                href={`/names/islamic/letter/${letter.toLowerCase()}/1`}
                 className="aspect-square flex items-center justify-center bg-white border-2 border-gray-200 rounded-lg font-bold text-lg text-gray-700 hover:border-transparent hover:shadow-md transition-all duration-300 hover:-translate-y-1"
                 style={{
                   '--hover-bg': `hsl(${hue}, 70%, 95%)`,
@@ -76,7 +78,7 @@ const AlphabetNavigation = () => {
             {popularLetters.map((item) => (
               <Link
                 key={item.letter}
-                href={`/names/islamic/letter/${item.letter.toLowerCase()}`}
+                href={`/names/islamic/letter/${item.letter.toLowerCase()}/1`}
                 className={`block ${item.bgColor} rounded-xl p-4 border-2 ${item.borderColor || 'border-transparent'} hover:shadow-lg transition-all duration-300 hover:-translate-y-1 text-center`}
               >
                 <div className={`text-2xl font-bold ${item.textColor} mb-1`}>Letter {item.letter}</div>

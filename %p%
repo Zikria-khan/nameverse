@@ -1,0 +1,4 @@
+import OriginNamesPage from '@/components/OriginNamesPage/OriginNamesPage'; ;
+ ;
+export default async function Page({ params }) { ;
+  return <OriginNamesPage params={params} />; & echo }

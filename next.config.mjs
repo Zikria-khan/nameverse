@@ -1,3 +1,5 @@
+const API_BASE = (process.env.NEXT_PUBLIC_API_BASE || 'https://name-meaning-site-backend.vercel.app').replace(/\/+$/, '');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -55,7 +57,7 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self' https: data:; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://analytics.ahrefs.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; connect-src 'self' https://analytics.ahrefs.com; font-src 'self' data:; frame-ancestors 'self'; object-src 'none'; base-uri 'self';",
+            value: "default-src 'self' https: data:; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://analytics.ahrefs.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; connect-src 'self' https://analytics.ahrefs.com https://name-meaning-site-backend.vercel.app; font-src 'self' data:; frame-ancestors 'self'; object-src 'none'; base-uri 'self';",
           },
           {
             key: 'Referrer-Policy',
@@ -116,6 +118,10 @@ const nextConfig = {
       {
         source: '/images/articles/:path*',
         destination: '/logo.png',
+      },
+      {
+        source: '/api/:path*',
+        destination: `${API_BASE}/:path*`,
       },
     ];
   },

@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { Filter, X, ChevronDown, Search, Sparkles, Calendar, Palette, Gem } from 'lucide-react';
-import { fetchReligionFilters } from '@/lib/api/names';
 
 /**
  * Advanced Name Filters Component
@@ -16,8 +15,8 @@ import { fetchReligionFilters } from '@/lib/api/names';
  * - Lucky Color
  * - Lucky Stone
  */
-export default function AdvancedNameFilters({ religion, onFiltersChange, initialFilters = {} }) {
-  const [filters, setFilters] = useState({
+export default function AdvancedNameFilters({ religion, filters, onFiltersChange, initialFilters = {} }) {
+  const [selectedFilters, setSelectedFilters] = useState({
     gender: initialFilters.gender || '',
     origin: initialFilters.origin || '',
     language: initialFilters.language || '',
@@ -39,64 +38,48 @@ export default function AdvancedNameFilters({ religion, onFiltersChange, initial
     luckyStones: [],
   });
 
-  const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [expandedSections, setExpandedSections] = useState({
     basic: true,
     lucky: false,
   });
 
-  // Fetch available filters from API
+  // Set available filters from props
   useEffect(() => {
-    const loadFilters = async () => {
-      if (!religion) return;
-
-      setLoading(true);
-      try {
-        const result = await fetchReligionFilters(religion);
-
-        if (result.success && result.filters) {
-          setAvailableFilters({
-            genders: result.filters.genders || ['Male', 'Female'],
-            origins: result.filters.origins || [],
-            languages: result.filters.languages || [],
-            categories: result.filters.categories || [],
-            letters: result.filters.letters || 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),
-            luckyDays: result.filters.luckyDays || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-            luckyColors: result.filters.luckyColors || ['Red', 'Blue', 'Green', 'Yellow', 'Purple', 'Orange', 'Pink', 'White', 'Black'],
-            luckyStones: result.filters.luckyStones || ['Diamond', 'Ruby', 'Emerald', 'Sapphire', 'Pearl', 'Topaz', 'Amethyst', 'Garnet'],
-          });
-        }
-      } catch (error) {
-        console.error('Error loading filters:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadFilters();
-  }, [religion]);
+    if (filters) {
+      setAvailableFilters({
+        genders: filters.genders || ['Male', 'Female'],
+        origins: filters.origins || [],
+        languages: filters.languages || [],
+        categories: filters.categories || [],
+        letters: filters.letters || 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),
+        luckyDays: filters.lucky_days || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        luckyColors: filters.lucky_colors || ['Red', 'Blue', 'Green', 'Yellow', 'Purple', 'Orange', 'Pink', 'White', 'Black'],
+        luckyStones: filters.lucky_stones || ['Diamond', 'Ruby', 'Emerald', 'Sapphire', 'Pearl', 'Topaz', 'Amethyst', 'Garnet'],
+      });
+    }
+  }, [filters]);
 
   // Notify parent of filter changes
   useEffect(() => {
     if (onFiltersChange) {
-      const activeFilters = Object.entries(filters).reduce((acc, [key, value]) => {
+      const activeFilters = Object.entries(selectedFilters).reduce((acc, [key, value]) => {
         if (value) acc[key] = value;
         return acc;
       }, {});
       onFiltersChange(activeFilters);
     }
-  }, [filters, onFiltersChange]);
+  }, [selectedFilters, onFiltersChange]);
 
   const handleFilterChange = (filterType, value) => {
-    setFilters(prev => ({
+    setSelectedFilters(prev => ({
       ...prev,
       [filterType]: prev[filterType] === value ? '' : value,
     }));
   };
 
   const clearAllFilters = () => {
-    setFilters({
+    setSelectedFilters({
       gender: '',
       origin: '',
       language: '',
@@ -116,17 +99,6 @@ export default function AdvancedNameFilters({ religion, onFiltersChange, initial
   };
 
   const activeFilterCount = Object.values(filters).filter(v => v).length;
-
-  if (loading) {
-    return (
-      <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-        <div className="animate-pulse flex items-center gap-4">
-          <div className="h-10 w-32 bg-gray-200 rounded"></div>
-          <div className="h-10 flex-1 bg-gray-200 rounded"></div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden mb-6">
@@ -191,7 +163,7 @@ export default function AdvancedNameFilters({ religion, onFiltersChange, initial
                   <FilterGroup
                     label="Gender"
                     options={availableFilters.genders}
-                    selected={filters.gender}
+                    selected={selectedFilters.gender}
                     onChange={(value) => handleFilterChange('gender', value)}
                     colors="blue"
                   />
@@ -202,7 +174,7 @@ export default function AdvancedNameFilters({ religion, onFiltersChange, initial
                   <FilterGroup
                     label="Origin"
                     options={availableFilters.origins}
-                    selected={filters.origin}
+                    selected={selectedFilters.origin}
                     onChange={(value) => handleFilterChange('origin', value)}
                     colors="green"
                   />
@@ -213,7 +185,7 @@ export default function AdvancedNameFilters({ religion, onFiltersChange, initial
                   <FilterGroup
                     label="Language"
                     options={availableFilters.languages}
-                    selected={filters.language}
+                    selected={selectedFilters.language}
                     onChange={(value) => handleFilterChange('language', value)}
                     colors="purple"
                   />
@@ -224,7 +196,7 @@ export default function AdvancedNameFilters({ religion, onFiltersChange, initial
                   <FilterGroup
                     label="Category"
                     options={availableFilters.categories}
-                    selected={filters.category}
+                    selected={selectedFilters.category}
                     onChange={(value) => handleFilterChange('category', value)}
                     colors="orange"
                   />
@@ -233,7 +205,7 @@ export default function AdvancedNameFilters({ religion, onFiltersChange, initial
                 {/* Alphabet Filter */}
                 {availableFilters.letters.length > 0 && (
                   <AlphabetFilter
-                    selected={filters.alphabet}
+                    selected={selectedFilters.alphabet}
                     onChange={(value) => handleFilterChange('alphabet', value)}
                   />
                 )}
@@ -262,7 +234,7 @@ export default function AdvancedNameFilters({ religion, onFiltersChange, initial
                 <FilterGroup
                   label="Lucky Day"
                   options={availableFilters.luckyDays}
-                  selected={filters.luckyDay}
+                  selected={selectedFilters.luckyDay}
                   onChange={(value) => handleFilterChange('luckyDay', value)}
                   colors="indigo"
                   icon={<Calendar size={16} />}
@@ -270,7 +242,7 @@ export default function AdvancedNameFilters({ religion, onFiltersChange, initial
 
                 {/* Lucky Color Filter */}
                 <ColorFilter
-                  selected={filters.luckyColor}
+                  selected={selectedFilters.luckyColor}
                   options={availableFilters.luckyColors}
                   onChange={(value) => handleFilterChange('luckyColor', value)}
                 />
@@ -279,7 +251,7 @@ export default function AdvancedNameFilters({ religion, onFiltersChange, initial
                 <FilterGroup
                   label="Lucky Stone"
                   options={availableFilters.luckyStones}
-                  selected={filters.luckyStone}
+                  selected={selectedFilters.luckyStone}
                   onChange={(value) => handleFilterChange('luckyStone', value)}
                   colors="pink"
                   icon={<Gem size={16} />}

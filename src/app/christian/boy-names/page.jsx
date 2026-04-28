@@ -73,7 +73,7 @@ function generateStructuredData(names) {
           "@type": "BreadcrumbList",
           "itemListElement": [
             { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE_URL },
-            { "@type": "ListItem", "position": 2, "name": "Christian Names", "item": `${SITE_URL}/names/christian` },
+             { "@type": "ListItem", "position": 2, "name": "Christian Names", "item": `${SITE_URL}/names/religion/christian/1` },
             { "@type": "ListItem", "position": 3, "name": "Christian Boy Names", "item": `${SITE_URL}/christian/boy-names` }
           ]
         },
@@ -175,7 +175,7 @@ export default function ChristianBoyNamesPage() {
           <ol className="flex items-center gap-2 text-sm">
             <li><Link href="/" className="text-blue-600 hover:text-blue-800 font-medium">Home</Link></li>
             <li className="text-gray-400">/</li>
-            <li><Link href="/names/christian" className="text-blue-600 hover:text-blue-800 font-medium">Christian Names</Link></li>
+            <li><Link href="/names/religion/christian/1" className="text-blue-600 hover:text-blue-800 font-medium">Christian Names</Link></li>
             <li className="text-gray-400">/</li>
             <li className="text-blue-700 font-semibold">Boy Names</li>
           </ol>
@@ -235,7 +235,7 @@ export default function ChristianBoyNamesPage() {
             {namesData.map((nameItem, index) => (
               <Link
                 key={index}
-                href={`/names/christian/${nameItem.name.toLowerCase().replace(/\s+/g, '-')}`}
+                href={`/names/religion/christian/1#${nameItem.name.toLowerCase()}`}
                 id={nameItem.name.toLowerCase()}
                 className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 border border-blue-100 hover:border-blue-300 group hover:-translate-y-1 block"
               >
@@ -331,8 +331,8 @@ export default function ChristianBoyNamesPage() {
               <h3 className="font-bold text-lg mb-2">Christian Girl Names</h3>
               <p className="text-pink-100 text-sm">Browse 100+ Biblical girl names</p>
             </Link>
-            <Link 
-              href="/names/christian"
+            <Link
+               href="/names/religion/christian/1"
               className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl p-6 hover:shadow-xl transition-all hover:-translate-y-1"
             >
               <h3 className="font-bold text-lg mb-2">All Christian Names</h3>

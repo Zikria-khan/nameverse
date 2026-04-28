@@ -8,10 +8,26 @@ export function middleware(request) {
   const { pathname } = request.nextUrl;
 
   // ==========================================
+  // REDIRECT OLD /names/filter/* TO NEW /names/* STRUCTURE
+  // ==========================================
+  // Old: /names/filter/{gender}/{letter}/{page}/{origin}/{category}
+  // New: /names/{religion}/{slug(gender)}/{category}/{alphabet}/{page}
+  const oldFilterPattern = /^\/names\/filter\/([^/]+)\/([^/]+)\/([^/]+)\/([^/]+)\/([^/]+)$/;
+  const oldFilterMatch = pathname.match(oldFilterPattern);
+
+  if (oldFilterMatch) {
+    const [, gender, letter, page, , category] = oldFilterMatch;
+    const newUrl = new URL(request.url);
+    // Default religion to islamic since old filter page hardcoded it
+    newUrl.pathname = `/names/islamic/${gender.toLowerCase()}/${category.toLowerCase()}/${letter.toUpperCase()}/${page}`;
+    return NextResponse.redirect(newUrl, 301); // 301 Permanent Redirect
+  }
+
+  // ==========================================
   // SANITIZE NAME SLUG URLS
   // ==========================================
-  // Pattern: /names/{religion}/{slug}
-  const nameSlugPattern = /^\/names\/([a-z]+)\/(.+)$/;
+  // Pattern: /names/{religion}/{slug} - only single-segment slugs
+  const nameSlugPattern = /^\/names\/([a-z]+)\/([^/]+)$/;
   const nameSlugMatch = pathname.match(nameSlugPattern);
 
   if (nameSlugMatch) {
@@ -42,31 +58,6 @@ export function middleware(request) {
       const newUrl = new URL(request.url);
       newUrl.pathname = `/names/${religion}/${sanitizedSlug}`;
       return NextResponse.redirect(newUrl, 301); // 301 Permanent Redirect
-    }
-  }
-
-  // ==========================================
-  // SANITIZE LETTER PAGE URLS
-  // ==========================================
-  // Pattern: /names/{religion}/letter/{letter}
-  const letterPattern = /^\/names\/([a-z]+)\/letter\/(.+)$/;
-  const letterMatch = pathname.match(letterPattern);
-
-  if (letterMatch) {
-    const [, religion, letter] = letterMatch;
-
-    // Validate letter is a single alphabetic character
-    if (!/^[a-zA-Z]$/.test(letter)) {
-      // Invalid letter - let page handler return 404
-      return NextResponse.next();
-    }
-
-    // Ensure letter is lowercase in URL
-    const lowerLetter = letter.toLowerCase();
-    if (letter !== lowerLetter) {
-      const newUrl = new URL(request.url);
-      newUrl.pathname = `/names/${religion}/letter/${lowerLetter}`;
-      return NextResponse.redirect(newUrl, 301);
     }
   }
 

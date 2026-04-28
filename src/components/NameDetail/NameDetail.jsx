@@ -335,7 +335,7 @@ export default function NameDetail({ data, faqData = [] }) {
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Name Not Found</h1>
           <p className="text-gray-600 mb-6">The requested name could not be found.</p>
-          <a href="/names" className="inline-block px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all">
+          <a href="/names/religion/islamic/1" className="inline-block px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all">
             Browse All Names
           </a>
         </div>

@@ -137,7 +137,7 @@ const rateLimiter = new RateLimiter(env.limits.maxRequestsPerWindow, env.limits.
 
 // Suppress console.error during API calls to prevent Next.js Dev Tools from showing errors
 const originalConsoleError = console.error;
-const suppressedPaths = ['/api/v1/names/', '/names/'];
+const suppressedPaths = ['/api/v1/names?page=1&limit=20&religion=islamic&origin=&language=&category=&theme=&luckyDay=&luckyColor=&alphabet=&luckyStone=&gender=male', '/names/', '/api/v1/filters/'];
 
 // Override console.error to suppress 404 and API errors
 if (typeof window === 'undefined') {

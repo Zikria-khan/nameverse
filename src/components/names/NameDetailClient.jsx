@@ -324,8 +324,8 @@ export default function NameDetailClient({ data, initialLanguage }) {
       <div className={`fixed top-0 left-0 right-0 z-50 bg-white shadow-sm transition-all duration-300 ${isScrolled ? 'translate-y-0' : '-translate-y-full'}`}>
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0">
-            <a 
-              href={`/names/${religion}`} 
+            <a
+              href={`/names/religion/${religion}/1`}
               className="text-gray-500 hover:text-gray-900 transition-colors flex-shrink-0"
               aria-label="Back to names list"
             >
@@ -366,9 +366,9 @@ export default function NameDetailClient({ data, initialLanguage }) {
               <span>Home</span>
             </a>
             <span className="text-white/60">/</span>
-            <a href="/names" className="hover:text-white transition-colors">Names</a>
+            <a href={`/names/religion/${religion}/1`} className="hover:text-white transition-colors">Names</a>
             <span className="text-white/60">/</span>
-            <a href={`/names/${religion}`} className="hover:text-white transition-colors capitalize">{religion}</a>
+            <a href={`/names/religion/${religion}/1`} className="hover:text-white transition-colors capitalize">{religion}</a>
             {data.gender && (
               <>
                 <span className="text-white/60">/</span>
@@ -820,7 +820,7 @@ export default function NameDetailClient({ data, initialLanguage }) {
                     {data.related_names.map((relatedName, idx) => (
                       <a
                         key={idx}
-                        href={`/names/${religion}/${relatedName.toLowerCase()}`}
+                        href={`/names/religion/${religion}/1`}
                         className={relatedNameLinkClass}
                       >
                         {relatedName}
@@ -839,7 +839,7 @@ export default function NameDetailClient({ data, initialLanguage }) {
                     {data.similar_sounding_names.map((similarName, idx) => (
                       <a
                         key={idx}
-                        href={`/names/${religion}/${similarName.toLowerCase()}`}
+                        href={`/names/religion/${religion}/1`}
                         className="inline-flex items-center px-4 py-2 rounded-full font-medium transition-all bg-white border-2 border-gray-200 text-gray-700 hover:border-emerald-500 hover:text-emerald-600 hover:shadow-md"
                       >
                         {similarName}

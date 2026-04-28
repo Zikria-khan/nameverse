@@ -9,7 +9,7 @@ const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app
 // Fetch search results from API - Cached for single-request deduplication
 const fetchSearchResults = cache(async (term) => {
   try {
-    const namesResult = await searchNames(term.trim(), { limit: 50 });
+    const namesResult = await searchNames(term.trim(), { limit: 8 });
     const names = namesResult.data || [];
 
     return {

@@ -82,7 +82,7 @@ const UniversalSearch = () => {
 
     try {
       const [namesResult, articlesResult] = await Promise.all([
-        searchNames(searchQuery.trim(), { limit: 5 }),
+        searchNames(searchQuery.trim(), { limit: 8 }),
         searchArticles(searchQuery.trim(), { limit: 5 })
       ]);
 

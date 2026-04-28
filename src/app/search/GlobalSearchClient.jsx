@@ -37,7 +37,7 @@ export default function GlobalSearchClient() {
       try {
         const result = await globalSearch(searchQuery, {
           type,
-          limit: 20,
+          limit: 8,
         });
 
         if (result.success) {

@@ -379,8 +379,8 @@ export default async function BlogPostPage({ params }) {
             <p className="text-gray-600 mb-6">
               Explore our database of 60,000+ baby names with meanings, origins, and numerology.
             </p>
-            <Link 
-              href="/names"
+            <Link
+              href="/names/religion/islamic/1"
               className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
             >
               <Heart className="w-5 h-5" />

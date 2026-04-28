@@ -147,9 +147,9 @@ export default function ExpertNamingGuidePage() {
             <p className="text-gray-600 mb-6">
               Explore our database of 60,000+ baby names with meanings, origins, and numerology.
             </p>
-            <Link 
-              href="/names"
-              className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-semibold rounded-xl hover:from-purple-600 hover:to-indigo-700 transition-all"
+            <Link
+              href="/names/religion/islamic/1"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-purple-700 font-semibold rounded-xl hover:bg-purple-50 transition-colors"
             >
               <Heart className="w-5 h-5" />
               Browse All Names

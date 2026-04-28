@@ -18,7 +18,6 @@ const Navbar = () => {
   const [mounted, setMounted] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [mobileOpenSection, setMobileOpenSection] = useState(null);
-  const dropdownTimeoutRef = useRef(null);
 
   // Handle mount state to prevent hydration mismatch
   useEffect(() => {
@@ -93,60 +92,23 @@ const Navbar = () => {
     };
   }, [isOpen]);
 
-  const handleDropdownEnter = (name) => {
-    if (dropdownTimeoutRef.current) {
-      clearTimeout(dropdownTimeoutRef.current);
-    }
-    setActiveDropdown(name);
-  };
 
-  const handleDropdownLeave = () => {
-    dropdownTimeoutRef.current = setTimeout(() => {
-      setActiveDropdown(null);
-    }, 200);
-  };
-
-  const handleDropdownContentEnter = () => {
-    if (dropdownTimeoutRef.current) {
-      clearTimeout(dropdownTimeoutRef.current);
-    }
-  };
 
   // Simplified navigation links - only pages that exist in this app
   const navLinks = [
     {
       name: 'Names',
-      href: '/names',
-      icon: Sparkles,
-    },
-    {
-      name: 'Islamic',
-      href: '/names/islamic',
       icon: Sparkles,
       subLinks: [
-        { name: 'Islamic All Names', href: '/names/islamic' },
         { name: 'Islamic Boy Names', href: '/islamic/boy-names' },
         { name: 'Islamic Girl Names', href: '/islamic/girl-names' },
-      ]
-    },
-    {
-      name: 'Hindu',
-      href: '/names/hindu',
-      icon: Sparkles,
-      subLinks: [
-        { name: 'Hindu All Names', href: '/names/hindu' },
-        { name: 'Hindu Boy Names', href: '/hindu/boy-names' },
-        { name: 'Hindu Girl Names', href: '/hindu/girl-names' },
-      ]
-    },
-    {
-      name: 'Christian',
-      href: '/names/christian',
-      icon: Sparkles,
-      subLinks: [
-        { name: 'Christian All Names', href: '/names/christian' },
         { name: 'Christian Boy Names', href: '/christian/boy-names' },
         { name: 'Christian Girl Names', href: '/christian/girl-names' },
+        { name: 'Hindu Boy Names', href: '/hindu/boy-names' },
+        { name: 'Hindu Girl Names', href: '/hindu/girl-names' },
+        { name: 'Full Islamic Names', href: '/names/religion/islamic/1' },
+        { name: 'Full Christian Names', href: '/names/religion/christian/1' },
+        { name: 'Full Hindu Names', href: '/names/religion/hindu/1' },
       ]
     },
     {
@@ -218,20 +180,19 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-1">
             {navLinks.map((link) => (
-              <div 
-                key={link.name} 
-                className="relative"
-                onMouseEnter={() => handleDropdownEnter(link.name)}
-                onMouseLeave={handleDropdownLeave}
-              >
-                {link.subLinks ? (
-                  <>
-                    <button
-                      type="button"
-                      className={`inline-flex items-center gap-1 px-4 py-2 rounded-xl text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 font-semibold transition-all duration-200 ${
-                        activeDropdown === link.name ? 'text-indigo-600 bg-indigo-50' : ''
-                      }`}
-                    >
+               <div 
+                 key={link.name} 
+                 className="relative"
+               >
+                 {link.subLinks ? (
+                   <>
+                     <button
+                       type="button"
+                       onClick={() => setActiveDropdown(activeDropdown === link.name ? null : link.name)}
+                       className={`inline-flex items-center gap-1 px-4 py-2 rounded-xl text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 font-semibold transition-all duration-200 ${
+                         activeDropdown === link.name ? 'text-indigo-600 bg-indigo-50' : ''
+                       }`}
+                     >
                       {link.name}
                       <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${
                         activeDropdown === link.name ? 'rotate-180' : ''
@@ -240,10 +201,8 @@ const Navbar = () => {
 
                     {activeDropdown === link.name && (
                       <div 
-                        className="absolute left-0 top-full pt-1"
-                        onMouseEnter={handleDropdownContentEnter}
-                        onMouseLeave={handleDropdownLeave}
-                      >
+                         className="absolute left-0 top-full pt-1"
+                       >
                         <div className="min-w-[220px] rounded-2xl bg-white shadow-2xl border border-gray-100 overflow-hidden">
                           <div className="py-2">
                             {link.subLinks.map((subLink) => (
@@ -276,7 +235,7 @@ const Navbar = () => {
           {/* Desktop Right Side */}
           <div className="hidden lg:flex items-center gap-2">
             <Link
-              href="/names"
+              href="/names/islamic/letter/A/1"
               className="px-5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold hover:shadow-lg transition-all duration-200 hover:scale-105"
             >
               Explore Names
@@ -390,7 +349,7 @@ const Navbar = () => {
 
               <div className="grid gap-3 py-2">
                 <Link
-                  href="/names"
+                  href="/names/religion/islamic/1"
                   onClick={() => setIsOpen(false)}
                   className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-4 text-sm font-semibold text-white shadow-lg shadow-indigo-100"
                 >

@@ -24,8 +24,6 @@ export {
   fetchNamesByOrigin,
   fetchNamesByLanguage,
   fetchTrendingNames,
-  fetchAllFilters,
-  fetchReligionFilters,
   fetchNamesWithAdvancedFilters,
   fetchRelatedNames,
   fetchSimilarNames,

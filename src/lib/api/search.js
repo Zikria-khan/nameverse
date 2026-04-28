@@ -3,8 +3,8 @@
  * Unified search across names, stories, and articles
  *
  * Backend Endpoints:
- * - GET /api/search?q=query - Global search across all content
- * - GET /api/names/search?q=query&religion=X - Search names
+ * - GET /api/v1/names/search?q=query - Global search across all names
+ * - GET /api/v1/names/search?q=query&religion=X - Search names by religion
  * - GET /api/stories/search?q=query - Search stories
  * - GET /api/articles/search?q=query - Search articles
  */
@@ -34,7 +34,7 @@ export async function globalSearch(query, options = {}) {
       };
     }
 
-    const { type = 'all', religion, limit = 20 } = options;
+    const { type = 'all', religion, limit = 8 } = options;
     const trimmedQuery = query.trim();
 
     // If searching all types, fetch from supported APIs in parallel
@@ -113,7 +113,7 @@ export async function quickSearch(query, options = {}) {
       };
     }
 
-    const { type = 'names', limit = 5 } = options;
+    const { type = 'names', limit = 8 } = options;
     const trimmedQuery = query.trim();
 
     // Quick search optimized for autocomplete

@@ -73,7 +73,7 @@ function generateStructuredData(names) {
           "@type": "BreadcrumbList",
           "itemListElement": [
             { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE_URL },
-            { "@type": "ListItem", "position": 2, "name": "Islamic Names", "item": `${SITE_URL}/names/islamic` },
+            { "@type": "ListItem", "position": 2, "name": "Islamic Names", "item": `${SITE_URL}/names/religion/islamic/1` },
             { "@type": "ListItem", "position": 3, "name": "Islamic Girl Names", "item": `${SITE_URL}/islamic/girl-names` }
           ]
         },
@@ -175,7 +175,7 @@ export default function IslamicGirlNamesPage() {
           <ol className="flex items-center gap-2 text-sm">
             <li><Link href="/" className="text-pink-600 hover:text-pink-800 font-medium">Home</Link></li>
             <li className="text-gray-400">/</li>
-            <li><Link href="/names/islamic" className="text-pink-600 hover:text-pink-800 font-medium">Islamic Names</Link></li>
+            <li><Link href="/names/religion/islamic/1" className="text-pink-600 hover:text-pink-800 font-medium">Islamic Names</Link></li>
             <li className="text-gray-400">/</li>
             <li className="text-pink-700 font-semibold">Girl Names</li>
           </ol>
@@ -331,8 +331,8 @@ export default function IslamicGirlNamesPage() {
               <h3 className="font-bold text-lg mb-2">Islamic Boy Names</h3>
               <p className="text-emerald-100 text-sm">Browse 150+ Muslim boy names</p>
             </Link>
-            <Link 
-              href="/names/islamic"
+            <Link
+               href="/names/religion/islamic/1"
               className="bg-gradient-to-br from-pink-500 to-rose-600 text-white rounded-2xl p-6 hover:shadow-xl transition-all hover:-translate-y-1"
             >
               <h3 className="font-bold text-lg mb-2">All Islamic Names</h3>

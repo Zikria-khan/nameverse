@@ -1,5 +1,4 @@
-import Link from 'next/link';
-import { Heart, ArrowRight, Sparkles, Users, Crown, Flame, Star } from 'lucide-react';
+import { Heart, Sparkles, Users, Crown, Flame, Star } from 'lucide-react';
 
 const PopularNamesSection = () => {
   const popularBoyNames = [
@@ -84,15 +83,14 @@ const PopularNamesSection = () => {
               {popularBoyNames.map((name) => {
                 const colors = colorMap[name.color];
                 return (
-                  <Link
+                  <div
                     key={name.slug}
-                    href={`/names/${name.religion.toLowerCase()}/${name.slug}`}
-                    className="group block p-3 rounded-lg hover:bg-gray-50 transition-all border border-transparent hover:border-gray-200"
+                    className="block p-3 rounded-lg border border-gray-200 bg-white"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <h4 className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                          <h4 className="font-bold text-gray-900">
                             {name.name}
                           </h4>
                           <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${colors.badge}`}>
@@ -103,21 +101,12 @@ const PopularNamesSection = () => {
                           {name.meaning} • {name.origin}
                         </p>
                       </div>
-                      <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-blue-600 flex-shrink-0 ml-2 transition-colors" />
                     </div>
-                  </Link>
+                  </div>
                 );
               })}
             </div>
 
-            <div className="px-4 pb-4">
-              <Link
-                href="/names/islamic/boy-names"
-                className="block w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-center font-semibold rounded-lg hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5"
-              >
-                Explore All Boy Names →
-              </Link>
-            </div>
           </div>
 
           {/* Girls Names */}
@@ -138,15 +127,14 @@ const PopularNamesSection = () => {
               {popularGirlNames.map((name) => {
                 const colors = colorMap[name.color];
                 return (
-                  <Link
+                  <div
                     key={name.slug}
-                    href={`/names/${name.religion.toLowerCase()}/${name.slug}`}
-                    className="group block p-3 rounded-lg hover:bg-gray-50 transition-all border border-transparent hover:border-gray-200"
+                    className="block p-3 rounded-lg border border-gray-200 bg-white"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <h4 className="font-bold text-gray-900 group-hover:text-pink-600 transition-colors">
+                          <h4 className="font-bold text-gray-900">
                             {name.name}
                           </h4>
                           <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${colors.badge}`}>
@@ -157,21 +145,12 @@ const PopularNamesSection = () => {
                           {name.meaning} • {name.origin}
                         </p>
                       </div>
-                      <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-pink-600 flex-shrink-0 ml-2 transition-colors" />
                     </div>
-                  </Link>
+                  </div>
                 );
               })}
             </div>
 
-            <div className="px-4 pb-4">
-              <Link
-                href="/names/hindu/girl-names"
-                className="block w-full py-3 bg-gradient-to-r from-pink-600 to-rose-600 text-white text-center font-semibold rounded-lg hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5"
-              >
-                Explore All Girl Names →
-              </Link>
-            </div>
           </div>
         </div>
       </div>

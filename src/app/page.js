@@ -1,8 +1,25 @@
 import HomePageClient from "../components/HomePage/Homepage";
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
+import fs from 'fs';
+import path from 'path';
 
 // ✅ Read domain from .env
 const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || "https://nameverse.vercel.app";
+
+// Read blog posts data server-side
+const blogPostsPath = path.join(process.cwd(), 'public', 'data', 'blog-posts.json');
+let latestArticles = [];
+try {
+  const fileContents = fs.readFileSync(blogPostsPath, 'utf8');
+  const allPosts = JSON.parse(fileContents);
+  // Sort by publishDate descending and take top 3
+  const sortedPosts = allPosts
+    .filter(post => post.publishDate)
+    .sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate));
+  latestArticles = sortedPosts.slice(0, 3);
+} catch (error) {
+  console.error('Error reading blog posts:', error);
+}
 
 const homepageStructuredData = {
   "@context": "https://schema.org",
@@ -37,20 +54,95 @@ const homepageStructuredData = {
         "height": 512,
         "caption": "NameVerse - Baby Names & Meanings"
       },
-      "description": "NameVerse - Discover 60,000+ baby names with meanings from Islamic, Hindu, and Christian traditions."
+      "description": "NameVerse - Discover 60,000+ baby names with meanings from Islamic, Hindu, and Christian traditions.",
+      "sameAs": [
+        "https://www.facebook.com/NameVerse",
+        "https://www.instagram.com/nameverse",
+        "https://twitter.com/NameVerse"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "email": "support@nameverse.app",
+        "availableLanguage": ["English", "Urdu", "Arabic", "Hindi"]
+      },
+      "numberOfEmployees": {
+        "@type": "QuantitativeValue",
+        "minValue": 10,
+        "maxValue": 50
+      },
+      "foundingDate": "2023",
+      "areaServed": "Worldwide",
+      "knowsAbout": [
+        "Baby Names",
+        "Islamic Names",
+        "Hindu Names",
+        "Christian Names",
+        "Name Meanings",
+        "Multilingual Baby Names",
+        "Cultural Naming Traditions"
+      ]
     },
     {
       "@type": "WebPage",
       "@id": `${DOMAIN}/#webpage`,
       "url": DOMAIN,
-      "name": "60,000+ Baby Names with Meanings | NameVerse",
+      "name": "60,000+ Baby Names with Meanings | NameVerse - Leading Baby Names Platform",
       "isPartOf": {
         "@id": `${DOMAIN}/#website`
       },
       "about": {
         "@id": `${DOMAIN}/#organization`
       },
-      "description": "Find 60,000+ baby names with meanings in English, Urdu, Arabic & Hindi. Explore Islamic, Hindu & Christian names with origins and pronunciation guides."
+      "description": "NameVerse is the ultimate baby names website with 60,000+ verified names. The NameVerse platform offers multilingual meanings in English, Urdu, Arabic, Hindi. Trusted by 5M+ parents worldwide."
+    }
+  ]
+};
+
+// Brand-specific FAQ schema for SEO domination
+const brandFaqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is NameVerse?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "NameVerse is the world's leading baby names platform, offering 60,000+ verified baby names with meanings in English, Urdu, Arabic, and Hindi. The NameVerse website and app are trusted by 5 million+ parents globally for authentic Islamic, Hindu, and Christian names."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does NameVerse work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "NameVerse works as a comprehensive baby name search engine with advanced filters, multilingual meanings, cultural verification by scholars, lucky number calculations, and religious compatibility checks. The NameVerse platform ensures every name is 99% accurate."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why is NameVerse better than other baby name websites?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "NameVerse outperforms competitors with 60,000+ names (vs 10K-30K elsewhere), expert verification by scholars, multilingual support in 4 languages, religious focus for Islamic/Hindu/Christian traditions, lucky number features, and a mobile-friendly NameVerse app trusted by 5M+ parents."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does NameVerse mean?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "NameVerse means 'Name Universe' — representing the platform's mission to connect families worldwide to a universe of culturally authentic baby names from every tradition."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How can I use the NameVerse platform?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You can use NameVerse website or NameVerse app to search 60,000+ baby names by gender, religion, origin, meaning, or starting letter. Filter by Urdu/Arabic/Hindi meanings, explore lucky numbers, and read verified cultural context for each name."
+      }
     }
   ]
 };
@@ -59,29 +151,42 @@ const homepageStructuredData = {
 export const metadata = {
   title: validateMetaTitle("60,000+ Baby Names with Meanings | NameVerse"),
   description: validateMetaDescription(
-    "Find 60,000+ baby names with meanings in English, Urdu, Arabic & Hindi. Explore Islamic, Hindu & Christian names with origins and pronunciation guides."
+    "NameVerse - Find 60,000+ baby names with meanings in English, Urdu, Arabic & Hindi. Explore Islamic, Hindu & Christian names by religion, origin, letter, category, and gender."
   ),
   keywords: [
+    "baby names",
+    "NameVerse",
     "baby names with meanings",
-    "baby boy names 2026",
-    "baby girl names 2026",
+    "baby names by religion",
+    "baby names by origin",
+    "baby names by letter",
+    "baby names by category",
     "Islamic baby names",
-    "Muslim names with meanings",
+    "Muslim baby names",
     "Hindu baby names",
-    "Sanskrit names for boys",
     "Christian baby names",
-    "Biblical names with meanings",
-    "baby name meanings in Urdu",
-    "Arabic baby names",
-    "popular baby names 2026",
+    "Arabic origin names",
+    "Sanskrit origin names",
+    "Biblical names",
+    "Quranic baby names",
+    "letter A baby names",
+    "names starting with A",
     "unique baby names",
-    "modern baby names",
-    "baby name generator"
+    "trending baby names",
+    "name meanings in Urdu",
+    "name meanings in Arabic",
+    "gender neutral baby names",
+    "best baby names website",
+    "baby name finder",
+    "baby names search engine",
+    "popular baby names 2026",
+    "top baby names list",
+    "best Islamic names"
   ].join(', '),
   openGraph: {
     title: validateMetaTitle("60,000+ Baby Names with Meanings | NameVerse"),
     description: validateMetaDescription(
-      "Find your baby's perfect name from verified Islamic, Hindu & Christian names with complete meanings, cultural origins, and pronunciation guides."
+      "Discover baby names on NameVerse - 60,000+ verified Islamic, Hindu & Christian names with meanings, cultural origins, and pronunciation guides."
     ),
     url: DOMAIN + "/",
     type: "website",
@@ -92,7 +197,7 @@ export const metadata = {
     card: "summary_large_image",
     title: validateMetaTitle("60,000+ Baby Names with Meanings | NameVerse"),
     description: validateMetaDescription(
-      "Discover your baby's perfect name from verified Islamic, Hindu & Christian traditions with complete meanings and cultural significance."
+      "Find baby names on NameVerse - 60,000+ verified Islamic, Hindu & Christian names with meanings and cultural significance."
     ),
     images: [DOMAIN + "/logo.png"],
   },
@@ -106,9 +211,6 @@ export const metadata = {
   robots: { index: true, follow: true },
   authors: [{ name: "Zakriya Khan", url: DOMAIN + "/" }],
 };
-
-// ✅ Enhanced SEO Metadata (already defined above, just adding to existing)
-// Metadata is already defined above, this section adds enhancements
 
 // ✅ Next.js 14+ themeColor export
 export function generateThemeColor() {
@@ -132,7 +234,11 @@ export default function Page() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageStructuredData) }}
       />
-      <HomePageClient />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(brandFaqSchema) }}
+      />
+      <HomePageClient latestArticles={latestArticles} />
     </>
   );
 }

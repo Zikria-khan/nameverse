@@ -43,6 +43,18 @@ export function validateMetaDescription(description) {
 }
 
 /**
+ * Generate canonical URL ensuring no trailing slashes
+ * @param {string} path - The page path
+ * @param {string} baseUrl - Base URL (default: from env)
+ * @returns {string} Canonical URL
+ */
+export function generateCanonicalUrl(path, baseUrl = process.env.NEXT_PUBLIC_SITE_URL) {
+  const cleanPath = path.replace(/\/+$|^\s+|\s+$/g, '');
+  const cleanBase = baseUrl?.replace(/\/+$|^\s+|\s+$/g, '') || 'https://nameverse.vercel.app';
+  return `${cleanBase}${cleanPath}`;
+}
+
+/**
  * Generate meta description for name pages
  * @param {object} data - Name data object
  * @returns {string} Generated meta description

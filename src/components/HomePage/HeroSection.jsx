@@ -8,7 +8,7 @@ const HeroSection = () => {
       id: 'islamic',
       name: 'Islamic',
       icon: Globe,
-      url: '/names/islamic',
+      url: '/names/religion/islamic/1',
       count: '25,000+',
       description: 'Quranic & Arabic names for boys & girls. A-Z listings with Urdu meanings.',
       color: 'from-emerald-500 to-teal-600',
@@ -20,7 +20,7 @@ const HeroSection = () => {
       id: 'hindu',
       name: 'Hindu',
       icon: Sparkles,
-      url: '/names/hindu',
+      url: '/names/religion/hindu/1',
       count: '20,000+',
       description: 'Sanskrit & Vedic names for boys & girls. Traditional & modern A-Z listings.',
       color: 'from-orange-500 to-amber-600',
@@ -32,7 +32,7 @@ const HeroSection = () => {
       id: 'christian',
       name: 'Christian',
       icon: Award,
-      url: '/names/christian',
+      url: '/names/religion/christian/1',
       count: '15,000+',
       description: 'Biblical names with spiritual meanings. Classic & contemporary A-Z listings.',
       color: 'from-blue-500 to-indigo-600',
@@ -145,15 +145,18 @@ const HeroSection = () => {
           <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-8 mt-8 mb-8">
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">
-                Find the right name with faith-based meaning and cultural accuracy
+                Find baby names with NameVerse - Faith-based meanings and cultural accuracy
               </h2>
               <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
                 Explore Islamic baby names with Urdu and Arabic meanings, Hindu baby names rooted in Sanskrit and Vedic tradition, and Christian baby names inspired by the Bible. Use NameVerse to search names by religion, gender, origin, meaning, and numerology.
               </p>
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed mt-3">
+                NameVerse is the ultimate resource for baby names, offering a comprehensive collection of meaningful names from every religion. Whether you're looking for traditional or modern baby names, our platform provides accurate meanings, cultural context, and pronunciation guides to help you choose the perfect name for your child.
+              </p>
               <div className="mt-4 flex flex-wrap justify-center gap-2 text-sm">
-                <a href="/names/islamic" className="rounded-full bg-emerald-50 text-emerald-700 px-4 py-2 border border-emerald-100 hover:bg-emerald-100 transition">Islamic Names</a>
-                <a href="/names/hindu" className="rounded-full bg-orange-50 text-orange-700 px-4 py-2 border border-orange-100 hover:bg-orange-100 transition">Hindu Names</a>
-                <a href="/names/christian" className="rounded-full bg-blue-50 text-blue-700 px-4 py-2 border border-blue-100 hover:bg-blue-100 transition">Christian Names</a>
+                <Link href="/names/religion/islamic/1" className="rounded-full bg-emerald-50 text-emerald-700 px-4 py-2 border border-emerald-100 hover:bg-emerald-100 transition">Islamic Names</Link>
+                <Link href="/names/religion/hindu/1" className="rounded-full bg-orange-50 text-orange-700 px-4 py-2 border border-orange-100 hover:bg-orange-100 transition">Hindu Names</Link>
+                <Link href="/names/religion/christian/1" className="rounded-full bg-blue-50 text-blue-700 px-4 py-2 border border-blue-100 hover:bg-blue-100 transition">Christian Names</Link>
               </div>
             </div>
           </div>

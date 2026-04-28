@@ -188,14 +188,14 @@ const CulturalImportance = () => {
               </motion.div>
 
               {/* CTA BUTTONS */}
-              <motion.div variants={itemVariants} className="mt-8 flex flex-col sm:flex-row gap-3">
-                <a 
-                  href="/names/islamic" 
-                  className="flex-1 px-4 sm:px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-lg hover:shadow-lg transition-all text-center text-sm sm:text-base"
-                  title="Explore verified Islamic baby names"
-                >
-                  Islamic Names
-                </a>
+               <motion.div variants={itemVariants} className="mt-8 flex flex-col sm:flex-row gap-3">
+                  <a
+                    href="/names/religion/islamic/1"
+                    className="flex-1 px-4 sm:px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-lg hover:shadow-lg transition-all text-center text-sm sm:text-base"
+                    title="Explore verified Islamic baby names"
+                  >
+                   Islamic Names
+                 </a>
                 <a 
                   href="/blog" 
                   className="flex-1 px-4 sm:px-6 py-3 border-2 border-indigo-600 text-indigo-600 font-bold rounded-lg hover:bg-indigo-50 transition-all text-center text-sm sm:text-base"

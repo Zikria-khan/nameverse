@@ -238,21 +238,21 @@ const ComprehensiveFAQ = () => {
           <p className="text-base text-gray-300 mb-8 max-w-2xl mx-auto">
             Explore our comprehensive database of 60,000+ verified baby names with meanings in English, Urdu, Arabic, and Hindi.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/names/islamic"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-gray-900 font-semibold rounded-xl hover:bg-gray-100 transition-colors"
-            >
-              <BookOpen className="w-5 h-5" />
-              Browse 25,000+ Islamic Names
-            </Link>
-            <Link
-              href="/names/hindu"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-transparent border-2 border-white text-white font-semibold rounded-xl hover:bg-white/10 transition-colors"
-            >
-              <ArrowRight className="w-5 h-5" />
-              Explore Hindu & Christian Names
-            </Link>
+           <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/names/religion/islamic/1"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-gray-900 font-semibold rounded-xl hover:bg-gray-100 transition-colors"
+              >
+               <BookOpen className="w-5 h-5" />
+               Browse 25,000+ Islamic Names
+             </Link>
+              <Link
+                href="/names/religion/islamic/1"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-transparent border-2 border-white text-white font-semibold rounded-xl hover:bg-white/10 transition-colors"
+              >
+               <ArrowRight className="w-5 h-5" />
+               Explore Hindu & Christian Names
+             </Link>
           </div>
 
           <p className="mt-6 text-sm text-gray-400">

@@ -86,7 +86,7 @@ export default function Breadcrumbs({ items = [], className = '' }) {
 export function generateNameBreadcrumbs(name, religion, slug) {
   const items = [
     { label: 'Names', href: '/names' },
-    { label: religion.charAt(0).toUpperCase() + religion.slice(1), href: `/names/${religion}` }
+    { label: religion.charAt(0).toUpperCase() + religion.slice(1), href: `/names/religion/${religion}/1` }
   ];
 
   // Add letter navigation if available
@@ -94,7 +94,7 @@ export function generateNameBreadcrumbs(name, religion, slug) {
     const firstLetter = name.name[0].toUpperCase();
     items.push({
       label: `Letter ${firstLetter}`,
-      href: `/names/${religion}/letter/${firstLetter.toLowerCase()}`
+      href: `/names/${religion}/letter/${firstLetter.toLowerCase()}/1`
     });
   }
 

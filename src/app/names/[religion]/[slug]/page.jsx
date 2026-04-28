@@ -1,45 +1,27 @@
-// app/names/[religion]/[slug]/page.jsx
-import NameDetailClientV2 from './NameDetailpage';
-import { generateNamePageMetadata, generateNamePageSchemas } from '@/lib/seo/name-page-seo';
-import { fetchNameDetail, fetchNamesByLetter } from '@/lib/api/names';
 import { notFound } from 'next/navigation';
-import dynamic from 'next/dynamic';
-import { validateAndSanitizeSlug, isSingleLetter } from '@/lib/utils/slugValidation';
+import { fetchNameDetail } from '@/lib/api/names';
+import NameDetailClient from '@/components/names/NameDetailClient';
 
-const NamesDatabaseClient = dynamic(() => import('../letter/[letter]/NameClientComponent'), { ssr: true });
+const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
 
-export const revalidate = 2592000;  // 1 month ISR (names data is static)
-
-export const dynamicParams = true;
-
-export async function generateMetadata({ params }) {
-  const { religion, slug } = await params;
-  // ... (letter page logic unchanged) ...
-
-  const nameData = await fetchNameDetail(religion, validateAndSanitizeSlug(slug));
-  if (!nameData) return { title: 'Not Found' };
-
-  return generateNamePageMetadata(nameData, religion, validateAndSanitizeSlug(slug));
+function normalizeReligion(religion) {
+  if (!religion || typeof religion !== 'string') return null;
+  const normalized = religion.toLowerCase();
+  return VALID_RELIGIONS.includes(normalized) ? normalized : null;
 }
 
-export default async function NameSlugPage({ params }) {
-  const { religion, slug } = await params;
-  // ... (letter page logic unchanged) ...
+export default async function NameDetailPage({ params }) {
+  const religion = normalizeReligion(params?.religion);
+  const slug = typeof params?.slug === 'string' ? params.slug : null;
 
-  const data = await fetchNameDetail(religion, validateAndSanitizeSlug(slug));
-  if (!data) return notFound();
+  if (!religion || !slug) {
+    return notFound();
+  }
 
-  const schemas = generateNamePageSchemas(data, religion, validateAndSanitizeSlug(slug));
+  const nameData = await fetchNameDetail(religion, slug);
+  if (!nameData) {
+    return notFound();
+  }
 
-  return (
-    <>
-      {/* Structured Data */}
-      {schemas.product && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas.product) }} />}
-      {schemas.faq && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas.faq) }} />}
-      {schemas.breadcrumb && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas.breadcrumb) }} />}
-      {schemas.howTo && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas.howTo) }} />}
-
-      <NameDetailClientV2 data={data} initialLanguage="english" />
-    </>
-  );
+  return <NameDetailClient data={nameData} initialLanguage="en" />;
 }

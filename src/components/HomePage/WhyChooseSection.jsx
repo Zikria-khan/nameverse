@@ -115,16 +115,16 @@ const WhyChooseSection = () => {
         </div>
 
         {/* CTA */}
-        <div className="text-center">
-          <Link
-            href="/names/islamic"
-            className="inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm sm:text-base font-semibold rounded-xl hover:shadow-xl transition-all duration-300 hover:-translate-y-1 w-full sm:w-auto"
-          >
-            <Zap className="w-4 h-4 sm:w-5 sm:h-5" />
-            Start Exploring 60,000+ Baby Names
-            <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
-          </Link>
-        </div>
+         <div className="text-center">
+            <Link
+              href="/names/religion/islamic/1"
+              className="inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm sm:text-base font-semibold rounded-xl hover:shadow-xl transition-all duration-300 hover:-translate-y-1 w-full sm:w-auto"
+            >
+             <Zap className="w-4 h-4 sm:w-5 sm:h-5" />
+             Start Exploring 60,000+ Baby Names
+             <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+           </Link>
+         </div>
       </div>
     </section>
   );

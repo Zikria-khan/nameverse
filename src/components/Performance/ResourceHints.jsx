@@ -41,7 +41,7 @@ export default function ResourceHints() {
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
 
       {/* Prefetch critical routes */}
-      <link rel="prefetch" href="/names" as="document" />
+      <link rel="prefetch" href="/names/religion/islamic/1" as="document" />
       <link rel="prefetch" href="/blog" as="document" />
     </>
   );

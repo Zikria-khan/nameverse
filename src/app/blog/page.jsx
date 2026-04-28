@@ -1,6 +1,11 @@
 import Link from 'next/link';
 import { BookOpen, Heart, Clock, ArrowRight, Calendar, Award, TrendingUp, User } from 'lucide-react';
-import blogPostsData from '../../../public/data/blog-posts.json';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
+const blogPostsData = JSON.parse(
+  readFileSync(join(process.cwd(), 'public', 'data', 'blog-posts.json'), 'utf8')
+);
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
@@ -179,8 +184,8 @@ export default function BlogPage() {
           <p className="text-gray-600 mb-8">
             Explore our database of 60,000+ baby names with detailed meanings and origins.
           </p>
-          <Link 
-            href="/names"
+          <Link
+            href="/names/religion/islamic/1"
             className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Heart className="w-5 h-5" />

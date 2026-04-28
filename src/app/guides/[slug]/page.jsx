@@ -43,8 +43,8 @@ export async function generateStaticParams() {
   }));
 }
 
-export default function GuidePage({ params }) {
-  const resolvedParams = params;
+export default async function GuidePage({ params }) {
+  const resolvedParams = await params;
   const post = blogPostsData.find(p => p.id === resolvedParams.slug);
 
   if (!post) {
@@ -284,8 +284,8 @@ export default function GuidePage({ params }) {
             <p className="text-purple-100 mb-6">
               Explore our database of 60,000+ baby names with meanings, origins, and numerology.
             </p>
-            <Link 
-              href="/names"
+            <Link
+              href="/names/religion/islamic/1"
               className="inline-flex items-center gap-2 px-6 py-3 bg-white text-purple-700 font-semibold rounded-xl hover:bg-purple-50 transition-colors"
             >
               <Heart className="w-5 h-5" />
