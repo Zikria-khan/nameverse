@@ -24,6 +24,9 @@ export function generateNamePageKeywords(data) {
     `${titleName} meaning`,
     `meaning of ${titleName}`,
     `${titleName} name meaning in English`,
+    `NameVerse ${titleName}`,
+    `NameVerse baby names`,
+    'NameVerse',
   ];
 
   // ========== LANGUAGE-SPECIFIC QUERIES (high conversion intent) ==========

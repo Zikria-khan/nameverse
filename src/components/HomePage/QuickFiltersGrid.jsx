@@ -2,14 +2,11 @@
 import Link from 'next/link';
 
 export default function QuickFiltersGrid() {
-  const filters = [
-    { label: "Boys", href: "/boys" },
-    { label: "Girls", href: "/girls" },
-    { label: "Quranic", href: "/quranic" },
-    { label: "Rare", href: "/rare" },
-    { label: "Urdu", href: "/urdu" },
-    { label: "Pashto", href: "/pashto" },
-  ];
+  const filters = [];
+
+  if (filters.length === 0) {
+    return null;
+  }
 
   return (
     <div className="mt-6 grid grid-cols-3 sm:grid-cols-6 gap-4 max-w-3xl mx-auto px-4">

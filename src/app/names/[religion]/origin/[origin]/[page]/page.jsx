@@ -41,21 +41,21 @@ export async function generateMetadata({ params }) {
   const canonical = generateCanonicalUrl(`/names/${religion}/origin/${origin}/${page}`);
 
   return {
-    title: validateMetaTitle(`${religionLabel} Baby Names from ${originLabel} Origin | NameVerse`),
+    title: validateMetaTitle(`Search ${religionLabel} Baby Names from ${originLabel} Origin | NameVerse`),
     description: validateMetaDescription(
-      `Discover ${religionLabel} baby names from ${originLabel} origin with meanings, pronunciation, and cultural significance. Browse page ${page} of origin-based baby names on NameVerse.`
+      `Search and discover ${religionLabel} baby names from ${originLabel} origin with meaning, pronunciation, and cultural context. Explore page ${page} of origin-based names on NameVerse.`
     ),
     keywords: [
-      `${religionLabel} baby names`,
+      `search ${religionLabel} names from ${originLabel} origin`,
       `${originLabel} origin baby names`,
       `${religionLabel} names by origin`,
       `${originLabel} name meanings`,
-      `baby names by origin`,
-      `baby name meanings by origin`,
+      `find ${originLabel} baby names`,
+      `meaning of ${originLabel} names`,
       `${religionLabel} baby names list`,
-      `best ${religionLabel} names`,
-      `names starting with ${originLabel}`,
-      `top ${religionLabel} baby names`
+      `best ${originLabel} origin names`,
+      `cultural baby names`,
+      'NameVerse'
     ].join(', '),
     openGraph: {
       title: validateMetaTitle(`${religionLabel} Baby Names from ${originLabel} Origin | NameVerse`),

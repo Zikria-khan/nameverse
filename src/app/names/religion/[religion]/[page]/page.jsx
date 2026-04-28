@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { fetchNamesWithAdvancedFilters } from '@/lib/api/names';
+import { validateMetaTitle, validateMetaDescription, generateCanonicalUrl } from '@/lib/seo/meta-helpers';
 import { ChevronLeft, ChevronRight, Sparkles, Moon } from 'lucide-react';
 
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
@@ -24,6 +25,47 @@ function normalizePage(page) {
 function generateSlug(name) {
   if (!name || typeof name !== 'string') return '';
   return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+}
+
+export async function generateMetadata({ params }) {
+  const resolvedParams = await params;
+  const religion = normalizeReligion(resolvedParams?.religion);
+  const page = normalizePage(resolvedParams?.page);
+  const label = RELIGION_LABELS[religion] || 'Baby';
+  const canonical = generateCanonicalUrl(`/names/religion/${religion}/${page}`);
+
+  return {
+    title: validateMetaTitle(`${label} Baby Names | Search & Discover with NameVerse`),
+    description: validateMetaDescription(
+      `Search ${label} baby names by meaning, origin, and pronunciation on NameVerse. Explore page ${page} of ${label} names with trusted cultural insights and naming inspiration.`
+    ),
+    keywords: [
+      `${label} baby names`,
+      `search ${label} names`,
+      `${label} names with meaning`,
+      `find ${label} baby names`,
+      `${label} baby name search`,
+      'NameVerse',
+      'baby name finder',
+      'cultural name meanings',
+      'religion-based baby names',
+      'name meaning search'
+    ].join(', '),
+    openGraph: {
+      title: validateMetaTitle(`${label} Baby Names | Search & Discover with NameVerse`),
+      description: validateMetaDescription(
+        `Explore ${label} baby names on NameVerse. Browse names by meaning, origin, gender, and lucky number on page ${page}.`
+      ),
+      url: canonical,
+      type: 'website',
+      siteName: 'NameVerse',
+    },
+    alternates: {
+      canonical,
+      languages: { en: canonical, 'x-default': canonical },
+    },
+    robots: { index: true, follow: true },
+  };
 }
 
 export default async function ReligionByPage({ params }) {

@@ -39,10 +39,12 @@ export async function generateMetadata({ params }) {
       `${letter} letter baby names`,
       `${religionLabel} names by letter`,
       `baby names starting with ${letter}`,
-      `names by first letter`,
-      `best ${religionLabel} names`,
+      `search ${letter} names`,
+      `find ${letter} baby names`,
+      `NameVerse`,
       `baby name search by letter`,
-      `top ${letter} baby names`
+      `top ${letter} baby names`,
+      `search baby names by first letter`
     ].join(', '),
     openGraph: {
       title: validateMetaTitle(`${religionLabel} baby names starting with ${letter} | NameVerse`),

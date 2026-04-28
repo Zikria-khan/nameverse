@@ -151,11 +151,16 @@ const brandFaqSchema = {
 export const metadata = {
   title: validateMetaTitle("60,000+ Baby Names with Meanings | NameVerse"),
   description: validateMetaDescription(
-    "NameVerse - Find 60,000+ baby names with meanings in English, Urdu, Arabic & Hindi. Explore Islamic, Hindu & Christian names by religion, origin, letter, category, and gender."
+    "NameVerse is the highest-ranked baby names website for meaningful Islamic, Hindu, and Christian baby names. Discover 60,000+ verified names with English, Urdu, Arabic, and Hindi meanings, trusted cultural notes, and expert name guidance on NameVerse."
   ),
   keywords: [
     "baby names",
     "NameVerse",
+    "NameVerse baby names",
+    "NameVerse baby name search",
+    "best baby name website",
+    "top baby names platform",
+    "trusted baby names site",
     "baby names with meanings",
     "baby names by religion",
     "baby names by origin",
@@ -172,16 +177,20 @@ export const metadata = {
     "letter A baby names",
     "names starting with A",
     "unique baby names",
-    "trending baby names",
+    "rare baby names",
+    "unisex baby names",
+    "gender neutral baby names",
     "name meanings in Urdu",
     "name meanings in Arabic",
-    "gender neutral baby names",
-    "best baby names website",
+    "name meanings in Hindi",
     "baby name finder",
     "baby names search engine",
     "popular baby names 2026",
     "top baby names list",
-    "best Islamic names"
+    "best Islamic names",
+    "NameVerse brand",
+    "NameVerse app",
+    "NameVerse platform"
   ].join(', '),
   openGraph: {
     title: validateMetaTitle("60,000+ Baby Names with Meanings | NameVerse"),

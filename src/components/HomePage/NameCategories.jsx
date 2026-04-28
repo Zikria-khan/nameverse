@@ -1,4 +1,5 @@
-import { Star, BookOpen, Heart, Sparkles, Users, Award } from 'lucide-react';
+import Link from 'next/link';
+import { Star, BookOpen, Sparkles, Award, MapPin, Hash, Layers } from 'lucide-react';
 
 const NameCategories = () => {
   const categories = [
@@ -36,33 +37,33 @@ const NameCategories = () => {
       border: 'border-blue-200'
     },
     {
-      icon: Sparkles,
-      title: 'Unique Names',
-      description: 'Stand out with our handpicked unique baby names that are rare yet beautiful. These uncommon names offer individuality without sacrificing meaning or cultural significance. Our unique names collection includes modern inventions, rediscovered vintage names, and international gems that will make your child&apos;s name truly special and memorable.',
-      href: '/search?q=unique+names',
-      keywords: 'unique baby names, rare baby names, uncommon names, distinctive baby names',
-      color: 'purple',
-      gradient: 'from-purple-500 to-pink-600',
-      bgGradient: 'from-purple-50 to-pink-50',
-      border: 'border-purple-200'
-    },
-    {
-      icon: Users,
-      title: 'Unisex Names',
-      description: 'Explore our diverse collection of unisex baby names perfect for any child. Gender neutral names offer flexibility and modern appeal while maintaining meaningful origins. Our unisex names span multiple cultures and traditions, providing options that work beautifully for boys, girls, or non-binary children. Find the perfect gender-neutral name with deep meaning.',
-      href: '/search?q=unisex+names',
-      keywords: 'unisex baby names, gender neutral names, neutral baby names, unisex names',
+      icon: MapPin,
+      title: 'Origin Names',
+      description: 'Explore names filtered by origin to discover Arabic, Sanskrit, Hebrew, and cultural baby name collections with deep meaning and tradition.',
+      href: '/names/islamic/origin/arabic/1',
+      keywords: 'origin baby names, Arabic origin names, cultural origin names, origin filtered names',
       color: 'teal',
       gradient: 'from-teal-500 to-cyan-600',
       bgGradient: 'from-teal-50 to-cyan-50',
       border: 'border-teal-200'
     },
     {
-      icon: Heart,
-      title: 'Middle Names',
-      description: 'Complete your baby&apos;s name with our comprehensive middle names guide. Middle names for babies add depth, honor family traditions, or create a flowing full name. We offer curated middle name suggestions that pair perfectly with first names across all traditions. Discover meaningful middle names that complement any primary name choice.',
-      href: '/guides',
-      keywords: 'middle names for babies, middle name ideas, middle name meanings, baby middle names',
+      icon: Hash,
+      title: 'Names by Letter',
+      description: 'Browse baby names by first letter for a fast alphabetic search. Great when you want names starting with your favorite letter or sound.',
+      href: '/names/islamic/letter/a/1',
+      keywords: 'names by letter, letter filtered names, alphabet baby names, baby names starting with a',
+      color: 'purple',
+      gradient: 'from-purple-500 to-pink-600',
+      bgGradient: 'from-purple-50 to-pink-50',
+      border: 'border-purple-200'
+    },
+    {
+      icon: Layers,
+      title: 'Category Names',
+      description: 'Discover names organized by category, including traditional, modern, and themed collections for every naming style.',
+      href: '/names/christian/categories/traditional/1',
+      keywords: 'category baby names, traditional baby names, names by category, category filtered names',
       color: 'pink',
       gradient: 'from-pink-500 to-rose-600',
       bgGradient: 'from-pink-50 to-rose-50',
@@ -106,9 +107,10 @@ const NameCategories = () => {
             const Icon = category.icon;
             const colors = colorClasses[category.color];
             return (
-              <div
+              <Link
                 key={index}
-                className={`p-5 sm:p-6 bg-gradient-to-br ${category.bgGradient} rounded-2xl border-2 ${category.border} flex flex-col h-full`}
+                href={category.href}
+                className={`group block p-5 sm:p-6 bg-gradient-to-br ${category.bgGradient} rounded-2xl border-2 ${category.border} flex flex-col h-full transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl`}
               >
                 {/* Icon & Title */}
                 <div className="flex items-center gap-3 mb-3">
@@ -125,9 +127,16 @@ const NameCategories = () => {
                   {category.description}
                 </p>
 
+                <div className="mt-3">
+                  <span className={`inline-flex items-center gap-2 text-sm font-semibold ${colors.hover}`}>
+                    Explore {category.title}
+                    <span aria-hidden="true">→</span>
+                  </span>
+                </div>
+
                 {/* Keywords (hidden visually but present for SEO context) */}
                 <span className="sr-only">{category.keywords}</span>
-              </div>
+              </Link>
             );
           })}
         </div>

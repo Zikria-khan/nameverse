@@ -73,6 +73,12 @@ const HeroSection = () => {
             <p className="mt-4 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2 leading-relaxed">
               Search thousands of meaningful baby names by faith, language, and origin. NameVerse helps families choose authentic Islamic, Hindu, and Christian names with trusted meanings, cultural notes, and pronunciation guidance.
             </p>
+            <p className="mt-4 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2 leading-relaxed">
+              NameVerse is the leading baby names brand and baby name search engine for parents who want the best baby names website. Find top NameVerse baby names, trusted name meanings, and expert-reviewed name ideas for every tradition.
+            </p>
+            <p className="mt-4 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2 leading-relaxed">
+              Use NameVerse to browse authentic baby names by religion, category, origin, letter, or gender. Our homepage is optimized to help you discover names, meaning, cultural context, and pronunciation—all in one powerful NameVerse platform.
+            </p>
           </div>
 
           {/* Search Bar */}
@@ -152,6 +158,12 @@ const HeroSection = () => {
               </p>
               <p className="text-sm sm:text-base text-gray-600 leading-relaxed mt-3">
                 NameVerse is the ultimate resource for baby names, offering a comprehensive collection of meaningful names from every religion. Whether you're looking for traditional or modern baby names, our platform provides accurate meanings, cultural context, and pronunciation guides to help you choose the perfect name for your child.
+              </p>
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed mt-3">
+                The NameVerse brand is trusted by parents worldwide as a top baby names website and baby name meaning resource. Our NameVerse name search experience is built to rank for baby names, NameVerse keywords, and the best baby names platform searches.
+              </p>
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed mt-3">
+                Browse our NameVerse homepage for baby names, top names lists, and expert recommendations so you can quickly discover the best name ideas for your family.
               </p>
               <div className="mt-4 flex flex-wrap justify-center gap-2 text-sm">
                 <Link href="/names/religion/islamic/1" className="rounded-full bg-emerald-50 text-emerald-700 px-4 py-2 border border-emerald-100 hover:bg-emerald-100 transition">Islamic Names</Link>

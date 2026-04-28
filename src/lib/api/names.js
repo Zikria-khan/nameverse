@@ -720,10 +720,14 @@ export async function fetchNameDetail(religion, slug) {
       return null;
     }
 
-    const { data } = await apiClient.get(`/api/v1/names/${religion}/${slug}`);
+    const response = await apiClient.get(`/api/v1/names/${religion}/${slug}`);
+    if (!response || response.status >= 400) {
+      return null;
+    }
 
-    if (data.success && data.data) {
-      return data.data;
+    const payload = response.data?.data ?? response.data;
+    if (payload && typeof payload === 'object') {
+      return payload;
     }
 
     return null;

@@ -1,8 +1,37 @@
 import { notFound } from 'next/navigation';
 import { fetchNameDetail } from '@/lib/api/names';
+import { generateNamePageMetadata } from '@/lib/seo/name-page-seo';
 import NameDetailClient from '@/components/names/NameDetailClient';
 
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
+
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
+
+export async function generateMetadata({ params }) {
+  const resolvedParams = await params;
+  const religion = normalizeReligion(resolvedParams?.religion);
+  const slug = typeof resolvedParams?.slug === 'string' ? resolvedParams.slug : null;
+
+  if (!religion || !slug) {
+    return {
+      title: 'Name Not Found | NameVerse',
+      description: 'The requested baby name page could not be found on NameVerse.',
+      keywords: ['NameVerse', 'baby names', 'name meaning site'],
+    };
+  }
+
+  const nameData = await fetchNameDetail(religion, slug);
+  if (!nameData) {
+    return {
+      title: 'Name Not Found | NameVerse',
+      description: 'The requested baby name page could not be found on NameVerse.',
+      keywords: ['NameVerse', 'name not found', 'baby name meanings'],
+    };
+  }
+
+  return generateNamePageMetadata(nameData, religion, slug);
+}
 
 function normalizeReligion(religion) {
   if (!religion || typeof religion !== 'string') return null;
@@ -11,8 +40,9 @@ function normalizeReligion(religion) {
 }
 
 export default async function NameDetailPage({ params }) {
-  const religion = normalizeReligion(params?.religion);
-  const slug = typeof params?.slug === 'string' ? params.slug : null;
+  const resolvedParams = await params;
+  const religion = normalizeReligion(resolvedParams?.religion);
+  const slug = typeof resolvedParams?.slug === 'string' ? resolvedParams.slug : null;
 
   if (!religion || !slug) {
     return notFound();

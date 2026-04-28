@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Heart, Sparkles, Users, Crown, Flame, Star } from 'lucide-react';
 
 const PopularNamesSection = () => {
@@ -83,9 +84,10 @@ const PopularNamesSection = () => {
               {popularBoyNames.map((name) => {
                 const colors = colorMap[name.color];
                 return (
-                  <div
+                  <Link
                     key={name.slug}
-                    className="block p-3 rounded-lg border border-gray-200 bg-white"
+                    href={`/names/${name.religion.toLowerCase()}/${name.slug}`}
+                    className="block p-3 rounded-lg border border-gray-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1 min-w-0">
@@ -102,7 +104,8 @@ const PopularNamesSection = () => {
                         </p>
                       </div>
                     </div>
-                  </div>
+                    <div className="mt-4 text-sm font-semibold text-blue-600">View details</div>
+                  </Link>
                 );
               })}
             </div>
@@ -127,9 +130,10 @@ const PopularNamesSection = () => {
               {popularGirlNames.map((name) => {
                 const colors = colorMap[name.color];
                 return (
-                  <div
+                  <Link
                     key={name.slug}
-                    className="block p-3 rounded-lg border border-gray-200 bg-white"
+                    href={`/names/${name.religion.toLowerCase()}/${name.slug}`}
+                    className="block p-3 rounded-lg border border-gray-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1 min-w-0">
@@ -146,7 +150,8 @@ const PopularNamesSection = () => {
                         </p>
                       </div>
                     </div>
-                  </div>
+                    <div className="mt-4 text-sm font-semibold text-blue-600">View details</div>
+                  </Link>
                 );
               })}
             </div>
