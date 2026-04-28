@@ -14,6 +14,39 @@ import { AppProvider } from "@/contexts/AppContext";
 import LoadingWrapper from "@/components/LoadingAnimation/LoadingWrapper";
 import { Suspense } from 'react';
 
+const SW_UNREGISTER_SCRIPT = `
+  (function() {
+    if (typeof navigator === 'undefined' || !('serviceWorker' in navigator) || typeof window === 'undefined') return;
+    const reloadFlag = 'nameverse-sw-unregistered';
+    if (sessionStorage.getItem(reloadFlag)) return;
+
+    navigator.serviceWorker.getRegistrations()
+      .then((registrations) => {
+        if (!registrations || registrations.length === 0) return false;
+
+        const unregisterPromises = registrations.map((registration) =>
+          registration.unregister().catch(() => false)
+        );
+
+        return Promise.all(unregisterPromises)
+          .then(() => {
+            if (!('caches' in window)) return true;
+            return caches.keys()
+              .then((cacheNames) => Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName))))
+              .catch(() => {})
+              .then(() => true);
+          });
+      })
+      .then((cleared) => {
+        if (cleared) {
+          sessionStorage.setItem(reloadFlag, '1');
+          window.location.reload();
+        }
+      })
+      .catch(() => {});
+  })();
+`;
+
 // Use environment variable or default - will be overridden client-side if needed
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://nameverse.vercel.app";
 
@@ -105,6 +138,7 @@ export default function RootLayout({ children }) {
         <meta name="content-language" content="en" />
         <meta name="theme-color" content="#4F46E5" />
         <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="google-site-verification" content="jh5i4wtunzVG-X6hSWFzKR3WpCzK4iI1N2SWr3NoGJs" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-title" content="NameVerse" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -139,6 +173,9 @@ export default function RootLayout({ children }) {
             items: [],
           }}
         />
+        <Script id="sw-unregister" strategy="beforeInteractive">
+          {SW_UNREGISTER_SCRIPT}
+        </Script>
         {/* Ahrefs analytics script */}
         <Script
           src="https://analytics.ahrefs.com/analytics.js"
