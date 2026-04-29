@@ -9,6 +9,34 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.a
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
 const STATIC_CATEGORIES = ['modern', 'traditional', 'nature', 'religious', 'classical', 'unique'];
 
+// Enforce static rendering + ISR for SEO optimization
+export const dynamic = 'force-static';
+export const revalidate = 86400; // 24 hours
+
+// Pre-generate first page of each category for fast initial loads
+export async function generateStaticParams() {
+  const religions = ['islamic', 'christian', 'hindu'];
+  const categories = STATIC_CATEGORIES;
+  
+  const params = [];
+  for (const religion of religions) {
+    try {
+      const filters = await fetchFilters(religion);
+      const availableCategories = filters.categories?.map(c => String(c).trim()).filter(Boolean) || categories;
+      
+      for (const category of availableCategories) {
+        params.push({ religion, category, page: '1' });
+      }
+    } catch (error) {
+      for (const category of categories) {
+        params.push({ religion, category, page: '1' });
+      }
+    }
+  }
+  
+  return params;
+}
+
 function resolveCategory(category, availableCategories) {
   if (!category) return 'modern';
   const normalized = category.toString().trim().toLowerCase();

@@ -1,10 +1,28 @@
-export const dynamic = 'force-dynamic';
 export const dynamicParams = true;
+
+// Enforce static rendering + ISR for SEO optimization
+export const dynamic = 'force-static';
+export const revalidate = 86400; // 24 hours
 
 import { validateMetaTitle, validateMetaDescription, generateCanonicalUrl } from '@/lib/seo/meta-helpers';
 import LetterNamesClient from '@/components/names/LetterNamesClient';
 
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
+const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+// Pre-generate first page for each letter (A-Z) for all religions
+export async function generateStaticParams() {
+  const religions = ['islamic', 'christian', 'hindu'];
+  
+  const params = [];
+  for (const religion of religions) {
+    for (const letter of ALPHABET) {
+      params.push({ religion, letter, page: '1' });
+    }
+  }
+  
+  return params;
+}
 
 function normalizeReligion(religion) {
   if (!religion || typeof religion !== 'string') return null;

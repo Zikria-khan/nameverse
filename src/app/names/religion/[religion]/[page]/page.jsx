@@ -11,6 +11,18 @@ const RELIGION_LABELS = {
   hindu: 'Hindu',
 };
 
+// Enforce static rendering + ISR for SEO optimization
+export const dynamic = 'force-static';
+export const revalidate = 86400; // 24 hours
+
+// Pre-generate first page for each religion at build time
+export async function generateStaticParams() {
+  return ['islamic', 'christian', 'hindu'].map(religion => ({
+    religion,
+    page: '1',
+  }));
+}
+
 function normalizeReligion(religion) {
   if (!religion || typeof religion !== 'string') return null;
   const normalized = religion.toLowerCase();

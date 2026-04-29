@@ -33,42 +33,46 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
-  // Headers for Performance
-  async headers() {
-    return [
-      {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'X-DNS-Prefetch-Control',
-            value: 'on'
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff'
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN'
-          },
-          {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block'
-          },
-          {
-            key: 'Content-Security-Policy',
-            value: "default-src 'self' https: data:; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://analytics.ahrefs.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; connect-src 'self' https://analytics.ahrefs.com https://name-meaning-site-backend.vercel.app; font-src 'self' data:; frame-ancestors 'self'; object-src 'none'; base-uri 'self';",
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin'
-          },
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=0, s-maxage=0, must-revalidate',
-          },
-        ],
-      },
+   // Headers for Performance & Edge Caching
+   async headers() {
+     return [
+       {
+         source: '/:path*',
+         headers: [
+           {
+             key: 'X-DNS-Prefetch-Control',
+             value: 'on'
+           },
+           {
+             key: 'X-Content-Type-Options',
+             value: 'nosniff'
+           },
+           {
+             key: 'X-Frame-Options',
+             value: 'SAMEORIGIN'
+           },
+           {
+             key: 'X-XSS-Protection',
+             value: '1; mode=block'
+           },
+           {
+             key: 'Content-Security-Policy',
+             value: "default-src 'self' https: data:; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://analytics.ahrefs.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; connect-src 'self' https://analytics.ahrefs.com https://name-meaning-site-backend.vercel.app; font-src 'self' data:; frame-ancestors 'self'; object-src 'none'; base-uri 'self';",
+           },
+           {
+             key: 'Referrer-Policy',
+             value: 'strict-origin-when-cross-origin'
+           },
+           // Optimized for Edge Caching & ISR
+           // max-age=0 ensures browsers always revalidate
+           // s-maxage=300 allows CDN to cache for 5 minutes (reduces origin load)
+           // stale-while-revalidate=86400 serves stale during revalidation (24h)
+           {
+             key: 'Cache-Control',
+             value: 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400',
+           },
+         ],
+       },
       {
         source: '/_next/data/:path*',
         headers: [
