@@ -73,7 +73,6 @@ export async function generateStaticParams() {
   return popular.map((term) => ({ term: encodeURIComponent(term) }));
 }
 
-export const revalidate = 86400; // 24 hours ISR (Search terms are mostly stable)
 
 // ---------------- Main Search Page ----------------
 export default async function SearchPage({ params }) {
