@@ -9,37 +9,8 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.a
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
 const STATIC_ORIGINS = ['arabic', 'persian', 'turkish', 'indian', 'english', 'other'];
 
-// Enforce static rendering + ISR for SEO optimization
-export const dynamic = 'force-static';
-export const revalidate = 86400; // 24 hours
-
-// Pre-generate static params for common origin+page combinations
-// This pre-builds the first page of each origin for faster initial loads
-export async function generateStaticParams() {
-  const religions = ['islamic', 'christian', 'hindu'];
-  const origins = STATIC_ORIGINS;
-  
-  const params = [];
-  for (const religion of religions) {
-    // Fetch filters to get actual origins
-    try {
-      const filters = await fetchFilters(religion);
-      const availableOrigins = filters.origins?.map(o => String(o).trim()).filter(Boolean) || origins;
-      
-      for (const origin of availableOrigins) {
-        // Generate first page as static
-        params.push({ religion, origin, page: '1' });
-      }
-    } catch (error) {
-      // Fallback to static origins
-      for (const origin of origins) {
-        params.push({ religion, origin, page: '1' });
-      }
-    }
-  }
-  
-  return params;
-}
+// Use dynamic rendering to avoid static generation for pagination pages
+export const dynamic = 'force-dynamic';
 
 function resolveOrigin(origin, availableOrigins) {
   if (!origin) return 'arabic';

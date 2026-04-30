@@ -6,9 +6,8 @@ import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpe
 
 const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
-// Enforce static rendering + ISR for SEO optimization
-export const dynamic = 'force-static';
-export const revalidate = 86400; // 24 hours
+// Use dynamic rendering to avoid static generation for search terms
+export const dynamic = 'force-dynamic';
 
 // Fetch search results from API - Cached for single-request deduplication
 const fetchSearchResults = cache(async (term) => {
