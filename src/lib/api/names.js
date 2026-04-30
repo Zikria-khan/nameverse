@@ -45,10 +45,8 @@ export const fetchFilters = async (religion) => {
       };
     }
 
-    console.log('🔍 fetchFilters called for religion:', religion);
     const normalizedReligion = normalizeReligion(religion);
     const { data } = await apiClient.get(`/api/v1/names/${normalizedReligion}/filters`);
-    console.log('📦 Raw API response for filters:', data);
 
     if (data.success && data.data) {
       const result = {
@@ -63,7 +61,6 @@ export const fetchFilters = async (religion) => {
         lucky_stones: data.data.lucky_stones || [],
         totalNames: data.data.total_names || 0,
       };
-      console.log('📦 Processed filters result:', result);
       return result;
     }
 
@@ -484,7 +481,6 @@ export async function fetchNames(options = {}) {
       };
     }
 
-    console.log('🔍 fetchNames called with:', { religion: normalizedReligion, page, limit, sort, ...rest });
 
     const params = {
       page,
@@ -513,7 +509,6 @@ export async function fetchNames(options = {}) {
 
     const { data } = await apiClient.get(`/api/v1/names/${normalizedReligion}`, { params });
 
-    console.log('📦 Raw API response for names:', data);
 
     const result = {
       data: data.data || data.names || [],
@@ -526,7 +521,6 @@ export async function fetchNames(options = {}) {
       success: data.success !== false,
     };
 
-    console.log('📦 Processed names result:', result);
     return result;
   } catch (error) {
     return {
@@ -572,7 +566,6 @@ export async function fetchNamesWithAdvancedFilters(options = {}) {
       };
     }
 
-    console.log('🔍 fetchNamesWithAdvancedFilters called with:', {
       religion: normalizedReligion, page, limit, sort, gender, origin, language, category, theme, luckyDay, luckyColor, alphabet, luckyStone, ...rest
     });
 
@@ -605,7 +598,6 @@ export async function fetchNamesWithAdvancedFilters(options = {}) {
 
     const { data } = await apiClient.get(`/api/v1/names/${normalizedReligion}`, { params });
 
-    console.log('📦 Raw API response for advanced filtered names:', data);
 
     const result = {
       data: data.data || data.names || [],
@@ -618,7 +610,6 @@ export async function fetchNamesWithAdvancedFilters(options = {}) {
       success: data.success !== false,
     };
 
-    console.log('📦 Processed advanced filtered names result:', result);
     return result;
   } catch (error) {
     return {
@@ -646,10 +637,8 @@ export async function fetchRelatedNames(religion, slug) {
       };
     }
 
-    console.log('🔍 fetchRelatedNames called for:', { religion, slug });
     const { data } = await apiClient.get(`/api/names/${religion}/${slug}/related`);
 
-    console.log('📦 Raw API response for related names:', data);
 
     const result = {
       data: data.data || data.names || [],
@@ -657,7 +646,6 @@ export async function fetchRelatedNames(religion, slug) {
       success: data.success !== false,
     };
 
-    console.log('📦 Processed related names result:', result);
     return result;
   } catch (error) {
     return {
@@ -685,10 +673,8 @@ export async function fetchSimilarNames(religion, slug) {
       };
     }
 
-    console.log('🔍 fetchSimilarNames called for:', { religion, slug });
     const { data } = await apiClient.get(`/api/names/${religion}/${slug}/similar`);
 
-    console.log('📦 Raw API response for similar names:', data);
 
     const result = {
       data: data.data || data.names || [],
@@ -696,7 +682,6 @@ export async function fetchSimilarNames(religion, slug) {
       success: data.success !== false,
     };
 
-    console.log('📦 Processed similar names result:', result);
     return result;
   } catch (error) {
     return {

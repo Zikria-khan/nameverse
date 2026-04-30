@@ -82,7 +82,6 @@ class APITester {
     
     
     
-    console.log(
       `Success Rate: ${((this.results.passed / this.results.total) * 100).toFixed(2)}%\n`
     );
   }

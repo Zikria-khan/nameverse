@@ -29,7 +29,6 @@ const UniversalSearch = () => {
       try {
         setRecentSearches(JSON.parse(saved).slice(0, 5));
       } catch (e) {
-        console.error('Failed to load recent searches', e);
       }
     }
   }, []);
@@ -102,7 +101,6 @@ const UniversalSearch = () => {
         setError('No results found. Try different keywords.');
       }
     } catch (err) {
-      console.error('Search error:', err);
       setError('Connection error. Please check your internet.');
       setNameResults([]);
       setArticleResults([]);

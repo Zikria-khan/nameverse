@@ -128,7 +128,6 @@ export default async function CategoryNamesPage({ params }) {
     pagination = response.pagination || { totalPages: 1, totalCount: 0 };
     success = response.success || false;
   } catch (error) {
-    console.error('Error fetching names:', error);
     success = false;
   }
 

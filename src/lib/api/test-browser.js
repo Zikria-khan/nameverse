@@ -180,7 +180,6 @@ export async function testAllEndpoints(options = { verbose: true }) {
  * @returns {Promise<boolean>} Success status
  */
 export async function quickTest() {
-  console.log('🚀 Running quick API test...\n');
 
   try {
     // Test 1: Health
@@ -214,7 +213,6 @@ export async function quickTest() {
  * @returns {Promise<Object>} Test result
  */
 export async function testEndpoint(endpoint, params = {}) {
-  console.log(`🧪 Testing ${endpoint}...`);
 
   const tests = {
     health: async () => {
@@ -264,7 +262,6 @@ if (typeof window !== 'undefined') {
     clearCache,
     getCacheStats,
   };
-  console.log('💡 API Testing utilities loaded. Use window.testAPI.quick() to run a quick test.');
 }
 
 const testAPI = {

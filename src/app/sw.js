@@ -9,12 +9,10 @@ export default function SWRegister() {
         .then((registrations) => {
           registrations.forEach((registration) => {
             registration.unregister().catch((error) => {
-              console.error('Failed to unregister service worker:', error);
             });
           });
         })
         .catch((error) => {
-          console.error('Error fetching service worker registrations:', error);
         });
     }
 
@@ -22,7 +20,6 @@ export default function SWRegister() {
       caches.keys()
         .then((cacheNames) => Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName))))
         .catch((error) => {
-          console.error('Failed to clear caches:', error);
         });
     }
   }, []);

@@ -22,7 +22,6 @@ const fetchSearchResults = cache(async (term) => {
       totalResults: names.length,
     };
   } catch (error) {
-    console.error('Search fetch error:', error);
     return { names: [], totalNames: 0, totalResults: 0 };
   }
 });

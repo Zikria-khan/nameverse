@@ -14,7 +14,6 @@ self.addEventListener('install', (event) => {
         return cache.addAll(urlsToCache);
       })
       .catch((error) => {
-        console.warn('Failed to cache initial URLs:', error);
       })
   );
   self.skipWaiting();

@@ -73,7 +73,6 @@ const UniversalSearch = () => {
         setError('No results found. Try different keywords.');
       }
     } catch (err) {
-      console.error('Search error:', err);
       setError('Connection error. Please check your internet.');
       setNameResults([]);
       setArticleResults([]);

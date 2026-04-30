@@ -47,7 +47,6 @@ export default function GlobalSearchClient() {
           setResults({ names: [], total: 0 });
         }
       } catch (error) {
-        console.error('Search error:', error);
         toast.error('Search failed. Please try again.');
         setResults({ names: [], total: 0 });
       } finally {

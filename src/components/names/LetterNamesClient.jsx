@@ -44,7 +44,6 @@ export default function LetterNamesClient({ selectedReligion, letter, page }) {
           setError('Failed to load names. Please try a different letter or refresh the page.');
         }
       } catch (err) {
-        console.error('Error fetching names:', err);
         setError(
           err?.message && typeof err.message === 'string'
             ? err.message

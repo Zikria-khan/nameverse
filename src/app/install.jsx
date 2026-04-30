@@ -23,7 +23,6 @@ export default function AppInstallPopup() {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
     const choice = await deferredPrompt.userChoice;
-    console.log("User choice:", choice);
     setShowPopup(false);
   };
 

@@ -18,7 +18,6 @@ try {
     .sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate));
   latestArticles = sortedPosts.slice(0, 3);
 } catch (error) {
-  console.error('Error reading blog posts:', error);
 }
 
 const homepageStructuredData = {

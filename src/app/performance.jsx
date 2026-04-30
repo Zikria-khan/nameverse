@@ -14,7 +14,6 @@ export default function PerformanceInit() {
       // Log performance metrics in development
       const observer = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
-          console.log('Performance Entry:', entry.name, entry.entryType, entry.startTime, entry.duration);
         }
       });
       

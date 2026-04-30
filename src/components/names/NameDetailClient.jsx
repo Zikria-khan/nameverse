@@ -219,7 +219,6 @@ export default function NameDetailClient({ data, initialLanguage }) {
       const favorites = JSON.parse(localStorage.getItem('favoriteNames') || '[]')
       setIsFavorite(favorites.includes(data.slug || data.name.toLowerCase()))
     } catch (error) {
-      console.error('Error loading favorites:', error)
     }
   }, [data, mounted])
 
@@ -239,7 +238,6 @@ export default function NameDetailClient({ data, initialLanguage }) {
         setIsFavorite(true)
       }
     } catch (error) {
-      console.error('Error toggling favorite:', error)
     }
   }, [data])
 
@@ -259,7 +257,6 @@ export default function NameDetailClient({ data, initialLanguage }) {
       }
     } catch (error) {
       if (error.name !== 'AbortError') {
-        console.error('Error sharing:', error)
       }
     }
   }, [data])
@@ -271,7 +268,6 @@ export default function NameDetailClient({ data, initialLanguage }) {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (error) {
-      console.error('Error copying:', error)
     }
   }, [data.name])
 

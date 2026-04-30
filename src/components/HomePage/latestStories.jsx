@@ -32,7 +32,6 @@ export default function ArticleExplorer({ embedded = false }) {
       setCategories(uniqueCats);
       setSelected("All Categories");
     } catch (error) {
-      console.error("Error loading initial data:", error);
     } finally {
       setIsLoading(false);
     }
@@ -51,7 +50,6 @@ export default function ArticleExplorer({ embedded = false }) {
         setArticles(data);
       }
     } catch (error) {
-      console.error("Error loading category:", error);
     } finally {
       setIsLoading(false);
     }
@@ -60,7 +58,6 @@ export default function ArticleExplorer({ embedded = false }) {
   const handleSearch = async (query) => {
     try {
       setIsLoading(true);
-      console.log("Searching for:", query); // Debug log
       
       if (!query || query.trim() === "") {
         // If empty search, reload all articles
@@ -69,12 +66,10 @@ export default function ArticleExplorer({ embedded = false }) {
         setSelected("All Categories");
       } else {
         const res = await searchArticles(query);
-        console.log("Search results:", res); // Debug log
         setArticles(res);
         setSelected(`Search: "${query}"`);
       }
     } catch (error) {
-      console.error("Error searching:", error);
     } finally {
       setIsLoading(false);
     }
