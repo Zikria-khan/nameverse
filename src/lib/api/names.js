@@ -36,7 +36,6 @@ const normalizeReligion = (religion) => {
 export const fetchFilters = async (religion) => {
   try {
     if (!religion) {
-      // Religion is required for fetching filters
       return {
         genders: [],
         origins: [],
@@ -47,6 +46,23 @@ export const fetchFilters = async (religion) => {
 
     const normalizedReligion = normalizeReligion(religion);
     const { data } = await apiClient.get(`/api/v1/names/${normalizedReligion}/filters`);
+
+    // Handle backend error responses (e.g., cacheKey not defined)
+    if (data && !data.success && data.message?.includes('cacheKey')) {
+      return {
+        genders: [],
+        origins: [],
+        letters: [],
+        categories: [],
+        themes: [],
+        languages: [],
+        lucky_days: [],
+        lucky_colors: [],
+        lucky_stones: [],
+        totalNames: 0,
+        error: data.message,
+      };
+    }
 
     if (data.success && data.data) {
       const result = {
@@ -71,7 +87,6 @@ export const fetchFilters = async (religion) => {
       totalNames: 0,
     };
   } catch (error) {
-    // Error fetching filters
     return {
       genders: [],
       origins: [],
@@ -79,8 +94,35 @@ export const fetchFilters = async (religion) => {
       totalNames: 0,
     };
   }
-};
+}
+/**
+ * Legacy: Fetch filters using old endpoint
+ * Backend: GET /api/religion/:religion/filters
+ * @deprecated Use fetchFilters() instead
+ */
+export async function fetchFiltersLegacy(religion) {
+  try {
+    const normalizedReligion = normalizeReligion(religion);
+    if (!normalizedReligion) {
+      return { genders: [], origins: [], firstLetters: [], totalNames: 0 };
+    }
 
+    const { data } = await apiClient.get(`/api/religion/${normalizedReligion}/filters`);
+
+    if (data.success && data.filters) {
+      return {
+        genders: data.filters.genders || [],
+        origins: data.filters.origins || [],
+        firstLetters: data.filters.firstLetters || [],
+        totalNames: data.totalNames || 0,
+      };
+    }
+
+    return { genders: [], origins: [], firstLetters: [], totalNames: 0 };
+  } catch (error) {
+    return { genders: [], origins: [], firstLetters: [], totalNames: 0 };
+  }
+}
 
 /**
  * Legacy: Fetch names using old endpoint
@@ -113,35 +155,6 @@ export async function fetchNamesLegacy(params = {}) {
       pagination: { page: 1, limit: 50, totalCount: 0, totalPages: 0 },
       success: false,
     };
-  }
-}
-
-/**
- * Legacy: Fetch filters using old endpoint
- * Backend: GET /api/religion/:religion/filters
- * @deprecated Use fetchFilters() instead
- */
-export async function fetchFiltersLegacy(religion) {
-  try {
-    const normalizedReligion = normalizeReligion(religion);
-    if (!normalizedReligion) {
-      return { genders: [], origins: [], firstLetters: [], totalNames: 0 };
-    }
-
-    const { data } = await apiClient.get(`/api/religion/${normalizedReligion}/filters`);
-
-    if (data.success && data.filters) {
-      return {
-        genders: data.filters.genders || [],
-        origins: data.filters.origins || [],
-        firstLetters: data.filters.firstLetters || [],
-        totalNames: data.totalNames || 0,
-      };
-    }
-
-    return { genders: [], origins: [], firstLetters: [], totalNames: 0 };
-  } catch (error) {
-    return { genders: [], origins: [], firstLetters: [], totalNames: 0 };
   }
 }
 
@@ -206,6 +219,24 @@ export async function fetchNamesByLetter(letter, params = {}) {
     const { data } = await apiClient.get(`/api/v1/names/${normalizedReligion}`, {
       params: requestParams,
     });
+
+    // Handle backend error responses (e.g., cacheKey not defined)
+    if (data && !data.success && data.message?.includes('cacheKey')) {
+      // Backend error - return empty result with success=false
+      return {
+        data: [],
+        pagination: {
+          page,
+          limit,
+          totalCount: 0,
+          totalPages: 0,
+        },
+        letter: String(letter || '').toLowerCase(),
+        religion: normalizedReligion,
+        success: false,
+        error: data.message,
+      };
+    }
 
     return {
       data: data.data || data.names || [],
@@ -481,7 +512,6 @@ export async function fetchNames(options = {}) {
       };
     }
 
-
     const params = {
       page,
       limit,
@@ -509,6 +539,15 @@ export async function fetchNames(options = {}) {
 
     const { data } = await apiClient.get(`/api/v1/names/${normalizedReligion}`, { params });
 
+    // Handle backend error responses (e.g., cacheKey not defined)
+    if (data && !data.success && data.message?.includes('cacheKey')) {
+      return {
+        data: [],
+        pagination: { page, limit, totalCount: 0, totalPages: 0 },
+        success: false,
+        error: data.message,
+      };
+    }
 
     const result = {
       data: data.data || data.names || [],
@@ -595,6 +634,15 @@ export async function fetchNamesWithAdvancedFilters(options = {}) {
 
     const { data } = await apiClient.get(`/api/v1/names/${normalizedReligion}`, { params });
 
+    // Handle backend error responses (e.g., cacheKey not defined)
+    if (data && !data.success && data.message?.includes('cacheKey')) {
+      return {
+        data: [],
+        pagination: { page, limit, totalCount: 0, totalPages: 0 },
+        success: false,
+        error: data.message,
+      };
+    }
 
     const result = {
       data: data.data || data.names || [],

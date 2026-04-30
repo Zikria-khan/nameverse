@@ -220,7 +220,7 @@ apiClient.interceptors.request.use(
  * - Automatic retry with exponential backoff
  * - Performance logging
  */
-apiClient.interceptors.response.use(
+  apiClient.interceptors.response.use(
   (response) => {
     const { requestId, metadata, method, url, params, __resolveDedup, __rejectDedup } = response.config;
     activeRequests.delete(requestId);
@@ -234,6 +234,24 @@ apiClient.interceptors.response.use(
       // Create error marker on response for calling code to check
       response.__isError = true;
       response.__errorMessage = response.data?.error || response.data?.message || 'Request failed';
+
+      // Special handling for backend cacheKey errors - try to serve from cache
+      if (method === 'get' && response.data?.message?.includes('cacheKey')) {
+        const cacheKey = `${url}?${JSON.stringify(params || {})}`;
+        const cached = requestCache.get(cacheKey);
+        if (cached) {
+          console.warn(`Backend cache error, serving stale cached data for: ${cacheKey}`);
+          return {
+            config,
+            data: cached,
+            status: 200,
+            statusText: 'OK (cached)',
+            headers: response.headers,
+            __fromCache: true,
+            __cacheStale: true,
+          };
+        }
+      }
 
       // Reject deduplicated requests
       if (__rejectDedup) {
@@ -286,7 +304,7 @@ apiClient.interceptors.response.use(
     }
 
     const { config } = error;
-    const { requestId, __rejectDedup } = config || {};
+    const { requestId, __rejectDedup, url, params, method } = config || {};
 
     if (requestId) {
       activeRequests.delete(requestId);
@@ -295,6 +313,24 @@ apiClient.interceptors.response.use(
     // Reject deduplicated requests
     if (__rejectDedup) {
       __rejectDedup(error);
+    }
+
+    // Try to serve stale cache on network errors for GET requests
+    if (method === 'get' && !error.response) {
+      const cacheKey = `${url}?${JSON.stringify(params || {})}`;
+      const cached = requestCache.get(cacheKey);
+      if (cached) {
+        console.warn(`Network error, serving stale cached data for: ${cacheKey}`);
+        return {
+          config,
+          data: cached,
+          status: 200,
+          statusText: 'OK (cached - offline)',
+          headers: {},
+          __fromCache: true,
+          __cacheStale: true,
+        };
+      }
     }
 
     // Network error handling

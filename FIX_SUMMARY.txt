@@ -1,0 +1,63 @@
+# Backend cacheKey Error Fix - Summary
+
+## Issue
+The frontend was receiving 500 Internal Server Error responses from the backend API with the message "cacheKey is not defined" when querying name data from `/api/v1/names/islamic` and other API endpoints.
+
+## Root Cause
+The backend API (separately deployed at `name-meaning-site-backend.vercel.app`) has a bug where the `cacheKey` variable is referenced without being properly defined in server-side code, causing a ReferenceError that crashes the API request.
+
+## Solution
+Implemented graceful error handling in the frontend to mitigate backend failures:
+
+### 1. Enhanced API Client (`src/lib/api/client.js`)
+- **Response Interceptor**: Detects backend cacheKey errors and serves stale cached data if available
+- **Error Interceptor**: Falls back to cached data on network errors
+- Maintains 200 status code with cached data instead of failing with 500 error
+- Provides console warnings when serving stale cache
+
+### 2. Enhanced API Functions (`src/lib/api/names.js`)
+Updated all API functions to handle backend errors gracefully:
+- `fetchFilters()`
+- `fetchNames()` 
+- `fetchNamesByLetter()`
+- `fetchNamesWithAdvancedFilters()`
+
+Each function now:
+- Checks for `cacheKey` in backend error messages
+- Returns empty results with `success: false` instead of crashing
+- Preserves proper function signature and return structure
+- Provides error message for debugging
+
+## Benefits
+✅ No more 500 errors shown to users  
+✅ Cached data served as fallback when available  
+✅ Graceful degradation instead of crashes  
+✅ Offline support with automatic cache fallback  
+✅ Backward compatible - no breaking changes  
+✅ Users see empty states instead of error pages  
+
+## Limitations
+⚠️ Frontend-only fix - backend bug still exists  
+⚠️ Empty results when backend fails and no cache available  
+⚠️ First-time visits (no cache) affected if backend is down  
+
+## Recommendation
+While this fix provides immediate relief, the backend team should:
+1. Fix the `cacheKey` variable declaration bug
+2. Add proper error handling to prevent ReferenceErrors
+3. Implement health checks and monitoring
+4. Add alerting for cache-related errors
+
+## Files Modified
+- `src/lib/api/client.js` - Enhanced interceptors
+- `src/lib/api/names.js` - Added error handling to API functions
+
+## Testing
+✅ All ESLint checks pass  
+✅ Next.js build completes successfully  
+✅ API functions handle cacheKey errors correctly  
+✅ Network error fallback works  
+✅ Cached data is served when available  
+
+## Status
+✅ Ready for deployment - provides immediate user benefit while backend fix is developed
