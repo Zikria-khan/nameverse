@@ -566,9 +566,6 @@ export async function fetchNamesWithAdvancedFilters(options = {}) {
       };
     }
 
-      religion: normalizedReligion, page, limit, sort, gender, origin, language, category, theme, luckyDay, luckyColor, alphabet, luckyStone, ...rest
-    });
-
     const params = {
       page,
       limit,

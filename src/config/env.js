@@ -17,8 +17,7 @@ function validateEnv() {
 
   // Only warn in production build, not during development
   if (missing.length > 0 && process.env.NODE_ENV === 'production' && process.env.NEXT_PHASE === 'phase-production-build') {
-      `Warning: Missing environment variables: ${missing.join(', ')}. Using defaults.`
-    );
+    console.warn(`Warning: Missing environment variables: ${missing.join(', ')}. Using defaults.`);
   }
 }
 
