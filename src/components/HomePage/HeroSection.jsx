@@ -3,6 +3,13 @@ import SearchBar from './SearchSection';
 import Link from 'next/link';
 
 const HeroSection = () => {
+  // Baby background image for homepage - optimized for SEO and visual appeal
+  const backgroundImage = {
+    url: '/img1.png',
+    alt: 'Cute baby - NameVerse baby names platform',
+    overlay: 'bg-gradient-to-b from-blue-50/95 via-white/90 to-white'
+  };
+
   const categories = [
     {
       id: 'islamic',
@@ -50,8 +57,28 @@ const HeroSection = () => {
   ];
 
   return (
-    <section className="w-full bg-gradient-to-b from-blue-50 via-white to-white py-8 sm:py-10 md:py-12">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+    <section 
+      className="relative w-full py-8 sm:py-10 md:py-12 overflow-hidden" 
+      itemScope 
+      itemType="https://schema.org/WebPageElement"
+      aria-label="NameVerse Hero Section - Baby Names Platform"
+    >
+      {/* Background baby image with overlay */}
+      <div className="absolute inset-0 z-0">
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
+          style={{ 
+            backgroundImage: `url(${backgroundImage.url})`,
+            filter: 'blur(3px)'
+          }}
+          role="img"
+          aria-label={backgroundImage.alt}
+        />
+        <div className={`absolute inset-0 ${backgroundImage.overlay}`} />
+      </div>
+      
+      {/* Content */}
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6">
         <div className="space-y-8 sm:space-y-10">
 
           {/* Main heading */}
@@ -63,21 +90,24 @@ const HeroSection = () => {
               </span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
-              Baby Names 2026 — 60,000+ Islamic, Hindu & Christian Names
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight" itemProp="name">
+              NameVerse — 60,000+ Baby Names with Meanings | Islamic, Hindu & Christian Names 2026
             </h1>
 
-            <p className="mt-4 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2 leading-relaxed">
-              Discover 60,000+ verified baby names with meanings. Find Quranic, Biblical, Sanskrit & modern names for boys and girls in English, Urdu, Arabic & Hindi. A-Z listings with origins & numerology.
+            <p className="mt-4 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2 leading-relaxed" itemProp="description">
+              Discover 60,000+ verified baby names with meanings on NameVerse. Find Quranic, Biblical, Sanskrit & modern names for boys and girls in English, Urdu, Arabic & Hindi. A-Z listings with origins & numerology on the top baby names platform.
             </p>
             <p className="mt-4 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2 leading-relaxed">
-              Search thousands of meaningful baby names by faith, language, and origin. NameVerse helps families choose authentic Islamic, Hindu, and Christian names with trusted meanings, cultural notes, and pronunciation guidance.
+              Search thousands of meaningful baby names by faith, language, and origin. NameVerse helps families choose authentic Islamic, Hindu, and Christian names with trusted meanings, cultural notes, and pronunciation guidance. Use NameVerse baby name search to find the perfect name.
             </p>
             <p className="mt-4 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2 leading-relaxed">
-              NameVerse is the leading baby names brand and baby name search engine for parents who want the best baby names website. Find top NameVerse baby names, trusted name meanings, and expert-reviewed name ideas for every tradition.
+              NameVerse is the leading baby names brand and baby name search engine for parents who want the best baby names website. Find top NameVerse baby names, trusted name meanings, popular baby names 2026, unique baby names, and expert-reviewed name ideas for every tradition on NameVerse.
             </p>
             <p className="mt-4 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2 leading-relaxed">
-              Use NameVerse to browse authentic baby names by religion, category, origin, letter, or gender. Our homepage is optimized to help you discover names, meaning, cultural context, and pronunciation—all in one powerful NameVerse platform.
+              Use NameVerse to browse authentic baby names by religion, category, origin, letter, or gender. Our NameVerse homepage is optimized to help you discover names, meaning, cultural context, and pronunciation—all in one powerful NameVerse platform. NameVerse offers the best baby names experience.
+            </p>
+            <p className="mt-4 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2 leading-relaxed">
+              Explore NameVerse for Muslim baby names, Hindu baby names with Sanskrit meanings, Christian biblical names, Arabic origin names, and unique baby names. NameVerse provides accurate name meanings in Urdu, Arabic, Hindi, and English for every baby name in our database.
             </p>
           </div>
 
@@ -147,28 +177,39 @@ const HeroSection = () => {
             </div>
           </div>
 
-          {/* Brand keyword content */}
-          <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-8 mt-8 mb-8">
+          {/* Brand keyword content - Enhanced for SEO */}
+          <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-8 mt-8 mb-8" itemScope itemType="https://schema.org/Article">
             <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">
-                Find baby names with NameVerse - Faith-based meanings and cultural accuracy
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3" itemProp="headline">
+                NameVerse - The Best Baby Names Website for Faith-Based Meanings & Cultural Accuracy
               </h2>
-              <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
-                Explore Islamic baby names with Urdu and Arabic meanings, Hindu baby names rooted in Sanskrit and Vedic tradition, and Christian baby names inspired by the Bible. Use NameVerse to search names by religion, gender, origin, meaning, and numerology.
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed" itemProp="description">
+                Explore Islamic baby names with Urdu and Arabic meanings, Hindu baby names rooted in Sanskrit and Vedic tradition, and Christian baby names inspired by the Bible. Use NameVerse to search names by religion, gender, origin, meaning, and numerology. NameVerse is the top baby name search engine.
               </p>
               <p className="text-sm sm:text-base text-gray-600 leading-relaxed mt-3">
-                NameVerse is the ultimate resource for baby names, offering a comprehensive collection of meaningful names from every religion. Whether you're looking for traditional or modern baby names, our platform provides accurate meanings, cultural context, and pronunciation guides to help you choose the perfect name for your child.
+                NameVerse is the ultimate resource for baby names, offering a comprehensive collection of meaningful names from every religion. Whether you're looking for traditional or modern baby names, our NameVerse platform provides accurate meanings, cultural context, and pronunciation guides to help you choose the perfect name for your child.
               </p>
               <p className="text-sm sm:text-base text-gray-600 leading-relaxed mt-3">
-                The NameVerse brand is trusted by parents worldwide as a top baby names website and baby name meaning resource. Our NameVerse name search experience is built to rank for baby names, NameVerse keywords, and the best baby names platform searches.
+                The NameVerse brand is trusted by parents worldwide as the top baby names website and baby name meaning resource. Our NameVerse name search experience is built to rank for baby names, NameVerse keywords, and the best baby names platform searches. NameVerse offers the most comprehensive baby names database.
               </p>
               <p className="text-sm sm:text-base text-gray-600 leading-relaxed mt-3">
-                Browse our NameVerse homepage for baby names, top names lists, and expert recommendations so you can quickly discover the best name ideas for your family.
+                Browse our NameVerse homepage for baby names, top names lists, popular baby names 2026, unique baby names, rare baby names, and expert recommendations so you can quickly discover the best name ideas for your family. NameVerse is the #1 choice for baby name search.
+              </p>
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed mt-3">
+                NameVerse provides Muslim baby names, Quranic names, Arabic names, Hindu names with Sanskrit meanings, Christian biblical names, unisex baby names, gender neutral baby names, and name meanings in Urdu, Arabic, Hindi, and English. Trust NameVerse for authentic baby names.
               </p>
               <div className="mt-4 flex flex-wrap justify-center gap-2 text-sm">
-                <Link href="/names/religion/islamic/1" className="rounded-full bg-emerald-50 text-emerald-700 px-4 py-2 border border-emerald-100 hover:bg-emerald-100 transition">Islamic Names</Link>
-                <Link href="/names/religion/hindu/1" className="rounded-full bg-orange-50 text-orange-700 px-4 py-2 border border-orange-100 hover:bg-orange-100 transition">Hindu Names</Link>
-                <Link href="/names/religion/christian/1" className="rounded-full bg-blue-50 text-blue-700 px-4 py-2 border border-blue-100 hover:bg-blue-100 transition">Christian Names</Link>
+                <Link href="/names/religion/islamic/1" className="rounded-full bg-emerald-50 text-emerald-700 px-4 py-2 border border-emerald-100 hover:bg-emerald-100 transition">Islamic Names on NameVerse</Link>
+                <Link href="/names/religion/hindu/1" className="rounded-full bg-orange-50 text-orange-700 px-4 py-2 border border-orange-100 hover:bg-orange-100 transition">Hindu Names on NameVerse</Link>
+                <Link href="/names/religion/christian/1" className="rounded-full bg-blue-50 text-blue-700 px-4 py-2 border border-blue-100 hover:bg-blue-100 transition">Christian Names on NameVerse</Link>
+              </div>
+              <div className="mt-3 flex flex-wrap justify-center gap-2 text-sm">
+                <Link href="/islamic/boy-names" className="rounded-full bg-emerald-50 text-emerald-700 px-4 py-2 border border-emerald-100 hover:bg-emerald-100 transition">Islamic Boy Names</Link>
+                <Link href="/islamic/girl-names" className="rounded-full bg-emerald-50 text-emerald-700 px-4 py-2 border border-emerald-100 hover:bg-emerald-100 transition">Islamic Girl Names</Link>
+                <Link href="/hindu/boy-names" className="rounded-full bg-orange-50 text-orange-700 px-4 py-2 border border-orange-100 hover:bg-orange-100 transition">Hindu Boy Names</Link>
+                <Link href="/hindu/girl-names" className="rounded-full bg-orange-50 text-orange-700 px-4 py-2 border border-orange-100 hover:bg-orange-100 transition">Hindu Girl Names</Link>
+                <Link href="/christian/boy-names" className="rounded-full bg-blue-50 text-blue-700 px-4 py-2 border border-blue-100 hover:bg-blue-100 transition">Christian Boy Names</Link>
+                <Link href="/christian/girl-names" className="rounded-full bg-blue-50 text-blue-700 px-4 py-2 border border-blue-100 hover:bg-blue-100 transition">Christian Girl Names</Link>
               </div>
             </div>
           </div>
