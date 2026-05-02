@@ -65,19 +65,6 @@ const AuthorityStats = () => {
     }
   ];
 
-  return (
-    <section className="py-12 sm:py-16 bg-white border-b border-gray-200">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        {/* Section Header */}
-        <div className="text-center mb-10">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
-            Why Parents Trust NameVerse — America's #1 Baby Names Website 2026
-          </h2>
-          <p className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto">
-            The world's most comprehensive and accurate baby names database with scholar-verified meanings across Islamic, Hindu, Christian, and global traditions.
-          </p>
-        </div>
-
   const getStatColors = (colorClass) => {
     if (colorClass.includes('emerald')) return { main: '#10b981', light: '#d1fae5' };
     if (colorClass.includes('blue')) return { main: '#3b82f6', light: '#dbeafe' };
