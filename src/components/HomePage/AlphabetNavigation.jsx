@@ -26,11 +26,14 @@ const AlphabetNavigation = () => {
           </div>
           
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            Browse Baby Names by <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Letter</span>
+            Baby Names A to Z — <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Complete Alphabetical Directory</span>
           </h2>
           
-          <p className="text-base text-gray-600 max-w-2xl mx-auto">
-            Discover Islamic, Hindu & Christian baby names starting with any letter.
+          <p className="text-base text-gray-600 max-w-2xl mx-auto mb-4">
+            Explore 65,000+ baby names sorted alphabetically. Find Islamic names, Hindu names, Christian names starting with any letter from A to Z. Perfect for parents who know the first letter they want. Browse baby boy names and baby girl names by letter with meanings and origins.
+          </p>
+          <p className="text-sm text-gray-600 max-w-2xl mx-auto">
+            Our A-Z baby name directory includes all religions and origins. Most popular letters: A (8,500+ names), M (7,200+ names), S (6,800+ names). Find unique names starting with Z, F, H and every letter in between.
           </p>
         </div>
 

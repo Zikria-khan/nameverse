@@ -173,8 +173,21 @@ export default function RootLayout({ children }) {
             items: [],
           }}
         />
-        <Script id="sw-unregister" strategy="beforeInteractive">
-          {SW_UNREGISTER_SCRIPT}
+        {/* ✅ Service Worker Registration - Proper PWA Setup */}
+        <Script id="sw-register" strategy="afterInteractive">
+          {`
+            if ('serviceWorker' in navigator) {
+              window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                  .then(function(registration) {
+                    console.log('SW registered: ', registration);
+                  })
+                  .catch(function(registrationError) {
+                    console.log('SW registration failed: ', registrationError);
+                  });
+              });
+            }
+          `}
         </Script>
         {/* Ahrefs analytics script */}
         <Script

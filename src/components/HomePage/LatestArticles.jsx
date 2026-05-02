@@ -90,6 +90,7 @@ const LatestArticles = ({ articles }) => {
   const generateArticleStructuredData = (article, position) => {
     const colors = categoryColors[article.category] || defaultColors;
     const date = article.publishDate || article.lastUpdated || new Date().toISOString();
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
     
     return {
       '@context': 'https://schema.org',
@@ -108,8 +109,10 @@ const LatestArticles = ({ articles }) => {
           },
           'datePublished': article.publishDate || article.lastUpdated,
           'dateModified': article.lastUpdated,
-          'image': `${process.env.NEXT_PUBLIC_SITE_URL}/api/og?title=${encodeURIComponent(article.title)}`,
-          'url': `${process.env.NEXT_PUBLIC_SITE_URL}/blog/${article.id}`,
+          'image': article.featuredImage
+            ? (article.featuredImage.startsWith('http') ? article.featuredImage : `${siteUrl}${article.featuredImage}`)
+            : `${siteUrl}/api/og?title=${encodeURIComponent(article.title)}`,
+          'url': `${siteUrl}/blog/${article.id}`,
           'publisher': {
             '@type': 'Organization',
             'name': 'NameVerse'
@@ -158,6 +161,10 @@ const LatestArticles = ({ articles }) => {
             {articles.map((article) => {
               const colors = categoryColors[article.category] || defaultColors;
               const truncatedExcerpt = truncateExcerpt(article.excerpt, 120);
+              const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
+              const imageUrl = article.featuredImage
+                ? (article.featuredImage.startsWith('http') ? article.featuredImage : `${siteUrl}${article.featuredImage}`)
+                : `${siteUrl}/api/og?title=${encodeURIComponent(article.title)}`;
               
               return (
                 <Link
@@ -166,56 +173,75 @@ const LatestArticles = ({ articles }) => {
                   className={`group block h-full transition-all duration-300 hover:-translate-y-1`}
                 >
                   <article
-                    className={`flex flex-col h-full p-5 sm:p-6 bg-white rounded-xl border-2 ${colors.border} ${colors.hover} shadow-md hover:shadow-xl transition-all duration-300`}
+                    className={`flex flex-col h-full bg-white rounded-xl border-2 ${colors.border} ${colors.hover} shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden`}
                   >
-                  {/* Category Badge */}
-                  <div className="mb-3">
-                    <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${colors.badge}`}>
-                      {article.category}
-                    </span>
-                  </div>
-
-                  {/* Article Title */}
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
-                    {article.title}
-                  </h3>
-
-                  {/* Excerpt */}
-                  <p className="text-sm text-gray-600 mb-4 flex-1 leading-relaxed line-clamp-3">
-                    {truncatedExcerpt}
-                  </p>
-
-                  {/* Article Meta */}
-                  <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-gray-500 mb-4 border-t border-gray-100 pt-3">
-                    <div className="flex items-center gap-1.5">
-                      <User className="w-3.5 h-3.5" />
-                      <span className="font-medium truncate max-w-[100px] sm:max-w-none">
-                        {article.author}
-                      </span>
-                    </div>
-                    {article.publishDate && (
-                      <div className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5" />
-                        <time dateTime={article.publishDate}>
-                          {new Date(article.publishDate).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric'
-                          })}
-                        </time>
+                    {/* Featured Image */}
+                     <div className="relative h-48 overflow-hidden bg-gray-100">
+                       <img
+                         src={imageUrl}
+                         alt={article.title}
+                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                         loading="eager"
+                         onError={(e) => {
+                           e.target.src = '/logo.png';
+                           e.target.onerror = null;
+                         }}
+                         onLoad={(e) => {
+                           e.target.classList.remove('opacity-0');
+                         }}
+                         style={{ opacity: 0 }}
+                       />
+                       <div className="absolute top-3 left-3">
+                        <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${colors.badge} shadow-sm`}>
+                          {article.category}
+                        </span>
                       </div>
-                    )}
-                    <div className="flex items-center gap-1.5 ml-auto">
-                      <Clock className="w-3.5 h-3.5" />
-                      <span>{article.readTime}</span>
                     </div>
-                  </div>
+                    
+                    {/* Content */}
+                    <div className="p-5 sm:p-6 flex flex-col flex-1">
+                      {/* Article Title */}
+                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
+                        {article.title}
+                      </h3>
 
-                  <div className={`inline-flex items-center justify-center gap-2 w-full py-2.5 sm:py-3 bg-indigo-50 text-indigo-700 text-sm font-semibold rounded-lg`}>
-                    Read Article
-                  </div>
-                </article>
-              </Link>
+                      {/* Excerpt */}
+                      <p className="text-sm text-gray-600 mb-4 flex-1 leading-relaxed line-clamp-3">
+                        {truncatedExcerpt}
+                      </p>
+
+                      {/* Article Meta */}
+                      <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-gray-500 mb-4 border-t border-gray-100 pt-3">
+                        <div className="flex items-center gap-1.5">
+                          <User className="w-3.5 h-3.5" />
+                          <span className="font-medium truncate max-w-[100px] sm:max-w-none">
+                            {article.author}
+                          </span>
+                        </div>
+                        {article.publishDate && (
+                          <div className="flex items-center gap-1.5">
+                            <Calendar className="w-3.5 h-3.5" />
+                            <time dateTime={article.publishDate}>
+                              {new Date(article.publishDate).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric'
+                              })}
+                            </time>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-1.5 ml-auto">
+                          <Clock className="w-3.5 h-3.5" />
+                          <span>{article.readTime}</span>
+                        </div>
+                      </div>
+
+                      <div className={`inline-flex items-center justify-center gap-2 w-full py-2.5 sm:py-3 bg-indigo-50 text-indigo-700 text-sm font-semibold rounded-lg group-hover:bg-indigo-100 transition-colors`}>
+                        Read Article
+                      </div>
+                    </div>
+                  </article>
+                </Link>
               );
             })}
           </div>

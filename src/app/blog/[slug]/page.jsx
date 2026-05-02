@@ -185,6 +185,28 @@ export default async function BlogPostPage({ params }) {
             <p className="text-lg text-gray-600 mb-6">
               {post.excerpt}
             </p>
+
+            {/* Featured Image */}
+            {post.featuredImage && (
+              <div className="relative w-full h-64 md:h-96 mb-8 rounded-xl overflow-hidden bg-gray-100">
+                <img
+                  src={post.featuredImage.startsWith('http') ? post.featuredImage : `${SITE_URL}${post.featuredImage}`}
+                  alt={post.title}
+                  className="w-full h-full object-cover transition-opacity duration-300"
+                  loading="eager"
+                  onError={(e) => {
+                    // Fallback to a placeholder if external image fails
+                    e.target.src = '/logo.png';
+                    e.target.onerror = null; // Prevent infinite loop
+                  }}
+                  onLoad={(e) => {
+                    e.target.classList.remove('opacity-0');
+                  }}
+                  style={{ opacity: 0 }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+              </div>
+            )}
             
             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
               <div className="flex items-center gap-2">

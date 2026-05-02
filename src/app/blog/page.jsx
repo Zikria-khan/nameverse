@@ -50,46 +50,56 @@ export default function BlogPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-8">Featured Guides</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {featuredPosts.map((post) => (
-              <article 
-                key={post.id}
-                className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-200 overflow-hidden"
-              >
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="bg-blue-100 text-blue-700 px-2.5 py-1 rounded text-xs font-medium">
-                      {post.category}
-                    </span>
-                    <span className="bg-amber-100 text-amber-700 px-2.5 py-1 rounded text-xs font-medium">
-                      Featured
-                    </span>
+            {featuredPosts.map((post) => {
+              const imageUrl = post.featuredImage ? `${SITE_URL}${post.featuredImage}` : `${SITE_URL}/api/og?title=${encodeURIComponent(post.title)}`;
+              return (
+                <article 
+                  key={post.id}
+                  className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-200 overflow-hidden"
+                >
+                  <div className="relative h-48 overflow-hidden">
+                    <img
+                      src={imageUrl}
+                      alt={post.title}
+                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                      loading="lazy"
+                    />
+                    <div className="absolute top-3 left-3 flex gap-2">
+                      <span className="bg-blue-100 text-blue-700 px-2.5 py-1 rounded text-xs font-medium">
+                        {post.category}
+                      </span>
+                      <span className="bg-amber-100 text-amber-700 px-2.5 py-1 rounded text-xs font-medium">
+                        Featured
+                      </span>
+                    </div>
                   </div>
-                  
-                  <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
-                    {post.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                    {post.excerpt}
-                  </p>
-                  
-                  <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
-                    <span>{post.author}</span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      {post.readTime}
-                    </span>
+                  <div className="p-6">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
+                      {post.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                      {post.excerpt}
+                    </p>
+                    
+                    <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                      <span>{post.author}</span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {post.readTime}
+                      </span>
+                    </div>
+                    
+                    <Link 
+                      href={`/blog/${post.id}`}
+                      className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium text-sm"
+                    >
+                      Read article
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
                   </div>
-                  
-                  <Link 
-                    href={`/blog/${post.id}`}
-                    className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium text-sm"
-                  >
-                    Read article
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -137,40 +147,51 @@ export default function BlogPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-8">More Articles</h2>
           
           <div className="space-y-4">
-            {recentPosts.map((post) => (
-              <article 
-                key={post.id}
-                className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"
-              >
-                <div className="flex flex-col md:flex-row md:items-center gap-4">
-                  <div className="flex-1">
-                    <span className="bg-gray-100 text-gray-700 px-2.5 py-1 rounded text-xs font-medium">
-                      {post.category}
-                    </span>
-                    <h3 className="text-lg font-bold text-gray-900 mt-2 mb-2">
-                      {post.title}
-                    </h3>
-                    <p className="text-gray-600 text-sm mb-3">
-                      {post.excerpt}
-                    </p>
-                    <div className="flex items-center gap-4 text-xs text-gray-500">
-                      <span>By {post.author}</span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {post.readTime}
-                      </span>
+            {recentPosts.map((post) => {
+              const imageUrl = post.featuredImage ? `${SITE_URL}${post.featuredImage}` : `${SITE_URL}/api/og?title=${encodeURIComponent(post.title)}`;
+              return (
+                <article 
+                  key={post.id}
+                  className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"
+                >
+                  <div className="flex flex-col md:flex-row md:items-center gap-4">
+                    <div className="w-full md:w-48 h-32 flex-shrink-0 overflow-hidden rounded-lg">
+                      <img
+                        src={imageUrl}
+                        alt={post.title}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
                     </div>
+                    <div className="flex-1">
+                      <span className="bg-gray-100 text-gray-700 px-2.5 py-1 rounded text-xs font-medium">
+                        {post.category}
+                      </span>
+                      <h3 className="text-lg font-bold text-gray-900 mt-2 mb-2">
+                        {post.title}
+                      </h3>
+                      <p className="text-gray-600 text-sm mb-3">
+                        {post.excerpt}
+                      </p>
+                      <div className="flex items-center gap-4 text-xs text-gray-500">
+                        <span>By {post.author}</span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {post.readTime}
+                        </span>
+                      </div>
+                    </div>
+                    <Link 
+                      href={`/blog/${post.id}`}
+                      className="flex-shrink-0 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
+                      aria-label={`Read more about ${post.title}`}
+                    >
+                      Read more
+                    </Link>
                   </div>
-                  <Link 
-                    href={`/blog/${post.id}`}
-                    className="flex-shrink-0 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
-                    aria-label={`Read more about ${post.title}`}
-                  >
-                    Read more about {post.title}
-                  </Link>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>

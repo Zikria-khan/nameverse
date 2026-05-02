@@ -37,19 +37,25 @@ const PopularNamesSection = () => {
   return (
     <section className="py-8 sm:py-10 md:py-12 bg-gradient-to-b from-white to-emerald-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        {/* Section Header */}
+        {/* Section Header — High-Intent Keywords */}
         <div className="text-center mb-8 md:mb-10">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full mb-4 shadow-md">
             <Flame className="w-4 h-4 text-white fill-white" />
-            <span className="text-sm font-semibold text-white">Popular Baby Names 2026</span>
+            <span className="text-sm font-semibold text-white">Most Popular Baby Names 2026 — Top 100 Trending Names</span>
           </div>
 
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            Most Popular Baby Names with <span className="bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">Meanings & Origins</span>
+            Popular Baby Names 2026 — Trending Names with Meanings & Origins
           </h2>
-          <p className="text-base text-gray-600 max-w-3xl mx-auto">
-            Discover the most searched Islamic, Hindu & Christian baby names chosen by millions of parents worldwide. Find trending Muslim baby names list, Hindu baby names list, and Christian baby names list with verified meanings.
+          <p className="text-base text-gray-600 max-w-3xl mx-auto mb-4">
+            Discover the most popular baby names for 2026 with verified meanings, origins, and religious significance. Explore trending Islamic baby names list, Hindu baby names list, Christian baby names list, and unique names gaining popularity. Find top boy names and top girl names chosen by 5M+ parents worldwide.
           </p>
+          <div className="flex flex-wrap justify-center gap-2 text-sm">
+            <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full font-medium">Most Popular Names 2026</span>
+            <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full font-medium">Trending Names This Year</span>
+            <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full font-medium">Top Boy & Girl Names</span>
+            <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full font-medium">Popular by Religion</span>
+          </div>
         </div>
 
         {/* Trust Banner */}

@@ -84,10 +84,10 @@ const TableOfContents = () => {
           </div>
 
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            NameVerse <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Table of Contents</span>
+            NameVerse <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Complete Navigation Guide</span>
           </h2>
-          <p className="text-base text-gray-600 max-w-3xl mx-auto">
-            Quickly navigate through NameVerse's comprehensive baby names database. Find Islamic, Hindu, and Christian names with verified meanings, origins, and cultural context.
+          <p className="text-base text-gray-600 max-w-3xl mx-auto mb-4">
+            Master NameVerse's powerful baby name search tools with our complete navigation guide. Find Islamic baby names, Hindu baby names, Christian baby names, unique names, popular names 2026, and expert naming guides — all in one place. Your ultimate baby names website directory.
           </p>
         </div>
 

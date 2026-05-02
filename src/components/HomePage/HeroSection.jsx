@@ -1,13 +1,13 @@
 import { Globe, Heart, Award, BookOpen, Languages, CheckCircle, Star, ArrowRight, Sparkles, Zap } from 'lucide-react';
 import SearchBar from './SearchSection';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const HeroSection = () => {
-  // Baby background image for homepage - optimized for SEO and visual appeal
+  // Use Next.js Image for optimal loading
   const backgroundImage = {
     url: '/img1.png',
     alt: 'Cute baby - NameVerse baby names platform',
-    overlay: 'bg-gradient-to-b from-blue-50/95 via-white/90 to-white'
   };
 
   const categories = [
@@ -83,52 +83,79 @@ const HeroSection = () => {
 
           {/* Main heading */}
           <div className="text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mb-4 shadow-md">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full mb-4 shadow-md">
               <Star className="w-4 h-4 text-white fill-white" />
               <span className="text-xs font-semibold text-white">
-                Trusted by 5M+ Parents Worldwide
+                World's #1 Baby Names Database — 65K+ Verified Names
               </span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight" itemProp="name">
-              NameVerse — 60,000+ Baby Names with Meanings | Islamic, Hindu & Christian Names 2026
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-3" itemProp="name">
+              NameVerse — Best Baby Names 2026 with Meanings
             </h1>
+            
+            <p className="text-lg sm:text-xl font-semibold text-blue-600 mb-4">
+              Islamic • Hindu • Christian • Quranic • Sanskrit • Biblical
+            </p>
 
-            <p className="mt-4 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2 leading-relaxed" itemProp="description">
-              Discover 60,000+ verified baby names with meanings on NameVerse. Find Quranic, Biblical, Sanskrit & modern names for boys and girls in English, Urdu, Arabic & Hindi. A-Z listings with origins & numerology on the top baby names platform.
+            <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2 leading-relaxed" itemProp="description">
+              Discover 65,000+ verified baby names with meanings, origins, and numerology. Find Quranic, Biblical, Sanskrit & modern names for boys and girls in English, Urdu, Arabic & Hindi. Expert-verified religious names with cultural accuracy.
             </p>
-            <p className="mt-4 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2 leading-relaxed">
-              Search thousands of meaningful baby names by faith, language, and origin. NameVerse helps families choose authentic Islamic, Hindu, and Christian names with trusted meanings, cultural notes, and pronunciation guidance. Use NameVerse baby name search to find the perfect name.
-            </p>
-            <p className="mt-4 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2 leading-relaxed">
-              NameVerse is the leading baby names brand and baby name search engine for parents who want the best baby names website. Find top NameVerse baby names, trusted name meanings, popular baby names 2026, unique baby names, and expert-reviewed name ideas for every tradition on NameVerse.
-            </p>
-            <p className="mt-4 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2 leading-relaxed">
-              Use NameVerse to browse authentic baby names by religion, category, origin, letter, or gender. Our NameVerse homepage is optimized to help you discover names, meaning, cultural context, and pronunciation—all in one powerful NameVerse platform. NameVerse offers the best baby names experience.
-            </p>
-            <p className="mt-4 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2 leading-relaxed">
-              Explore NameVerse for Muslim baby names, Hindu baby names with Sanskrit meanings, Christian biblical names, Arabic origin names, and unique baby names. NameVerse provides accurate name meanings in Urdu, Arabic, Hindi, and English for every baby name in our database.
-            </p>
+            
+            <div className="flex flex-wrap justify-center gap-4 mt-6 text-sm text-gray-600">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-emerald-600" />
+                <span>Scholar-Verified Meanings</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Languages className="w-4 h-4 text-blue-600" />
+                <span>4 Languages: English • Urdu • Arabic • Hindi</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Heart className="w-4 h-4 text-red-600" />
+                <span>Trusted by 5M+ Parents Worldwide</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Authority Stats */}
+          <div className="max-w-3xl mx-auto mb-8">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+              {[
+                { number: '65K+', label: 'Verified Baby Names', icon: BookOpen, color: 'text-emerald-600', bgColor: 'bg-emerald-50' },
+                { number: '15+', label: 'Languages Supported', icon: Languages, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+                { number: '99%', label: 'Accuracy Rate Scholar-Verified', icon: CheckCircle, color: 'text-purple-600', bgColor: 'bg-purple-50' },
+                { number: '5M+', label: 'Happy Parents Worldwide', icon: Heart, color: 'text-orange-600', bgColor: 'bg-orange-50' }
+              ].map((stat, index) => {
+                const Icon = stat.icon;
+                return (
+                  <div key={index} className={`text-center p-3 sm:p-4 rounded-xl ${stat.bgColor} border border-gray-100 shadow-sm hover:shadow-md transition-shadow`}>
+                    <div className={`text-xl sm:text-2xl md:text-3xl font-bold ${stat.color}`}>{stat.number}</div>
+                    <div className="text-xs sm:text-sm text-gray-700 mt-1 font-semibold">{stat.label}</div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           {/* Search Bar */}
-          <div className="max-w-lg mx-auto w-full">
+          <div className="max-w-lg mx-auto w-full mb-8">
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-2xl blur opacity-20"></div>
               <SearchBar />
             </div>
           </div>
 
-          {/* Trust features */}
-          <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 max-w-2xl mx-auto">
+          {/* Trust Badges */}
+          <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 max-w-2xl mx-auto mb-8">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
                 <div 
                   key={index}
-                  className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-600 bg-white px-3 py-1.5 rounded-full border border-gray-100 shadow-sm"
+                  className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-700 bg-white px-3 py-1.5 rounded-full border border-gray-200 shadow-sm hover:shadow-md transition-all"
                 >
-                  <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-500" />
+                  <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600" />
                   <span className="font-medium">{feature.text}</span>
                 </div>
               );

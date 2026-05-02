@@ -225,7 +225,7 @@ const CulturalImportance = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: prefersReducedMotion ? 0.4 : 0.5 }}
                     transition={{
-                      delay: prefersReducedMotion ? 0 : Math.random() * 1.5,
+                      delay: prefersReducedMotion ? 0 : (i % 10) * 0.08,
                       duration: prefersReducedMotion ? 0.01 : 0.8,
                       repeat: prefersReducedMotion ? 0 : Infinity,
                       repeatType: 'reverse',
