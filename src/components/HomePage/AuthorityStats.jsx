@@ -78,18 +78,46 @@ const AuthorityStats = () => {
           </p>
         </div>
 
+  const getStatColors = (colorClass) => {
+    if (colorClass.includes('emerald')) return { main: '#10b981', light: '#d1fae5' };
+    if (colorClass.includes('blue')) return { main: '#3b82f6', light: '#dbeafe' };
+    if (colorClass.includes('purple')) return { main: '#8b5cf6', light: '#ede9fe' };
+    if (colorClass.includes('red')) return { main: '#ef4444', light: '#fee2e2' };
+    if (colorClass.includes('orange')) return { main: '#f97316', light: '#ffedd5' };
+    return { main: '#6b7280', light: '#f3f4f6' };
+  };
+
+  return (
+    <section className="py-12 sm:py-16 bg-white border-b border-gray-200">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        {/* Section Header */}
+        <div className="text-center mb-10">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
+            Why Parents Trust NameVerse — America's #1 Baby Names Website 2026
+          </h2>
+          <p className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto">
+            The world's most comprehensive and accurate baby names database with scholar-verified meanings across Islamic, Hindu, Christian, and global traditions.
+          </p>
+        </div>
+
         {/* Main Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
+            const colors = getStatColors(stat.color);
             return (
               <div 
                 key={index} 
                 className={`text-center p-5 sm:p-6 rounded-2xl ${stat.bgColor} border-2 ${stat.borderColor} hover:shadow-lg transition-all hover:-translate-y-1`}
               >
-                <div className={`w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br ${stat.color.replace('text-', 'from-').replace('600', '500').replace('700', '600')} to-current flex items-center justify-center`}
-                     style={{ background: `linear-gradient(135deg, ${stat.color.includes('emerald') ? '#10b981' : stat.color.includes('blue') ? '#3b82f6' : stat.color.includes('purple') ? '#8b5cf6' : stat.color.includes('red') ? '#ef4444' : '#6b7280'}20, ${stat.color.includes('emerald') ? '#10b981' : stat.color.includes('blue') ? '#3b82f6' : stat.color.includes('purple') ? '#8b5cf6' : stat.color.includes('red') ? '#ef4444' : '#6b7280'}40)`}>
-                  <Icon className="w-6 h-6 sm:w-7 sm:h-7" style={{ color: stat.color.replace('text-', '').replace('600', '').replace('700', '') }} />
+                <div 
+                  className="w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center"
+                  style={{ 
+                    background: `linear-gradient(135deg, ${colors.light} 0%, ${colors.main} 100%)`,
+                    color: colors.main
+                  }}
+                >
+                  <Icon className="w-6 h-6 sm:w-7 sm:h-7" />
                 </div>
                 <div className={`text-2xl sm:text-3xl font-bold ${stat.color} mb-1`}>{stat.number}</div>
                 <div className="text-sm font-bold text-gray-900 mb-1">{stat.label}</div>
