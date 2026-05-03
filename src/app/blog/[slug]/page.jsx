@@ -72,15 +72,17 @@ function FAQSchema({ faqs }) {
 
 // Featured Name Link Component
 function FeaturedNameLink({ name, religion = 'islamic' }) {
+  // Handle both string names and object names with a 'name' property
+  const displayName = typeof name === 'string' ? name : name.name;
   // Generate a slug from the name for URL
-  const nameSlug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  const nameSlug = displayName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
   
   return (
     <Link
       href={`/names/${religion}/${nameSlug}`}
       className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-medium hover:bg-blue-100 transition-colors border border-blue-200"
     >
-      {name}
+      {displayName}
       <ExternalLink className="w-3 h-3" />
     </Link>
   );
