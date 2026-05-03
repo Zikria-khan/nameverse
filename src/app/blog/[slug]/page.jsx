@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
 import { BookOpen, Heart, Clock, ArrowLeft, Share2, Calendar, User, Tag, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
 import blogPostsData from '../../../../public/data/blog-posts.json';
+import Image from 'next/image';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
@@ -189,20 +190,12 @@ export default async function BlogPostPage({ params }) {
             {/* Featured Image */}
             {post.featuredImage && (
               <div className="relative w-full h-64 md:h-96 mb-8 rounded-xl overflow-hidden bg-gray-100">
-                <img
+                <Image
                   src={post.featuredImage.startsWith('http') ? post.featuredImage : `${SITE_URL}${post.featuredImage}`}
                   alt={post.title}
-                  className="w-full h-full object-cover transition-opacity duration-300"
-                  loading="eager"
-                  onError={(e) => {
-                    // Fallback to a placeholder if external image fails
-                    e.target.src = '/logo.png';
-                    e.target.onerror = null; // Prevent infinite loop
-                  }}
-                  onLoad={(e) => {
-                    e.target.classList.remove('opacity-0');
-                  }}
-                  style={{ opacity: 0 }}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
               </div>

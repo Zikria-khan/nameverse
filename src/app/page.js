@@ -390,15 +390,15 @@ export const metadata = {
     "baby names with lucky numbers"
   ].join(', '),
   openGraph: {
-    title: validateMetaTitle("NameVerse — #1 Best Baby Names Website 2026 | 65K+ Names with Meanings"),
+    title: validateMetaTitle("NameVerse — #1 Best Baby Names Website 2026 | 65K+ Islamic Hindu Christian Names with Meanings"),
     description: validateMetaDescription(
       "NameVerse is America's #1 baby names website with 65,000+ verified Islamic, Hindu & Christian names. Find authentic meanings in Urdu, Arabic, Hindi, English. Scholar-verified, 100% free. Trusted by 5M+ parents. Search the NameVerse platform for baby names with meanings, trends 2026, popular names, and unique names."
     ),
-    url: siteUrl + "/",
+    url: DOMAIN + "/",
     type: "website",
     siteName: "NameVerse",
     images: [{ 
-      url: `${siteUrl}/logo.png`, 
+      url: `${DOMAIN}/logo.png`, 
       width: 1200, 
       height: 630, 
       type: "image/png", 
@@ -412,7 +412,17 @@ export const metadata = {
     description: validateMetaDescription(
       "NameVerse: America's #1 baby names website with 65,000+ verified names. Find Islamic, Hindu, Christian names with meanings. Free, scholar-verified, 5M+ parents trust NameVerse platform."
     ),
-    images: [`${siteUrl}/logo.png`],
+    images: [`${DOMAIN}/logo.png`],
+    creator: "@NameVerseOfficial",
+    site: "@NameVerseOfficial",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: validateMetaTitle("NameVerse — Best Baby Names 2026 | #1 Baby Names Website in America"),
+    description: validateMetaDescription(
+      "NameVerse: America's #1 baby names website with 65,000+ verified names. Find Islamic, Hindu, Christian names with meanings. Free, scholar-verified, 5M+ parents trust NameVerse platform."
+    ),
+    images: [`${DOMAIN}/logo.png`],
     creator: "@NameVerseOfficial",
     site: "@NameVerseOfficial",
   },

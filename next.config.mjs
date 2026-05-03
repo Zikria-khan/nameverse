@@ -17,23 +17,28 @@ const nextConfig = {
     '*.repl.co',
     '*.kirk.replit.dev',
   ],
-  
+
   // Performance Optimizations
   compress: true,
 
 
-  
   // Image Optimization this will happen in thesis
   images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+    ],
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 31536000, // 1 year cache for optimized images
-    dangerouslyAllowSVG: true,
+dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
-   // Headers for Performance & Edge Caching
+  // Headers for Performance & Edge Caching
    async headers() {
      return [
        {

@@ -1,6 +1,6 @@
 'use client';
 
-import { Crown, Globe, Users, Heart, Award, Star, CheckCircle, Shield, Sparkles, Target, Zap } from 'lucide-react';
+import { Crown, Globe, Users, Heart, Award, Star, CheckCircle, Shield, Sparkles, Target, Zap, Search } from 'lucide-react';
 import Link from 'next/link';
 
 const PlatformOverview = () => {

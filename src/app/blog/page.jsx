@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { BookOpen, Heart, Clock, ArrowRight, Calendar, Award, TrendingUp, User } from 'lucide-react';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import Image from 'next/image';
 
 const blogPostsData = JSON.parse(
   readFileSync(join(process.cwd(), 'public', 'data', 'blog-posts.json'), 'utf8')
@@ -53,15 +54,16 @@ export default function BlogPage() {
             {featuredPosts.map((post) => {
               const imageUrl = post.featuredImage ? `${SITE_URL}${post.featuredImage}` : `${SITE_URL}/api/og?title=${encodeURIComponent(post.title)}`;
               return (
-                <article 
+                <article
                   key={post.id}
                   className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-200 overflow-hidden"
                 >
                   <div className="relative h-48 overflow-hidden">
-                    <img
+                    <Image
                       src={imageUrl}
                       alt={post.title}
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                      fill
+                      className="object-cover transition-transform duration-300 hover:scale-105"
                       loading="lazy"
                     />
                     <div className="absolute top-3 left-3 flex gap-2">
@@ -150,16 +152,17 @@ export default function BlogPage() {
             {recentPosts.map((post) => {
               const imageUrl = post.featuredImage ? `${SITE_URL}${post.featuredImage}` : `${SITE_URL}/api/og?title=${encodeURIComponent(post.title)}`;
               return (
-                <article 
+                <article
                   key={post.id}
                   className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"
                 >
                   <div className="flex flex-col md:flex-row md:items-center gap-4">
-                    <div className="w-full md:w-48 h-32 flex-shrink-0 overflow-hidden rounded-lg">
-                      <img
+                    <div className="relative w-full md:w-48 h-32 flex-shrink-0 overflow-hidden rounded-lg">
+                      <Image
                         src={imageUrl}
                         alt={post.title}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
                         loading="lazy"
                       />
                     </div>

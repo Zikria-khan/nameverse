@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Clock, User, Calendar, BookOpen } from 'lucide-react';
+import Image from 'next/image';
 
 const LatestArticles = ({ articles }) => {
   // Category color mapping
@@ -177,19 +178,12 @@ const LatestArticles = ({ articles }) => {
                   >
                     {/* Featured Image */}
                      <div className="relative h-48 overflow-hidden bg-gray-100">
-                       <img
+                       <Image
                          src={imageUrl}
                          alt={article.title}
-                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                         loading="eager"
-                         onError={(e) => {
-                           e.target.src = '/logo.png';
-                           e.target.onerror = null;
-                         }}
-                         onLoad={(e) => {
-                           e.target.classList.remove('opacity-0');
-                         }}
-                         style={{ opacity: 0 }}
+                         fill
+                         className="object-cover transition-transform duration-300 group-hover:scale-105"
+                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                        />
                        <div className="absolute top-3 left-3">
                         <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${colors.badge} shadow-sm`}>
