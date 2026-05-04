@@ -50,10 +50,10 @@ export default function BlogPage() {
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl font-bold text-gray-900 mb-8">Featured Guides</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {featuredPosts.map((post) => {
-              const imageUrl = post.featuredImage ? `${SITE_URL}${post.featuredImage}` : `${SITE_URL}/api/og?title=${encodeURIComponent(post.title)}`;
-              return (
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+             {featuredPosts.map((post) => {
+               const imageUrl = post.featuredImage ? (post.featuredImage.startsWith('http') ? post.featuredImage : `${SITE_URL}${post.featuredImage}`) : `${SITE_URL}/api/og?title=${encodeURIComponent(post.title)}`;
+               return (
                 <article
                   key={post.id}
                   className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-200 overflow-hidden"
@@ -148,10 +148,10 @@ export default function BlogPage() {
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl font-bold text-gray-900 mb-8">More Articles</h2>
           
-          <div className="space-y-4">
-            {recentPosts.map((post) => {
-              const imageUrl = post.featuredImage ? `${SITE_URL}${post.featuredImage}` : `${SITE_URL}/api/og?title=${encodeURIComponent(post.title)}`;
-              return (
+           <div className="space-y-4">
+             {recentPosts.map((post) => {
+               const imageUrl = post.featuredImage ? (post.featuredImage.startsWith('http') ? post.featuredImage : `${SITE_URL}${post.featuredImage}`) : `${SITE_URL}/api/og?title=${encodeURIComponent(post.title)}`;
+               return (
                 <article
                   key={post.id}
                   className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"

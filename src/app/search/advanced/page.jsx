@@ -135,18 +135,18 @@ export default async function AdvancedSearchPage() {
           </div>
         </section>
 
-        {/* Main Search Interface */}
+{/* Main Search Interface */}
         <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-4 gap-6 sm:gap-8">
-{/* Filters Sidebar */}
-               <div className="lg:col-span-1">
-                 <div className="sticky top-24">
-                   <AdvancedSearchFilters 
-                     filters={filters} 
-                   />
-                 </div>
-               </div>
+              {/* Filters Sidebar */}
+              <div className="lg:col-span-1">
+                <div className="sticky top-24">
+                  <AdvancedSearchFilters 
+                    filters={filters} 
+                  />
+                </div>
+              </div>
 
               {/* Results Section */}
               <div className="lg:col-span-3">
