@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Search, List, Grid, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useState, useTransition, useMemo, useCallback } from 'react';
+import FavoriteButton from '@/components/FavoriteButton';
 
 export default function SearchResultsClient({
   initialNames,
@@ -281,23 +282,37 @@ function NameCard({ name, viewMode, index, searchTerm, router }) {
 
   return (
     <article
-      onClick={() => router.push(url)}
       className="group transition-transform duration-300 hover:scale-[1.038] hover:shadow-xl rounded-2xl border border-gray-100 bg-white px-6 py-7 flex flex-col items-start cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-400"
       tabIndex={0}
       aria-label={`View details for ${name.name}`}
       role="button"
     >
-      <h3
-        className="text-2xl font-extrabold text-indigo-900 mb-3 tracking-tight group-hover:text-indigo-700 transition-colors"
-        itemProp="name"
-      >
-        {name.name}
-      </h3>
+      <div className="flex items-start justify-between w-full mb-3">
+        <h3
+          className="text-2xl font-extrabold text-indigo-900 tracking-tight group-hover:text-indigo-700 transition-colors cursor-pointer"
+          itemProp="name"
+          onClick={() => router.push(url)}
+        >
+          {name.name}
+        </h3>
+        <FavoriteButton
+          nameData={{
+            name: name.name,
+            slug: name.slug || name.name?.toLowerCase().replace(/\s+/g, '-'),
+            religion: religion,
+            meaning: name.short_meaning || name.long_meaning,
+            origin: name.origin
+          }}
+          size="small"
+        />
+      </div>
       {(name.short_meaning || name.long_meaning) && (
-        <p className="text-gray-700 text-base mb-2 line-clamp-2">{name.short_meaning || name.long_meaning}</p>
+        <p className="text-gray-700 text-base mb-2 line-clamp-2 cursor-pointer" onClick={() => router.push(url)}>
+          {name.short_meaning || name.long_meaning}
+        </p>
       )}
       {name.origin && (
-        <span className="inline-block text-xs mt-2 px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded font-bold uppercase tracking-wider" itemProp="description">
+        <span className="inline-block text-xs mt-2 px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded font-bold uppercase tracking-wider cursor-pointer" itemProp="description" onClick={() => router.push(url)}>
           {name.origin}
         </span>
       )}

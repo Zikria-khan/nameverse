@@ -9,8 +9,25 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.a
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
 const STATIC_ORIGINS = ['arabic', 'persian', 'turkish', 'indian', 'english', 'other'];
 
-// Use dynamic rendering to avoid static generation for pagination pages
-export const dynamic = 'force-dynamic';
+// Use static generation with ISR for pagination pages
+export const dynamic = 'force-static';
+export const revalidate = 86400;
+export const dynamicParams = true;
+
+// Pre-generate first page for all religion/origin combinations
+export async function generateStaticParams() {
+  const params = [];
+  for (const religion of VALID_RELIGIONS) {
+    for (const origin of STATIC_ORIGINS) {
+      params.push({
+        religion,
+        origin,
+        page: '1',
+      });
+    }
+  }
+  return params;
+}
 
 function resolveOrigin(origin, availableOrigins) {
   if (!origin) return 'arabic';
@@ -24,7 +41,12 @@ function resolveOrigin(origin, availableOrigins) {
 function validateAndSanitizeParams(params, availableOrigins) {
   const { religion, origin, page } = params;
 
-  const normalizedReligion = VALID_RELIGIONS.includes(religion?.toLowerCase()) ? religion.toLowerCase() : 'islamic';
+  // Handle common variations for religion normalization
+  let normalizedReligion = religion?.toLowerCase();
+  if (normalizedReligion === 'islam' || normalizedReligion === 'muslim') normalizedReligion = 'islamic';
+  if (normalizedReligion === 'hinduism') normalizedReligion = 'hindu';
+  if (normalizedReligion === 'christianity') normalizedReligion = 'christian';
+  normalizedReligion = VALID_RELIGIONS.includes(normalizedReligion) ? normalizedReligion : 'islamic';
   const normalizedOrigin = resolveOrigin(origin, availableOrigins);
   const normalizedPage = parseInt(page) > 0 ? parseInt(page) : 1;
 

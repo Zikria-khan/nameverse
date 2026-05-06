@@ -3,14 +3,30 @@ import Link from 'next/link';
 import { fetchFilters, fetchNamesWithAdvancedFilters } from '@/lib/api/names';
 import { validateMetaTitle, validateMetaDescription, generateCanonicalUrl } from '@/lib/seo/meta-helpers';
 import { Sparkles, Moon, ChevronLeft, ChevronRight } from 'lucide-react';
+import FavoriteButton from '@/components/FavoriteButton';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
 const STATIC_CATEGORIES = ['modern', 'traditional', 'nature', 'religious', 'classical', 'unique'];
 
-// Use dynamic rendering to avoid static generation for pagination pages
-export const dynamic = 'force-dynamic';
+// Static generation with ISR revalidation
+export const dynamic = 'force-static';
+export const revalidate = 86400;
+export const dynamicParams = true;
+
+function normalizeReligion(religion) {
+  if (!religion || typeof religion !== 'string') return null;
+  const normalized = religion.toLowerCase();
+
+  // Handle common variations
+  if (normalized === 'islam' || normalized === 'muslim') return 'islamic';
+  if (normalized === 'hinduism') return 'hindu';
+  if (normalized === 'christianity') return 'christian';
+
+  const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
+  return VALID_RELIGIONS.includes(normalized) ? normalized : null;
+}
 
 function resolveCategory(category, availableCategories) {
   if (!category) return 'modern';
@@ -24,7 +40,12 @@ function resolveCategory(category, availableCategories) {
 function validateAndSanitizeParams(params, availableCategories) {
   const { religion, category, page } = params;
 
-  const normalizedReligion = VALID_RELIGIONS.includes(religion?.toLowerCase()) ? religion.toLowerCase() : 'islamic';
+  // Handle common variations for religion normalization
+  let normalizedReligion = religion?.toLowerCase();
+  if (normalizedReligion === 'islam' || normalizedReligion === 'muslim') normalizedReligion = 'islamic';
+  if (normalizedReligion === 'hinduism') normalizedReligion = 'hindu';
+  if (normalizedReligion === 'christianity') normalizedReligion = 'christian';
+  normalizedReligion = VALID_RELIGIONS.includes(normalizedReligion) ? normalizedReligion : 'islamic';
   const normalizedCategory = resolveCategory(category, availableCategories);
   const normalizedPage = parseInt(page) > 0 ? parseInt(page) : 1;
 
@@ -36,11 +57,12 @@ function validateAndSanitizeParams(params, availableCategories) {
 }
 
 export async function generateMetadata({ params }) {
-  const religion = VALID_RELIGIONS.includes(params.religion?.toLowerCase()) ? params.religion.toLowerCase() : 'islamic';
-  const category = resolveCategory(params.category, STATIC_CATEGORIES);
+  const rawParams = await params;
+  const religion = VALID_RELIGIONS.includes(rawParams.religion?.toLowerCase()) ? rawParams.religion.toLowerCase() : 'islamic';
+  const category = resolveCategory(rawParams.category, STATIC_CATEGORIES);
   const religionLabel = religion.charAt(0).toUpperCase() + religion.slice(1);
   const categoryLabel = category.charAt(0).toUpperCase() + category.slice(1);
-  const page = parseInt(params.page, 10) > 0 ? parseInt(params.page, 10) : 1;
+  const page = parseInt(rawParams.page, 10) > 0 ? parseInt(rawParams.page, 10) : 1;
   const canonical = generateCanonicalUrl(`/names/${religion}/categories/${category}/${page}`);
 
   return {
@@ -78,6 +100,20 @@ export async function generateMetadata({ params }) {
     },
     robots: { index: true, follow: true },
   };
+}
+
+export async function generateStaticParams() {
+  const params = [];
+  for (const religion of VALID_RELIGIONS) {
+    for (const category of STATIC_CATEGORIES) {
+      params.push({
+        religion,
+        category,
+        page: '1',
+      });
+    }
+  }
+  return params;
 }
 
 export default async function CategoryNamesPage({ params }) {
@@ -123,6 +159,11 @@ export default async function CategoryNamesPage({ params }) {
 
   const prevUrl = hasPrev ? `/names/${religion}/categories/${category}/${page - 1}` : null;
   const nextUrl = hasNext ? `/names/${religion}/categories/${category}/${page + 1}` : null;
+
+  function generateSlug(name) {
+    if (!name || typeof name !== 'string') return '';
+    return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  }
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-emerald-50">
@@ -197,7 +238,7 @@ export default async function CategoryNamesPage({ params }) {
                     className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 border border-emerald-100 hover:border-emerald-300 group hover:-translate-y-1 block"
                   >
                     <div className="flex items-start justify-between mb-4">
-                      <div>
+                      <div className="flex-1">
                         <h3 className="text-2xl font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">
                           {nameItem.name || 'Unknown'}
                         </h3>
@@ -207,8 +248,20 @@ export default async function CategoryNamesPage({ params }) {
                           </span>
                         )}
                       </div>
-                      <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-                        <Moon className="w-6 h-6 text-emerald-600" />
+                      <div className="flex items-center gap-2">
+                        <FavoriteButton
+                          nameData={{
+                            name: nameItem.name,
+                            slug: generateSlug(nameItem.name),
+                            religion: religion,
+                            meaning: nameItem.short_meaning || nameItem.meaning,
+                            origin: nameItem.origin
+                          }}
+                          size="small"
+                        />
+                        <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
+                          <Moon className="w-6 h-6 text-emerald-600" />
+                        </div>
                       </div>
                     </div>
 
@@ -266,9 +319,4 @@ export default async function CategoryNamesPage({ params }) {
       </section>
     </main>
   );
-}
-
-function generateSlug(name) {
-  if (!name || typeof name !== 'string') return '';
-  return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 }

@@ -1,13 +1,6 @@
 /**
- * World-Class Optimized API Client
- * Features:
- * - Request/Response caching with TTL
- * - Request deduplication (prevent duplicate concurrent requests)
- * - Automatic retry with exponential backoff
- * - Request cancellation and cleanup
- * - Compression support
- * - Performance monitoring
- * - Intelligent error handling
+ * Simple API Client
+ * Basic axios wrapper without caching
  */
 
 import axios from 'axios';
@@ -36,82 +29,10 @@ class RateLimiter {
   }
 }
 
-/**
- * In-memory cache for GET requests
- */
-class RequestCache {
-  constructor() {
-    this.cache = new Map();
-    this.timestamps = new Map();
-  }
 
-  get(key) {
-    const data = this.cache.get(key);
-    const timestamp = this.timestamps.get(key);
-    
-    if (!data || !timestamp) return null;
-    
-    // Default TTL: 1 hour for cached responses to stay within free limits
-    const TTL = 60 * 60 * 1000;
-    if (Date.now() - timestamp > TTL) {
-      this.delete(key);
-      return null;
-    }
-    
-    return data;
-  }
 
-  set(key, value) {
-    this.cache.set(key, value);
-    this.timestamps.set(key, Date.now());
-  }
 
-  delete(key) {
-    this.cache.delete(key);
-    this.timestamps.delete(key);
-  }
 
-  clear() {
-    this.cache.clear();
-    this.timestamps.clear();
-  }
-
-  size() {
-    return this.cache.size;
-  }
-}
-
-/**
- * Request deduplication - prevents duplicate concurrent requests
- */
-class RequestDeduplicator {
-  constructor() {
-    this.pending = new Map();
-  }
-
-  createKey(config) {
-    const { method, url, params, data } = config;
-    return JSON.stringify({ method, url, params, data });
-  }
-
-  getPending(config) {
-    const key = this.createKey(config);
-    return this.pending.get(key);
-  }
-
-  setPending(config, promise) {
-    const key = this.createKey(config);
-    this.pending.set(key, promise);
-    
-    // Clean up after request completes
-    promise.finally(() => {
-      this.pending.delete(key);
-    });
-  }
-}
-
-const requestCache = new RequestCache();
-const requestDeduplicator = new RequestDeduplicator();
 const activeRequests = new Map();
 
 /**
@@ -135,34 +56,11 @@ export const apiClient = axios.create({
 
 const rateLimiter = new RateLimiter(env.limits.maxRequestsPerWindow, env.limits.windowMs);
 
-// Suppress console.error during API calls to prevent Next.js Dev Tools from showing errors
-const originalConsoleError = console.error;
-const suppressedPaths = ['/api/v1/names?page=1&limit=20&religion=islamic&origin=&language=&category=&theme=&luckyDay=&luckyColor=&alphabet=&luckyStone=&gender=male', '/names/', '/api/v1/filters/'];
 
-// Override console.error to suppress 404 and API errors
-if (typeof window === 'undefined') {
-  // Server-side only
-  console.error = (...args) => {
-    const message = args.join(' ');
-    // Suppress axios errors and 404s
-    if (
-      message.includes('AxiosError') ||
-      message.includes('status code 404') ||
-      message.includes('Request failed') ||
-      suppressedPaths.some(path => message.includes(path))
-    ) {
-      return; // Silently ignore
-    }
-    originalConsoleError.apply(console, args);
-  };
-}
 
 /**
- * Request Interceptor
- * - Request deduplication
- * - Cache checking for GET requests
- * - Request tracking
- * - Performance monitoring
+ * Simple Request Interceptor
+ * - Basic request tracking
  */
 apiClient.interceptors.request.use(
   async (config) => {
@@ -170,38 +68,6 @@ apiClient.interceptors.request.use(
     const requestId = `${Date.now()}-${Math.random()}`;
     config.requestId = requestId;
     config.metadata = { startTime: Date.now() };
-
-    // For GET requests, check cache first
-    if (config.method === 'get') {
-      const cacheKey = `${config.url}?${JSON.stringify(config.params || {})}`;
-      const cached = requestCache.get(cacheKey);
-      
-      if (cached) {
-        // Return cached response
-        return Promise.reject({
-          __CACHED__: true,
-          config,
-          data: cached,
-        });
-      }
-
-      // Check for duplicate pending request
-      const pendingRequest = requestDeduplicator.getPending(config);
-      if (pendingRequest) {
-        return Promise.reject({
-          __DEDUPED__: true,
-          config,
-          promise: pendingRequest,
-        });
-      }
-
-      // Create a promise for this request and register it for deduplication
-      const requestPromise = new Promise((resolve, reject) => {
-        config.__resolveDedup = resolve;
-        config.__rejectDedup = reject;
-      });
-      requestDeduplicator.setPending(config, requestPromise);
-    }
 
     activeRequests.set(requestId, config);
 
@@ -213,143 +79,33 @@ apiClient.interceptors.request.use(
 );
 
 /**
- * Response Interceptor
- * - Handles cached responses
- * - Handles deduped responses
- * - Caches successful GET responses
- * - Automatic retry with exponential backoff
- * - Performance logging
+ * Simple Response Interceptor
+ * - Basic error handling
  */
   apiClient.interceptors.response.use(
   (response) => {
-    const { requestId, metadata, method, url, params, __resolveDedup, __rejectDedup } = response.config;
+    const { requestId } = response.config;
     activeRequests.delete(requestId);
 
-    // Calculate request duration
-    const duration = Date.now() - (metadata?.startTime || Date.now());
-
-    // For error status codes, we'll just return the response and let the caller handle it
-    // This prevents Promise.reject from triggering Next.js error boundaries
+    // For error status codes, mark as error but return response
     if (response.status >= 400) {
-      // Create error marker on response for calling code to check
       response.__isError = true;
       response.__errorMessage = response.data?.error || response.data?.message || 'Request failed';
-
-      // Special handling for backend cacheKey errors - try to serve from cache
-      if (method === 'get' && response.data?.message?.includes('cacheKey')) {
-        const cacheKey = `${url}?${JSON.stringify(params || {})}`;
-        const cached = requestCache.get(cacheKey);
-        if (cached) {
-          console.warn(`Backend cache error, serving stale cached data for: ${cacheKey}`);
-          return {
-            config,
-            data: cached,
-            status: 200,
-            statusText: 'OK (cached)',
-            headers: response.headers,
-            __fromCache: true,
-            __cacheStale: true,
-          };
-        }
-      }
-
-      // Reject deduplicated requests
-      if (__rejectDedup) {
-        const error = {
-          response,
-          status: response.status,
-          message: response.__errorMessage,
-          config: response.config,
-        };
-        __rejectDedup(error);
-      }
-
-      // Return response instead of rejecting - caller will check status code
       return response;
-    }
-
-    // Cache successful GET responses
-    if (method === 'get' && response.status === 200) {
-      const cacheKey = `${url}?${JSON.stringify(params || {})}`;
-      requestCache.set(cacheKey, response.data);
-    }
-
-    // Resolve deduplicated requests
-    if (__resolveDedup) {
-      __resolveDedup(response);
     }
 
     return response;
   },
   async (error) => {
-    // Handle cached responses
-    if (error.__CACHED__) {
-      return {
-        config: error.config,
-        data: error.data,
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        __fromCache: true,
-      };
-    }
-
-    // Handle deduped responses
-    if (error.__DEDUPED__) {
-      try {
-        return await error.promise;
-      } catch (dedupError) {
-        throw dedupError;
-      }
-    }
-
     const { config } = error;
-    const { requestId, __rejectDedup, url, params, method } = config || {};
+    const { requestId } = config || {};
 
     if (requestId) {
       activeRequests.delete(requestId);
     }
 
-    // Reject deduplicated requests
-    if (__rejectDedup) {
-      __rejectDedup(error);
-    }
-
-    // Try to serve stale cache on network errors for GET requests
-    if (method === 'get' && !error.response) {
-      const cacheKey = `${url}?${JSON.stringify(params || {})}`;
-      const cached = requestCache.get(cacheKey);
-      if (cached) {
-        console.warn(`Network error, serving stale cached data for: ${cacheKey}`);
-        return {
-          config,
-          data: cached,
-          status: 200,
-          statusText: 'OK (cached - offline)',
-          headers: {},
-          __fromCache: true,
-          __cacheStale: true,
-        };
-      }
-    }
-
-    // Network error handling
+    // Simple error handling without caching
     if (!error.response) {
-      // Retry logic for network errors
-      if (config && !config.__retryCount) {
-        config.__retryCount = 0;
-      }
-
-      // Increased retry attempts and backoff time for build processes
-      if (config && config.__retryCount < 3) {
-        config.__retryCount++;
-        // Exponential backoff with jitter
-        const backoff = Math.min(1000 * Math.pow(2, config.__retryCount) + Math.random() * 1000, 10000);
-
-        await new Promise(resolve => setTimeout(resolve, backoff));
-        return apiClient(config);
-      }
-      
       return Promise.reject({
         status: 0,
         message: 'Network error. Please check your internet connection.',
@@ -357,8 +113,6 @@ apiClient.interceptors.request.use(
       });
     }
 
-    // This shouldn't happen anymore since we handle error status codes in the success handler
-    // But keep it as a fallback for edge cases
     if (error.response) {
       const { status, data } = error.response;
       return Promise.reject({
@@ -368,7 +122,6 @@ apiClient.interceptors.request.use(
       });
     }
 
-    // Unknown error
     return Promise.reject(error);
   }
 );
@@ -403,32 +156,8 @@ export function cancelRequest(requestId) {
   }
 }
 
-/**
- * Clear request cache
- */
-export function clearCache() {
-  requestCache.clear();
-}
 
-/**
- * Get cache statistics
- */
-export function getCacheStats() {
-  return {
-    size: requestCache.size(),
-    entries: requestCache.cache.size,
-  };
-}
 
-/**
- * Prefetch data - useful for preloading critical resources
- */
-export async function prefetch(url, params = {}) {
-  try {
-    await apiClient.get(url, { params });
-  } catch (error) {
-    
-  }
-}
+
 
 export default apiClient;

@@ -192,39 +192,64 @@ export function generateNamePageKeywords(data) {
 export function generateNamePageMetadata(data, religion, slug) {
   const titleName = data.name || slug.replace(/[-_]/g, ' ');
   const religionTitle = religion.charAt(0).toUpperCase() + religion.slice(1);
-  const description = validateMetaDescription(generateNameMetaDescription(data));
   const keywords = generateNamePageKeywords(data);
   const pageUrl = `${SITE_URL}/names/${religion}/${slug}`;
 
-  // Enhanced title with higher CTR patterns
+  // 2026 CTR-optimized title patterns - keyword-first approach with emotional hooks
   const titleVariations = [
-    `${titleName} Name Meaning, Origin & Lucky Number | ${religionTitle}`,
-    `${titleName}: Meaning, Numerology & Personality | ${religionTitle} Baby Names`,
-    `${titleName} - ${religionTitle} Name Meaning (${data.gender || ''}) + Lucky Stone`,
+    `${titleName} Name Meaning, Origin & Lucky Number | ${religionTitle} Names`,
+    `${titleName} Meaning: Origin, Numerology & Personality Traits | ${religionTitle}`,
+    `What Does ${titleName} Mean? ${religionTitle} Name Origin + Lucky Stone`,
+    `${titleName} Name Meaning & Origin | ${religionTitle} Baby Names 2026`,
+    `${titleName}: Spiritual Meaning, Numerology & Cultural Significance | ${religionTitle}`
   ];
-  
-  // Use the most clickable title pattern based on available data
+
+  // Advanced title selection based on data richness and CTR potential
   let title = titleVariations[0];
-  if (data.lucky_number && data.emotional_traits?.length) {
-    title = titleVariations[1];
-  } else if (data.lucky_stone) {
-    title = titleVariations[2];
+  if (data.lucky_number && data.lucky_stone && data.emotional_traits?.length) {
+    title = titleVariations[1]; // Most comprehensive data = most specific title
+  } else if (data.lucky_stone && data.spiritual_meaning) {
+    title = titleVariations[2]; // Question-based for higher CTR
+  } else if (data.popularity_score || data.trending) {
+    title = titleVariations[3]; // Include 2026 for freshness
+  } else if (data.cultural_significance) {
+    title = titleVariations[4]; // Spiritual angle for depth
   }
   title = validateMetaTitle(title);
 
-  const ogTitle = `${titleName} - ${religionTitle} Name Meaning, Origin & Lucky Number`;
-  const twitterTitle = `${titleName} Name Meaning | ${religionTitle}`;
+  // Enhanced meta description with emotional hooks and clear value proposition
+  const descriptionVariations = [
+    `Discover the beautiful meaning of ${titleName}, a ${religionTitle.toLowerCase()} name. Origin, numerology, lucky number ${data.lucky_number || ''}, personality traits & spiritual significance. Find similar names and cultural context.`,
+    `${titleName} name meaning: "${data.short_meaning || ''}". ${religionTitle} origin, lucky stone ${data.lucky_stone || ''}, numerology insights. Perfect for expecting parents seeking meaningful baby names.`,
+    `What does ${titleName} mean? Complete ${religionTitle.toLowerCase()} name guide with pronunciation, origin story, lucky attributes, and personality analysis. Choose wisely for your baby.`,
+    `${titleName}: ${religionTitle} baby name meaning, origin & numerology. Lucky number ${data.lucky_number || ''}, stone ${data.lucky_stone || ''}, spiritual significance & cultural heritage guide.`
+  ];
+
+  // Select most appropriate description based on data completeness
+  let description = descriptionVariations[0];
+  if (data.short_meaning && data.lucky_number && data.lucky_stone) {
+    description = descriptionVariations[1]; // Most comprehensive
+  } else if (data.spiritual_meaning) {
+    description = descriptionVariations[2]; // Question-based
+  } else if (data.cultural_significance) {
+    description = descriptionVariations[3]; // Cultural focus
+  }
+
+  const validatedDescription = validateMetaDescription(description);
+
+  const ogTitle = `${titleName} Name Meaning & Origin | ${religionTitle} Baby Names`;
+  const twitterTitle = `${titleName} Meaning | ${religionTitle} Names`;
 
   // Enhanced OpenGraph with better social sharing appeal
   return {
     title,
-    description,
+    description: validatedDescription,
     keywords,
     authors: [{ name: 'NameVerse' }],
     alternates: { canonical: pageUrl },
     openGraph: {
       title: ogTitle,
-      description,
+      description: validatedDescription,
       type: 'article',
       url: pageUrl,
       siteName: 'NameVerse',
@@ -240,7 +265,7 @@ export function generateNamePageMetadata(data, religion, slug) {
     twitter: {
       card: 'summary_large_image',
       title: twitterTitle,
-      description,
+      description: validatedDescription,
       images: [`${SITE_URL}/api/og?name=${encodeURIComponent(titleName)}&religion=${religion}`],
     },
     robots: {

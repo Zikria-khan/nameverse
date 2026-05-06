@@ -14,14 +14,6 @@ const SearchTools = () => {
       linkText: 'Search All Names'
     },
     {
-      icon: Filter,
-      title: 'Smart Name Filters',
-      description: 'Narrow down names by popularity trends, lucky numerology numbers, pronunciation difficulty, cultural authenticity, and modern vs traditional style.',
-      keywords: 'baby name filters, name finder tool, advanced name search, filter baby names',
-      link: '/advanced-search',
-      linkText: 'Use Advanced Filters'
-    },
-    {
       icon: Heart,
       title: 'Save Favorite Names',
       description: 'Create personalized baby name lists. Compare names side-by-side, share with partner and family, and get AI-powered suggestions based on your preferences.',

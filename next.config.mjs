@@ -4,6 +4,9 @@ const API_BASE = (process.env.NEXT_PUBLIC_API_BASE || 'https://name-meaning-site
 const nextConfig = {
   reactStrictMode: true,
 
+  // Output for Edge Runtime - reduces origin transfer
+  output: 'standalone',
+
   // Disable TypeScript checking during build
   typescript: {
     ignoreBuildErrors: true,
@@ -74,7 +77,7 @@ dangerouslyAllowSVG: true,
            // stale-while-revalidate=86400 serves stale during revalidation (24h)
            {
              key: 'Cache-Control',
-             value: 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400',
+             value: "public, max-age=0, s-maxage=86400, stale-while-revalidate=86400",
            },
          ],
        },

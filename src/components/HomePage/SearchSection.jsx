@@ -190,7 +190,7 @@ const UniversalSearch = () => {
       // Navigate to name page
       // API returns "Islam" but we need "islamic" for the URL
       const religionMap = {
-        'islam': 'islamic',
+        'islamic': 'islamic',
         'islamic': 'islamic',
         'hindu': 'hindu',
         'hinduism': 'hindu',

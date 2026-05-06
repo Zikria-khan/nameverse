@@ -7,6 +7,7 @@ import {
   Globe, ChevronDown, ChevronUp, Home, AlignLeft, History, Star,
   MessageCircle, Copy, Check, ExternalLink
 } from 'lucide-react'
+import FavoriteButton from '@/components/FavoriteButton'
 
 // Religion-based theme configuration
 const religionThemes = {
@@ -382,14 +383,26 @@ export default function NameDetailClient({ data, initialLanguage }) {
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white">
                 {data.name}
               </h1>
-              <button
-                onClick={handleCopyName}
-                className="p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors text-white"
-                aria-label="Copy name to clipboard"
-                title="Copy name"
-              >
-                {copied ? <Check size={24} /> : <Copy size={24} />}
-              </button>
+              <div className="flex items-center gap-2">
+                <FavoriteButton
+                  nameData={{
+                    name: data.name,
+                    slug: data.slug || data.name?.toLowerCase().replace(/\s+/g, '-'),
+                    religion: data.religion?.toLowerCase() === 'islam' ? 'islamic' : data.religion?.toLowerCase(),
+                    meaning: data.short_meaning || data.long_meaning || data.meaning,
+                    origin: data.origin
+                  }}
+                  className="p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors"
+                />
+                <button
+                  onClick={handleCopyName}
+                  className="p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors text-white"
+                  aria-label="Copy name to clipboard"
+                  title="Copy name"
+                >
+                  {copied ? <Check size={24} /> : <Copy size={24} />}
+                </button>
+              </div>
             </div>
 
             {/* Native Script */}
@@ -532,7 +545,108 @@ export default function NameDetailClient({ data, initialLanguage }) {
         </div>
       </nav>
 
-      {/* Tab Content */}
+      {/* Main Content - Above Fold for SEO */}
+      <div className="max-w-5xl mx-auto px-4 py-8">
+        {/* Primary Content Section - H1 and Core Information */}
+        <article className="prose prose-lg max-w-none mb-12">
+          <header>
+            <h1 className={`text-3xl sm:text-4xl font-bold mb-6 ${theme.text}`}>
+              {data.name} Name Meaning: Origin, Numerology & Spiritual Significance
+            </h1>
+
+            {/* Core Meaning - Above Fold */}
+            {data.short_meaning && (
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 mb-8 border-l-4 border-blue-500">
+                <h2 className="text-xl font-bold text-gray-900 mb-3">What Does {data.name} Mean?</h2>
+                <p className="text-lg text-gray-700 leading-relaxed">{data.short_meaning}</p>
+                {data.long_meaning && data.long_meaning !== data.short_meaning && (
+                  <p className="text-gray-600 mt-3 leading-relaxed">{data.long_meaning}</p>
+                )}
+              </div>
+            )}
+
+            {/* Key Facts Summary */}
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              {data.origin && (
+                <div className="text-center">
+                  <h3 className="font-bold text-gray-900 mb-2">Origin</h3>
+                  <p className="text-gray-600">{Array.isArray(data.origin) ? data.origin.join(', ') : data.origin}</p>
+                </div>
+              )}
+              {data.gender && (
+                <div className="text-center">
+                  <h3 className="font-bold text-gray-900 mb-2">Gender</h3>
+                  <p className="text-gray-600 capitalize">{data.gender}</p>
+                </div>
+              )}
+              {data.lucky_number && (
+                <div className="text-center">
+                  <h3 className="font-bold text-gray-900 mb-2">Lucky Number</h3>
+                  <p className="text-gray-600">{data.lucky_number}</p>
+                </div>
+              )}
+            </div>
+          </header>
+        </article>
+
+        {/* Related Names Section - Above Fold for Better SEO */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Similar {data.name} Names</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {data.similar_sounding_names?.slice(0, 8).map((similarName, index) => (
+              <Link
+                key={index}
+                href={`/names/${data.religion}/${similarName.toLowerCase().replace(/\s+/g, '-')}`}
+                className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all text-center"
+              >
+                <div className="font-semibold text-blue-600">{similarName}</div>
+                <div className="text-xs text-gray-500 mt-1">Similar Sound</div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* Quick Links Section */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Explore More {religion.charAt(0).toUpperCase() + religion.slice(1)} Names</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Link
+              href={`/names/${data.religion}`}
+              className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4 text-center hover:shadow-md transition-all"
+            >
+              <div className="font-semibold text-blue-700">All {religion.charAt(0).toUpperCase() + religion.slice(1)} Names</div>
+              <div className="text-xs text-blue-600 mt-1">Browse Complete List</div>
+            </Link>
+            <Link
+              href={`/names/${data.religion}/letter/${data.name.charAt(0).toUpperCase()}/1`}
+              className="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4 text-center hover:shadow-md transition-all"
+            >
+              <div className="font-semibold text-green-700">Names Starting with {data.name.charAt(0).toUpperCase()}</div>
+              <div className="text-xs text-green-600 mt-1">Letter {data.name.charAt(0).toUpperCase()}</div>
+            </Link>
+            {data.gender && (
+              <Link
+                href={`/${data.religion}/${data.gender}-names`}
+                className="bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg p-4 text-center hover:shadow-md transition-all"
+              >
+                <div className="font-semibold text-purple-700">{data.gender.charAt(0).toUpperCase() + data.gender.slice(1)} Names</div>
+                <div className="text-xs text-purple-600 mt-1">{religion.charAt(0).toUpperCase() + religion.slice(1)} {data.gender}s</div>
+              </Link>
+            )}
+            {data.origin && (
+              <Link
+                href={`/names/${data.religion}/origin/${Array.isArray(data.origin) ? data.origin[0] : data.origin}/1`}
+                className="bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg p-4 text-center hover:shadow-md transition-all"
+              >
+                <div className="font-semibold text-orange-700">{Array.isArray(data.origin) ? data.origin[0] : data.origin} Names</div>
+                <div className="text-xs text-orange-600 mt-1">Same Origin</div>
+              </Link>
+            )}
+          </div>
+        </section>
+      </div>
+
+      {/* Tab Content - Below Fold */}
       <main className="max-w-5xl mx-auto px-4 py-8">
         {/* Meaning Tab */}
         {activeTab === 'meaning' && (

@@ -6,8 +6,10 @@ import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpe
 
 const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
-// Use dynamic rendering to avoid static generation for search terms
-export const dynamic = 'force-dynamic';
+// Use static rendering with ISR for popular search terms
+export const dynamic = 'force-static';
+export const revalidate = 86400;
+export const dynamicParams = true;
 
 // Fetch search results from API - Cached for single-request deduplication
 const fetchSearchResults = cache(async (term) => {
@@ -67,8 +69,12 @@ export const generateMetadata = async ({ params }) => {
 
 // ---------------- ISR Static Pre-render ----------------
 export async function generateStaticParams() {
-  const popular = ['muhammad', 'fatima', 'ali', 'aisha', 'omar'];
-  return popular.map((term) => ({ term: encodeURIComponent(term) }));
+  const popular = [
+    'muhammad', 'fatima', 'ali', 'aisha', 'omar',
+    'sara', 'mohammed', 'noah', 'sophia', 'abdullah',
+    'ayesha', 'hassan', 'imam', 'zainab',
+  ];
+  return [...new Set(popular)].map((term) => ({ term: encodeURIComponent(term) }));
 }
 
 

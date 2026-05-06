@@ -193,14 +193,14 @@ const ReligiousNamesSection = () => {
         {/* Authority Banner */}
         <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-6 sm:p-8 text-center">
           <h3 className="text-xl sm:text-2xl font-bold text-white mb-3">
-            The World's Most Comprehensive Religious Baby Names Database
+            The World's Most Comprehensive Religious Baby Names Database - Quranic, Sanskrit & Biblical Names
           </h3>
           <p className="text-gray-300 max-w-3xl mx-auto mb-6">
-            Unlike generic baby name sites, NameVerse specializes in religious naming traditions. Our Islamic names include Quranic references and Arabic etymology. Hindu names feature Vedic context and Sanskrit roots. Christian names include Biblical citations and saint histories.
+            Unlike generic baby name sites, NameVerse specializes in authentic religious naming traditions. Our Islamic baby names include Quranic references, Arabic etymology, and Urdu meanings. Hindu names feature Vedic context, Sanskrit roots, and Hindi translations. Christian names include Biblical citations, saint histories, and faith heritage. Discover spiritual baby names with deep cultural and religious significance.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             {religions.map((religion) => (
-              <Link 
+              <Link
                 key={religion.id}
                 href={religion.link}
                 className={`px-5 py-2.5 rounded-lg border-2 ${religion.borderColor} ${religion.textColor} hover:bg-white transition-all font-semibold text-sm`}
