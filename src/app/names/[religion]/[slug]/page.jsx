@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { notFound } from 'next/navigation';
 import { fetchNameDetail } from '@/lib/api/names';
 import { generateNamePageMetadata, generateNamePageSchemas } from '@/lib/seo/name-page-seo';
@@ -10,6 +11,9 @@ export const revalidate = 86400;
 export const dynamicParams = true;
 
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
+
+// Cached fetch to deduplicate identical requests within the same request cycle
+const fetchCachedNameDetail = cache(fetchNameDetail);
 
 // Pre-generate static params for popular names at build time
 export async function generateStaticParams() {
@@ -46,7 +50,7 @@ export async function generateMetadata({ params }) {
     };
   }
 
-  const nameData = await fetchNameDetail(religion, slug);
+  const nameData = await fetchCachedNameDetail(religion, slug);
   if (!nameData) {
     return {
       title: 'Name Not Found | NameVerse',
@@ -79,7 +83,7 @@ export default async function NameDetailPage({ params }) {
     return notFound();
   }
 
-  const nameData = await fetchNameDetail(religion, slug);
+  const nameData = await fetchCachedNameDetail(religion, slug);
   if (!nameData) {
     return notFound();
   }

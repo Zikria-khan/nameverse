@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { fetchNamesWithAdvancedFilters } from '@/lib/api/names';
@@ -14,15 +15,21 @@ const RELIGION_LABELS = {
 
 // Use static rendering with ISR for pagination pages
 export const dynamic = 'force-static';
-export const revalidate = 86400;
+export const revalidate = 604800;
 export const dynamicParams = true;
 
-// Pre-generate first page for all religions at build time
+// Pre-generate first 5 pages for all religions at build time
 export function generateStaticParams() {
-  return VALID_RELIGIONS.map((religion) => ({
-    religion,
-    page: '1',
-  }));
+  const params = [];
+  for (const religion of VALID_RELIGIONS) {
+    for (let page = 1; page <= 5; page++) {
+      params.push({
+        religion,
+        page: page.toString(),
+      });
+    }
+  }
+  return params;
 }
 
 function normalizeReligion(religion) {
@@ -48,8 +55,9 @@ function generateSlug(name) {
 }
 
 export async function generateMetadata({ params }) {
-  const religion = normalizeReligion(params?.religion);
-  const page = normalizePage(params?.page);
+  const awaitedParams = await params;
+  const religion = normalizeReligion(awaitedParams?.religion);
+  const page = normalizePage(awaitedParams?.page);
   const label = RELIGION_LABELS[religion] || 'Baby';
   const canonical = generateCanonicalUrl(`/names/religion/${religion}/${page}`);
 
@@ -216,15 +224,21 @@ export async function generateMetadata({ params }) {
   };
 }
 
+// Cached fetch to deduplicate identical requests within the same request cycle
+const fetchCachedNames = cache(async (params) => {
+  return await fetchNamesWithAdvancedFilters(params);
+});
+
 export default async function ReligionByPage({ params }) {
-  const religion = normalizeReligion(params?.religion);
-  const page = normalizePage(params?.page);
+  const awaitedParams = await params;
+  const religion = normalizeReligion(awaitedParams?.religion);
+  const page = normalizePage(awaitedParams?.page);
 
   if (!religion) {
     return notFound();
   }
 
-  const response = await fetchNamesWithAdvancedFilters({
+  const response = await fetchCachedNames({
     religion,
     page,
     limit: 50,

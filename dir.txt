@@ -1,0 +1,10 @@
+ Volume in drive F has no label.
+ Volume Serial Number is 469F-7196
+
+ Directory of F:\coding\nameverse\.next.corrupted\dev\cache\turbopack
+
+05/05/2026  06:00 AM    <DIR>                       .
+05/05/2026  06:00 AM    <DIR>                       ..
+05/07/2026  06:48 AM    <DIR>                       d1bd5b58
+               0 File(s)              0 bytes
+               3 Dir(s)  164,573,040,640 bytes free

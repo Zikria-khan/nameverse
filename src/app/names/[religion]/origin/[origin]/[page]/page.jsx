@@ -11,19 +11,21 @@ const STATIC_ORIGINS = ['arabic', 'persian', 'turkish', 'indian', 'english', 'ot
 
 // Use static generation with ISR for pagination pages
 export const dynamic = 'force-static';
-export const revalidate = 86400;
+export const revalidate = 604800;
 export const dynamicParams = true;
 
-// Pre-generate first page for all religion/origin combinations
+// Pre-generate first 5 pages for all religion/origin combinations
 export async function generateStaticParams() {
   const params = [];
   for (const religion of VALID_RELIGIONS) {
     for (const origin of STATIC_ORIGINS) {
-      params.push({
-        religion,
-        origin,
-        page: '1',
-      });
+      for (let page = 1; page <= 5; page++) {
+        params.push({
+          religion,
+          origin,
+          page: page.toString(),
+        });
+      }
     }
   }
   return params;
@@ -58,11 +60,12 @@ function validateAndSanitizeParams(params, availableOrigins) {
 }
 
 export async function generateMetadata({ params }) {
-  const religion = VALID_RELIGIONS.includes(params.religion?.toLowerCase()) ? params.religion.toLowerCase() : 'islamic';
-  const origin = resolveOrigin(params.origin, STATIC_ORIGINS);
+  const awaitedParams = await params;
+  const religion = VALID_RELIGIONS.includes(awaitedParams.religion?.toLowerCase()) ? awaitedParams.religion.toLowerCase() : 'islamic';
+  const origin = resolveOrigin(awaitedParams.origin, STATIC_ORIGINS);
+  const page = parseInt(awaitedParams.page, 10) > 0 ? parseInt(awaitedParams.page, 10) : 1;
   const religionLabel = religion.charAt(0).toUpperCase() + religion.slice(1);
   const originLabel = origin.charAt(0).toUpperCase() + origin.slice(1);
-  const page = parseInt(params.page, 10) > 0 ? parseInt(params.page, 10) : 1;
   const canonical = generateCanonicalUrl(`/names/${religion}/origin/${origin}/${page}`);
 
   return {

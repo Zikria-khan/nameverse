@@ -1,8 +1,9 @@
 "use client"
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
+import Link from 'next/link'
 import {
-  Sparkles, BookOpen, Book, Heart, Brain, Gem, Calendar, Palette, Hash,
+  Sparkles, BookOpen, Book, Heart, Brain, Gem, Calendar, Hash,
   Languages, Volume2, Users, Link2, Share2, Bookmark, TrendingUp,
   Globe, ChevronDown, ChevronUp, Home, AlignLeft, History, Star,
   MessageCircle, Copy, Check, ExternalLink

@@ -7,6 +7,7 @@ import { Search, List, Grid, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useState, useTransition, useMemo, useCallback } from 'react';
 import FavoriteButton from '@/components/FavoriteButton';
+import SearchWithSuggestions from '@/components/SearchWithSuggestions';
 
 export default function SearchResultsClient({
   initialNames,
@@ -87,6 +88,11 @@ export default function SearchResultsClient({
           </Link>
           <span className="font-medium text-gray-600">Back to Home</span>
         </nav>
+
+        {/* Search Bar */}
+        <div className="max-w-4xl mx-auto px-4 mb-4">
+          <SearchWithSuggestions />
+        </div>
 
         <nav
           className="max-w-4xl mx-auto flex flex-col sm:flex-row gap-3 justify-between items-center px-4 py-6 mb-4 border-b border-gray-100"

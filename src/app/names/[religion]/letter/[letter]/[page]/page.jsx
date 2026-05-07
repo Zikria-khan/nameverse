@@ -9,7 +9,7 @@ const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ#'.split('');
 const NAMES_PER_PAGE = 50;
 
 export const dynamic = 'force-static';
-export const revalidate = 86400;
+export const revalidate = 604800;
 export const dynamicParams = true;
 
 function normalizeReligion(religion) {
@@ -40,24 +40,27 @@ export async function generateStaticParams() {
   const params = [];
   const religions = ['islamic', 'christian', 'hindu'];
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-  
+
   for (const religion of religions) {
     for (const letter of letters) {
-      params.push({
-        religion,
-        letter,
-        page: '1',
-      });
+      for (let page = 1; page <= 5; page++) {
+        params.push({
+          religion,
+          letter,
+          page: page.toString(),
+        });
+      }
     }
   }
-  
+
   return params;
 }
 
 export async function generateMetadata({ params }) {
-  const religion = normalizeReligion(params.religion) || 'islamic';
-  const letter = normalizeLetter(params.letter);
-  const page = normalizePage(params.page);
+  const awaitedParams = await params;
+  const religion = normalizeReligion(awaitedParams.religion) || 'islamic';
+  const letter = normalizeLetter(awaitedParams.letter);
+  const page = normalizePage(awaitedParams.page);
   const religionLabel = religion.charAt(0).toUpperCase() + religion.slice(1);
   const canonical = generateCanonicalUrl(`/names/${religion}/letter/${letter}/${page}`);
 

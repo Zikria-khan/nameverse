@@ -12,7 +12,7 @@ const STATIC_CATEGORIES = ['modern', 'traditional', 'nature', 'religious', 'clas
 
 // Static generation with ISR revalidation
 export const dynamic = 'force-static';
-export const revalidate = 86400;
+export const revalidate = 604800;
 export const dynamicParams = true;
 
 function normalizeReligion(religion) {
@@ -106,11 +106,13 @@ export async function generateStaticParams() {
   const params = [];
   for (const religion of VALID_RELIGIONS) {
     for (const category of STATIC_CATEGORIES) {
-      params.push({
-        religion,
-        category,
-        page: '1',
-      });
+      for (let page = 1; page <= 5; page++) {
+        params.push({
+          religion,
+          category,
+          page: page.toString(),
+        });
+      }
     }
   }
   return params;

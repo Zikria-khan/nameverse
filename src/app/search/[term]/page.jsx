@@ -8,7 +8,7 @@ const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app
 
 // Use static rendering with ISR for popular search terms
 export const dynamic = 'force-static';
-export const revalidate = 86400;
+export const revalidate = 604800;
 export const dynamicParams = true;
 
 // Fetch search results from API - Cached for single-request deduplication
@@ -70,9 +70,24 @@ export const generateMetadata = async ({ params }) => {
 // ---------------- ISR Static Pre-render ----------------
 export async function generateStaticParams() {
   const popular = [
-    'muhammad', 'fatima', 'ali', 'aisha', 'omar',
-    'sara', 'mohammed', 'noah', 'sophia', 'abdullah',
-    'ayesha', 'hassan', 'imam', 'zainab',
+    // Islamic names
+    'muhammad', 'fatima', 'ali', 'aisha', 'omar', 'maryam', 'ibrahim', 'zahra',
+    'yusuf', 'khadija', 'salman', 'hassan', 'hussein', 'zainab', 'ayesha', 'abdullah',
+    'umar', 'abdul', 'noor', 'sara', 'mariam', 'aiman', 'ahmed', 'bilal', 'farah',
+
+    // Christian names
+    'noah', 'sophia', 'james', 'mary', 'david', 'sarah', 'matthew', 'elizabeth',
+    'joseph', 'anna', 'john', 'emma', 'michael', 'olivia', 'william', 'ava',
+    'alexander', 'isabella', 'daniel', 'mia', 'lucas', 'charlotte', 'henry', 'amelia',
+
+    // Hindu names
+    'aarav', 'saanvi', 'vihaan', 'ananya', 'arjun', 'diya', 'krishna', 'priya',
+    'rohan', 'meera', 'rahul', 'isha', 'aditya', 'sneha', 'vikram', 'kavya',
+    'dev', 'lila', 'raj', 'maya', 'sanjay', 'nisha', 'amit', 'priya',
+
+    // Common search terms (meanings and origins)
+    'strong', 'beautiful', 'peace', 'love', 'light', 'grace', 'victory', 'noble',
+    'arabic', 'hebrew', 'sanskrit', 'greek', 'latin', 'persian',
   ];
   return [...new Set(popular)].map((term) => ({ term: encodeURIComponent(term) }));
 }
