@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Search, List, Grid, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { useState, useTransition, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import FavoriteButton from '@/components/FavoriteButton';
 import SearchWithSuggestions from '@/components/SearchWithSuggestions';
 
@@ -16,17 +16,20 @@ export default function SearchResultsClient({
 }) {
   const router = useRouter();
 
-  const totalResults = totalNames;
+  const initialTotalResults = totalNames;
   const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
   const dynamicTitle = `${searchTerm} - Names | NameVerse`;
-  const dynamicDescription = `Discover ${totalResults} name results for ${searchTerm}. Expert meanings, origins, and inspiration for your search.`;
+  const dynamicDescription = `Discover ${initialTotalResults} name results for ${searchTerm}. Expert meanings, origins, and inspiration for your search.`;
   const canonicalURL = `${DOMAIN}/search/${encodeURIComponent(searchTerm)}`;
 
   const [viewMode, setViewMode] = useState('grid');
-  const [isPending, startTransition] = useTransition();
   const [activeTab, setActiveTab] = useState('all');
+  const [names, setNames] = useState(initialNames || []);
+  const [searchResultsCount, setSearchResultsCount] = useState(initialTotalResults || 0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const displayNames = initialNames;
+  const displayNames = names;
 
   // SEO Schemas
   const faqSchema = {
@@ -76,6 +79,49 @@ export default function SearchResultsClient({
     `Each entry includes origin, short meaning, usage notes, and related names so you can compare options and choose with confidence.`,
   ], [searchTerm]);
 
+  useEffect(() => {
+    const controller = new AbortController();
+    const source = controller.signal;
+    const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'https://name-meaning-site-backend.vercel.app';
+
+    async function loadResults() {
+      if (!searchTerm || searchTerm.trim().length < 2) {
+        setNames([]);
+        setSearchResultsCount(0);
+        setError(null);
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const params = new URLSearchParams({ q: searchTerm.trim(), limit: '20' });
+        const response = await fetch(`${apiBase}/api/v1/names/search?${params.toString()}`, {
+          signal: source,
+          cache: 'no-store',
+        });
+        const payload = await response.json();
+        const results = payload.data || payload.results || [];
+        const count = payload.count || payload.total || results.length;
+        setNames(results);
+        setSearchResultsCount(count);
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          setError('Unable to load search results.');
+          setNames([]);
+          setSearchResultsCount(0);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadResults();
+    return () => controller.abort();
+  }, [searchTerm]);
+
   return (
     <>
       <Script id="faq-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
@@ -100,7 +146,7 @@ export default function SearchResultsClient({
         >
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-extrabold text-indigo-900 tracking-tight">{searchTerm}</h1>
-            <span className="text-base text-indigo-700 font-semibold">({totalResults} results)</span>
+            <span className="text-base text-indigo-700 font-semibold">({searchResultsCount} results)</span>
           </div>
 
           <div className="flex gap-1 bg-gray-50 rounded-md px-2 py-1">
@@ -132,9 +178,9 @@ export default function SearchResultsClient({
         
 
         <section className="max-w-4xl mx-auto px-4 pt-2 pb-6" role="main">
-          {isPending ? (
+          {isLoading ? (
             <SkeletonResults />
-          ) : totalResults === 0 ? (
+          ) : searchResultsCount === 0 ? (
             <EmptyState searchTerm={searchTerm} />
           ) : (
             <div className="space-y-12">

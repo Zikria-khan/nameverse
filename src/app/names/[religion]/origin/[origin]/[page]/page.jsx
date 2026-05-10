@@ -1,6 +1,6 @@
 // src/app/names/origins/[origin]/[page]/page.jsx
 import Link from 'next/link';
-import { fetchFilters, fetchNamesWithAdvancedFilters } from '@/lib/api/names';
+import { fetchNamesWithAdvancedFilters } from '@/lib/api/names';
 import { validateMetaTitle, validateMetaDescription, generateCanonicalUrl } from '@/lib/seo/meta-helpers';
 import { Sparkles, Moon, ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -11,7 +11,7 @@ const STATIC_ORIGINS = ['arabic', 'persian', 'turkish', 'indian', 'english', 'ot
 
 // Use static generation with ISR for pagination pages
 export const dynamic = 'force-static';
-export const revalidate = 604800;
+export const revalidate = 2592000;
 export const dynamicParams = true;
 
 // Pre-generate first 5 pages for all religion/origin combinations
@@ -107,8 +107,7 @@ export async function generateMetadata({ params }) {
 
 export default async function OriginNamesPage({ params }) {
   const rawParams = await params;
-  const filters = await fetchFilters(rawParams.religion || 'islamic');
-  const availableOrigins = filters.origins?.map((originValue) => String(originValue).trim()).filter(Boolean) || STATIC_ORIGINS;
+  const availableOrigins = STATIC_ORIGINS;
   const { religion, origin, page } = validateAndSanitizeParams(rawParams, availableOrigins);
 
   let names = [];

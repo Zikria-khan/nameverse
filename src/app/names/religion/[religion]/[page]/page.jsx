@@ -15,7 +15,7 @@ const RELIGION_LABELS = {
 
 // Use static rendering with ISR for pagination pages
 export const dynamic = 'force-static';
-export const revalidate = 604800;
+export const revalidate = 2592000;
 export const dynamicParams = true;
 
 // Pre-generate first 5 pages for all religions at build time

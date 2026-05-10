@@ -788,55 +788,40 @@ export async function fetchNamesWithAdvancedFilters(options = {}) {
       delete params.startsWith;
     }
 
-    const { data } = await apiClient.get(`/api/v1/names/${normalizedReligion}`, { params });
-
-    // For development/demo purposes, always return mock data to ensure pages work
     const mockNames = getMockNamesForReligion(normalizedReligion, page, limit);
-    return {
-      data: mockNames,
-      pagination: {
-        page,
-        limit,
-        totalCount: mockNames.length * 5, // Simulate more pages
-        totalPages: Math.ceil((mockNames.length * 5) / limit),
-      },
-      success: true,
-      __mockData: true, // Flag to indicate this is mock data
-    };
+    const mockTotalCount = Math.max(1, mockNames.length * 5);
+    const mockTotalPages = Math.max(1, Math.ceil(mockTotalCount / limit));
+    const useMockData = process.env.NEXT_PUBLIC_USE_MOCK_NAMES !== 'false';
 
-    /* Original logic - commented out for now
-    // If API fails or returns no data, provide fallback mock data
-    const hasValidData = data && (data.data || data.names) && Array.isArray(data.data || data.names) && (data.data || data.names).length > 0;
-
-    if (!hasValidData) {
-      // Return mock data for development/demo purposes
-      const mockNames = getMockNamesForReligion(normalizedReligion, page, limit);
+    if (useMockData) {
       return {
         data: mockNames,
         pagination: {
           page,
           limit,
-          totalCount: mockNames.length * 5, // Simulate more pages
-          totalPages: Math.ceil((mockNames.length * 5) / limit),
+          totalCount: mockTotalCount,
+          totalPages: mockTotalPages,
         },
         success: true,
-        __mockData: true, // Flag to indicate this is mock data
+        __mockData: true,
       };
     }
-    */
 
-    const result = {
-      data: data.data || data.names || [],
-      pagination: data.pagination || {
-        page: data.pagination?.page || page,
-        limit: data.pagination?.limit || limit,
-        totalCount: data.pagination?.total || data.totalCount || 0,
-        totalPages: data.pagination?.pages || data.totalPages || 0,
-      },
-      success: data.success !== false,
+    const { data } = await apiClient.get(`/api/v1/names/${normalizedReligion}`, { params });
+    const payload = data.data || data.names || [];
+    const pagination = data.pagination || {
+      page,
+      limit,
+      totalCount: data.total || data.totalCount || payload.length,
+      totalPages: data.pagination?.pages || data.totalPages || Math.max(1, Math.ceil((payload.length || 0) / limit)),
     };
 
-    return result;
+    return {
+      data: payload,
+      pagination,
+      success: data.success !== false,
+      __mockData: false,
+    };
   } catch (error) {
     return {
       data: [],

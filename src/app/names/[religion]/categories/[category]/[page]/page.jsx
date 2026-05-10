@@ -1,6 +1,6 @@
 // src/app/names/categories/[category]/[page]/page.jsx
 import Link from 'next/link';
-import { fetchFilters, fetchNamesWithAdvancedFilters } from '@/lib/api/names';
+import { fetchNamesWithAdvancedFilters } from '@/lib/api/names';
 import { validateMetaTitle, validateMetaDescription, generateCanonicalUrl } from '@/lib/seo/meta-helpers';
 import { Sparkles, Moon, ChevronLeft, ChevronRight } from 'lucide-react';
 import FavoriteButton from '@/components/FavoriteButton';
@@ -12,7 +12,7 @@ const STATIC_CATEGORIES = ['modern', 'traditional', 'nature', 'religious', 'clas
 
 // Static generation with ISR revalidation
 export const dynamic = 'force-static';
-export const revalidate = 604800;
+export const revalidate = 2592000;
 export const dynamicParams = true;
 
 function normalizeReligion(religion) {
@@ -120,8 +120,7 @@ export async function generateStaticParams() {
 
 export default async function CategoryNamesPage({ params }) {
   const rawParams = await params;
-  const filters = await fetchFilters(rawParams.religion || 'islamic');
-  const availableCategories = filters.categories?.map((categoryValue) => String(categoryValue).trim()).filter(Boolean) || STATIC_CATEGORIES;
+  const availableCategories = STATIC_CATEGORIES;
   const { religion, category, page } = validateAndSanitizeParams(rawParams, availableCategories);
 
   let names = [];

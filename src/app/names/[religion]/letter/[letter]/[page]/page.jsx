@@ -9,7 +9,7 @@ const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ#'.split('');
 const NAMES_PER_PAGE = 50;
 
 export const dynamic = 'force-static';
-export const revalidate = 604800;
+export const revalidate = 2592000;
 export const dynamicParams = true;
 
 function normalizeReligion(religion) {

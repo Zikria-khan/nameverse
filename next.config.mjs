@@ -4,8 +4,9 @@ const API_BASE = (process.env.NEXT_PUBLIC_API_BASE || 'https://name-meaning-site
 const nextConfig = {
   reactStrictMode: true,
 
-  // Output for Edge Runtime - reduces origin transfer
-  output: 'standalone',
+  // Use standard server output for Vercel and Windows builds
+  // Standalone output can cause file lock issues on Windows during next build.
+  // Removing this avoids .next/standalone copy errors.
 
   // Disable TypeScript checking during build
   typescript: {
@@ -82,7 +83,7 @@ dangerouslyAllowSVG: true,
             },
             // Optimized for Edge Caching & ISR
             // max-age=0 ensures browsers always revalidate
-            // s-maxage=300 allows CDN to cache for 5 minutes (reduces origin load)
+            // s-maxage=86400 allows CDN to cache for 24 hours (reduces origin load)
             // stale-while-revalidate=86400 serves stale during revalidation (24h)
             {
               key: 'Cache-Control',
@@ -95,7 +96,7 @@ dangerouslyAllowSVG: true,
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=0, s-maxage=0, must-revalidate',
+            value: 'public, max-age=0, s-maxage=86400, stale-while-revalidate=86400',
           },
         ],
       },

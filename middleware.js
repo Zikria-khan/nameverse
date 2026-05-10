@@ -96,6 +96,10 @@ export function middleware(request) {
 // ==========================================
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|_next/data|favicon.ico|robots.txt|sitemap.xml|images).*)",
+    '/names',
+    '/names/:path*',
+    '/search/:path*',
+    '/blog/:path*',
+    '/guides/:path*',
   ],
 };
