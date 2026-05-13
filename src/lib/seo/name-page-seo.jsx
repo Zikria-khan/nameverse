@@ -1,315 +1,407 @@
 // lib/seo/name-page-seo-enhanced.jsx
+// PRODUCTION-GRADE SEO SYSTEM - Deterministic rotation, E-E-A-T safe, stable indexing
+
 import { getSiteUrl } from '@/lib/seo/site';
-import { validateMetaTitle, validateMetaDescription, generateNameMetaDescription } from '@/lib/seo/meta-helpers';
-import { generateNameProductSchema, generateFAQSchema } from '@/lib/seo/structured-data';
-import { generateNameFAQ } from '@/lib/seo/content-helpers';
+import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
 
 const SITE_URL = getSiteUrl();
 
 /**
- * Enhanced keyword generation with question-based, comparison, and ultra-long-tail clusters
- * Optimized for 2026 search intent and voice search
+ * Deterministic hash function for consistent rotation
+ * Same name + religion = same variant every time
+ * No Math.random() = SEO stable
  */
-export function generateNamePageKeywords(data) {
-  const titleName = data.name;
-  const religionTitle = data.religion.charAt(0).toUpperCase() + data.religion.slice(1);
-  const gender = data.gender?.toLowerCase() || '';
-  const origin = data.origin || '';
-
-  // ========== CORE BRAND KEYWORDS (highest priority) ==========
-  const coreKeywords = [
-    titleName,
-    `${titleName} name`,
-    `${titleName} name meaning`,
-    `${titleName} meaning`,
-    `meaning of ${titleName}`,
-    `${titleName} name meaning in English`,
-    `NameVerse ${titleName}`,
-    `NameVerse baby names`,
-    'NameVerse',
-  ];
-
-  // ========== LANGUAGE-SPECIFIC QUERIES (high conversion intent) ==========
-  const languageKeywords = [];
-  if (data.in_urdu) languageKeywords.push(`${titleName} name meaning in Urdu`, `meaning of ${titleName} in Urdu`, `${data.in_urdu.name} meaning in Urdu`);
-  if (data.in_arabic) languageKeywords.push(`${titleName} name meaning in Arabic`, `معنى اسم ${data.in_arabic.name}`, `${data.in_arabic.name} meaning in Arabic`);
-  if (data.in_hindi) languageKeywords.push(`${titleName} name meaning in Hindi`, `${titleName} ka matlab`);
-  if (data.in_pashto) languageKeywords.push(`${titleName} meaning in Pashto`);
-
-  // ========== QUESTION-BASED QUERIES (voice search optimized) ==========
-  const questionKeywords = [
-    `what does ${titleName} mean`,
-    `what is the meaning of ${titleName}`,
-    `what does the name ${titleName} mean`,
-    `what is ${titleName} name meaning`,
-    `what does ${titleName} stand for`,
-    `what is the meaning of the name ${titleName}`,
-    `what does ${titleName} mean in ${religionTitle}`,
-    `what is the lucky number of ${titleName}`,
-    `what is the lucky stone of ${titleName}`,
-    `what is the origin of ${titleName}`,
-    `how to pronounce ${titleName}`,
-    `is ${titleName} a good name`,
-    `is ${titleName} a ${gender} name`,
-    `is ${titleName} an ${origin} name`,
-  ];
-
-  // ========== COMPARISON QUERIES (capture indecision traffic) ==========
-  const comparisonKeywords = [];
-  if (data.similar_sounding_names?.length) {
-    data.similar_sounding_names.slice(0, 2).forEach(similar => {
-      comparisonKeywords.push(`${titleName} vs ${similar}`);
-      comparisonKeywords.push(`${similar} vs ${titleName}`);
-      comparisonKeywords.push(`${titleName} or ${similar} which is better`);
-    });
+function getStableHash(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+    hash |= 0;
   }
+  return Math.abs(hash);
+}
 
-  // ========== RELIGIOUS + CULTURAL INTENT ==========
-  const religiousKeywords = [
-    `${religionTitle} names`,
-    `${religionTitle} baby names`,
-    `${religionTitle} ${gender} names`,
-    `${religionTitle} names with meanings`,
-    `beautiful ${religionTitle} names`,
-    `unique ${religionTitle} names`,
-    `traditional ${religionTitle} names`,
-    `modern ${religionTitle} names`,
-    gender ? `${religionTitle} ${gender} names with meanings` : '',
-    data.lucky_number ? `${religionTitle} names with lucky number ${data.lucky_number}` : '',
+function getStableVariantIndex(name, religion, variantsCount) {
+  const stableKey = `${name}-${religion}`;
+  const hash = getStableHash(stableKey);
+  return hash % variantsCount;
+}
+
+function formatTraitList(traits = []) {
+  const list = Array.isArray(traits) ? traits.filter(Boolean) : [];
+  return list.slice(0, 3).join(', ');
+}
+
+function getPersonalitySummary(data) {
+  const traits = [
+    ...(Array.isArray(data.emotional_traits) ? data.emotional_traits : []),
+    ...(Array.isArray(data.hidden_personality_traits) ? data.hidden_personality_traits : []),
   ].filter(Boolean);
+  return formatTraitList(traits);
+}
 
-  // ========== ORIGIN + LANGUAGE INTENT ==========
-  const originKeywords = origin ? [
-    `${origin} names`,
-    `${origin} baby names`,
-    `${origin} ${gender} names`,
-    `${origin} names with meanings`,
-    `popular ${origin} names`,
-    `traditional ${origin} names`,
-    `${titleName} ${origin} name meaning`,
-    `${origin} name ${titleName}`,
-  ] : [];
-
-  // ========== NUMEROLOGY + LUCKY ATTRIBUTES INTENT ==========
-  const numerologyKeywords = [];
-  if (data.lucky_number) {
-    numerologyKeywords.push(
-      `names with lucky number ${data.lucky_number}`,
-      `number ${data.lucky_number} names`,
-      `${titleName} lucky number`,
-      `${titleName} numerology`,
-      `${titleName} numerology number ${data.life_path_number || ''}`,
-      `lucky number ${data.lucky_number} baby names`,
-      `${gender} names with lucky number ${data.lucky_number}`
-    );
+function formatLanguages(data) {
+  if (Array.isArray(data.languages) && data.languages.length > 0) {
+    return data.languages.slice(0, 3).join(', ');
   }
-  if (data.lucky_stone) {
-    numerologyKeywords.push(
-      `${data.lucky_stone} lucky stone names`,
-      `names with lucky stone ${data.lucky_stone}`,
-      `${titleName} lucky stone`
-    );
-  }
-  if (data.lucky_day) {
-    numerologyKeywords.push(`names for ${data.lucky_day} born`);
-  }
-
-  // ========== ULTRA LONG-TAIL QUERIES (low competition, high specificity) ==========
-  const longTailKeywords = [
-    `${titleName} name meaning and lucky number`,
-    `${titleName} name meaning in ${religionTitle} with lucky color`,
-    `best ${religionTitle} ${gender} names that mean ${data.short_meaning?.split(',')[0] || ''}`,
-    `${titleName} name meaning personality and traits`,
-    `baby ${gender} name ${titleName} meaning origin and numerology`,
-    `${titleName} ${religionTitle} baby name meaning and pronunciation`,
-    `${titleName} name spiritual meaning and significance`,
-    `${titleName} name numerology and personality traits`,
-    `is ${titleName} a common ${religionTitle} name`,
-    `${titleName} name popularity in ${data.popularity_by_region?.[0]?.region || ''}`,
-  ].filter(k => !k.includes('undefined'));
-
-  // ========== LOCATION-SPECIFIC QUERIES ==========
-  const locationKeywords = [];
-  if (data.popularity_by_region?.length) {
-    data.popularity_by_region.slice(0, 3).forEach(region => {
-      locationKeywords.push(
-        `${titleName} name popularity in ${region.region}`,
-        `${region.region} ${religionTitle} baby names`,
-        `popular ${gender} names in ${region.region}`,
-        `${titleName} meaning in ${region.region}`
-      );
-    });
-  }
-
-  // ========== SIBLING & COMPANION NAME QUERIES ==========
-  const siblingKeywords = [];
-  if (gender === 'female') {
-    siblingKeywords.push(`sister names for ${titleName}`, `names that go with ${titleName}`);
-  } else if (gender === 'male') {
-    siblingKeywords.push(`brother names for ${titleName}`, `names that go with ${titleName}`);
-  }
-
-  // ========== GENERAL BABY NAME DISCOVERY ==========
-  const generalKeywords = [
-    'baby name meanings',
-    'baby names with meanings',
-    'unique baby names',
-    'beautiful baby names',
-    'popular baby names',
-    'trending baby names',
-    'best baby names',
-    'baby names and meanings',
-    'name meanings and origins',
-    'baby name finder',
-  ];
-
-  // Combine all clusters with priority order (most important first)
-  const allKeywords = [
-    ...new Set([
-      ...coreKeywords,
-      ...questionKeywords,
-      ...languageKeywords,
-      ...comparisonKeywords,
-      ...religiousKeywords,
-      ...originKeywords,
-      ...numerologyKeywords,
-      ...longTailKeywords,
-      ...locationKeywords,
-      ...siblingKeywords,
-      ...generalKeywords,
-    ]),
-  ]
-    .filter(Boolean)
-    .filter(k => k.length > 2)
-    .slice(0, 35); // Keep most valuable 35 keywords for meta tag
-
-  return allKeywords.join(', ');
+  return '';
 }
 
 /**
- * Generate enhanced metadata with 2026 best practices
+ * Extract clean core emotion from meaning
+ * Server-side safe, handles long/poetic/multilingual meanings
  */
-export function generateNamePageMetadata(data, religion, slug) {
-  const titleName = data.name || slug.replace(/[-_]/g, ' ');
-  const religionTitle = religion.charAt(0).toUpperCase() + religion.slice(1);
-  const keywords = generateNamePageKeywords(data);
+function extractCoreEmotion(meaning) {
+  if (!meaning || typeof meaning !== 'string') return 'Beautiful';
+  
+  // Clean: remove extra spaces, take first meaningful part
+  let cleaned = meaning.trim();
+  
+  // Split by comma, period, or line break - take first clause
+  cleaned = cleaned.split(',')[0];
+  cleaned = cleaned.split('.')[0];
+  cleaned = cleaned.split('\n')[0];
+  
+  // Take first 2-3 words up to 25 chars
+  const words = cleaned.split(' ').filter(w => w.length > 0);
+  const coreWords = words.slice(0, 2).join(' ');
+  
+  // Fallback if too short or too long
+  if (coreWords.length < 2) return words[0] || 'Meaningful';
+  if (coreWords.length > 30) return coreWords.substring(0, 27) + '...';
+  
+  return coreWords;
+}
+
+/**
+ * SEO Fingerprint Lock System
+ * Same name + religion = same base structure
+ * Only wording changes slightly within stable variant
+ */
+function getSEOStableVariant(name, religion) {
+  const stableKey = `${name.toLowerCase()}-${religion}`;
+  const hash = getStableHash(stableKey);
+  
+  // 4 stable variants based on hash (0-3)
+  // Same name always gets same variant number
+  const variantMap = {
+    0: { type: 'question', style: 'direct' },
+    1: { type: 'question', style: 'soft' },
+    2: { type: 'statement', style: 'meaning' },
+    3: { type: 'statement', style: 'story' }
+  };
+  
+  return variantMap[hash % 4];
+}
+
+/**
+ * TITLE SYSTEM - 2 MODES ONLY, Deterministic rotation
+ * No Math.random() - SEO stable
+ * Neutral hooks - E-E-A-T safe
+ */
+export function generateOptimizedTitle(data, religion) {
+  const name = data.name;
+  const gender = typeof data.gender === 'string' ? data.gender.toLowerCase() : '';
+  const genderLabel = gender === 'male' ? 'Boy' : gender === 'female' ? 'Girl' : '';
+  const religionDisplay = religion === 'islamic' ? 'Islamic' : 
+                          religion === 'christian' ? 'Christian' : 
+                          religion === 'hindu' ? 'Hindu' : religion;
+  const genderPhrase = genderLabel ? `${genderLabel} ` : '';
+
+  const title = `${name} ${religionDisplay} ${genderPhrase}Name Meaning | Origin, Lucky Number, Pronunciation & Personality`;
+
+  return validateMetaTitle(title);
+}
+
+/**
+ * DESCRIPTION SYSTEM - clear benefit copy for CTR
+ * Deterministic per name
+ */
+export function generateOptimizedDescription(data, religion) {
+  const name = data.name;
+  const shortMeaning = data.short_meaning || data.meaning || '';
+  const religionDisplay = religion === 'islamic' ? 'Islamic' : 
+                          religion === 'christian' ? 'Christian' : 
+                          religion === 'hindu' ? 'Hindu' : '';
+  const gender = typeof data.gender === 'string' ? data.gender.toLowerCase() : '';
+  const genderText = gender === 'male' ? 'boy name' : gender === 'female' ? 'girl name' : 'name';
+  const origin = data.origin || '';
+  const luckyNumber = data.lucky_number || '';
+  const luckyDay = data.lucky_day || '';
+  const luckyColors = Array.isArray(data.lucky_colors) ? data.lucky_colors.slice(0, 3).join(', ') : '';
+  const personality = getPersonalitySummary(data);
+  const languageSnippet = formatLanguages(data);
+  const coreEmotion = extractCoreEmotion(shortMeaning);
+
+  const intro = `${name} is ${religionDisplay === 'Islamic' ? 'an' : 'a'} ${religionDisplay.toLowerCase()} ${genderText} meaning "${coreEmotion}"`;
+  const attributes = [];
+  if (origin) attributes.push(`${origin} origin`);
+  if (luckyNumber) attributes.push(`lucky number ${luckyNumber}`);
+  if (luckyDay) attributes.push(`lucky day ${luckyDay}`);
+  if (luckyColors) attributes.push(`lucky colors ${luckyColors}`);
+  if (personality) attributes.push(`${personality} personality traits`);
+  if (languageSnippet) attributes.push(`used in ${languageSnippet}`);
+
+  let description = attributes.length > 0 ? `${intro} with ${attributes.join(', ')}.` : `${intro}.`;
+  description += ` Learn pronunciation, variations, origin and spiritual significance.`;
+
+  description = description
+    .replace(/\s+/g, ' ')
+    .replace(/\.\./g, '.')
+    .trim();
+
+  if (description.length > 158) {
+    description = `${intro}. Learn pronunciation, variations, origin and spiritual significance.`;
+  }
+  if (description.length > 158) {
+    description = description.substring(0, 155) + '...';
+  }
+
+  return validateMetaDescription(description);
+}
+
+/**
+ * Keywords - minimal, focused, stable (12 max)
+ */
+export function generateOptimizedKeywords(data, religion) {
+  const name = data.name;
+  const keywords = new Set();
+  const origin = data.origin || '';
+  const gender = typeof data.gender === 'string' ? data.gender.toLowerCase() : '';
+  const luckyNumber = data.lucky_number || '';
+  const luckyColors = Array.isArray(data.lucky_colors) ? data.lucky_colors : [];
+  const languageList = Array.isArray(data.languages) ? data.languages : [];
+  const personality = getPersonalitySummary(data);
+
+  keywords.add(`${name} name meaning`);
+  keywords.add(`${name} Islamic baby name meaning`);
+  keywords.add(`meaning of ${name}`);
+  if (origin) keywords.add(`${name} name origin`);
+  if (religion === 'islamic') {
+    keywords.add(`${name} Islamic name`);
+  } else if (religion === 'christian') {
+    keywords.add(`${name} Christian name`);
+  } else if (religion === 'hindu') {
+    keywords.add(`${name} Hindu name`);
+  }
+
+  if (gender === 'male') {
+    keywords.add(`Islamic boy name ${name}`);
+  } else if (gender === 'female') {
+    keywords.add(`Islamic girl name ${name}`);
+  }
+
+  if (luckyNumber) {
+    keywords.add(`${name} lucky number`);
+    keywords.add(`${name} lucky number meaning`);
+  }
+  if (luckyColors.length) keywords.add(`${name} lucky colors`);
+  if (languageList.length) {
+    keywords.add(`${name} language`);
+    if (languageList.includes('Arabic') || languageList.includes('arabic')) {
+      keywords.add(`${name} Arabic meaning`);
+    }
+  }
+  if (personality) keywords.add(`${name} personality`);
+  keywords.add(`${name} name pronunciation`);
+  keywords.add(`what does ${name} mean`);
+
+  return Array.from(keywords).slice(0, 12).join(', ');
+}
+
+/**
+ * Build FAQ item list from page data.
+ */
+function generateDynamicFaqItems(data, religion) {
+  const name = data.name || 'This name';
+  const origin = data.origin || '';
+  const religionDisplay = religion === 'islamic' ? 'Islamic' : religion === 'christian' ? 'Christian' : religion === 'hindu' ? 'Hindu' : religion;
+  const simpleMeaning = extractCoreEmotion(data.short_meaning || data.meaning || 'meaningful');
+  const gender = typeof data.gender === 'string' ? data.gender.toLowerCase() : '';
+  const nameType = gender === 'male' ? 'boy name' : gender === 'female' ? 'girl name' : 'name';
+  const pronunciation = data.pronunciation?.english ? `${data.pronunciation.english}${data.pronunciation?.ipa ? ` (${data.pronunciation.ipa})` : ''}` : '';
+  const personality = getPersonalitySummary(data);
+  const languages = Array.isArray(data.languages) ? data.languages.join(', ') : '';
+  const luckDetails = [];
+  if (data.lucky_number) luckDetails.push(`lucky number ${data.lucky_number}`);
+  if (data.lucky_day) luckDetails.push(`lucky day ${data.lucky_day}`);
+  if (data.lucky_colors?.length) luckDetails.push(`lucky colors ${data.lucky_colors.join(', ')}`);
+  if (data.lucky_stone) luckDetails.push(`lucky stone ${data.lucky_stone}`);
+
+  const items = [
+    {
+      q: `What does ${name} mean in ${religionDisplay}?`,
+      a: data.short_meaning || data.meaning || `${name} is a ${religionDisplay.toLowerCase()} ${nameType} that suggests ${simpleMeaning}.`,
+    },
+    {
+      q: `Is ${name} an ${religionDisplay.toLowerCase()} ${nameType}?`,
+      a: `Yes, ${name} is widely used as an ${religionDisplay.toLowerCase()} ${nameType} and is chosen for its meaningful origin.`,
+    },
+    {
+      q: `What is the origin of the name ${name}?`,
+      a: origin ? `${name} comes from ${origin} origin and carries spiritual meaning in ${religionDisplay.toLowerCase()} tradition.` : `${name} has a meaningful origin and is popular in ${religionDisplay.toLowerCase()} communities.`,
+    },
+    {
+      q: `What is ${name}'s lucky number and lucky color?`,
+      a: luckDetails.length ? `${name} is associated with ${luckDetails.join(', ')}.` : `${name} does not have a specific lucky number or color listed, but it is valued for its positive meaning.`,
+    },
+    {
+      q: `How do you pronounce ${name}?`,
+      a: pronunciation ? `The pronunciation of ${name} is ${pronunciation}.` : `The pronunciation of ${name} is commonly spoken in Arabic and Islamic name traditions.`,
+    },
+    {
+      q: `What personality traits are associated with ${name}?`,
+      a: personality ? `${name} is often linked to ${personality}.` : `${name} is believed to reflect positive personality qualities and strong character traits.`,
+    },
+    {
+      q: `What are variations of ${name}?`,
+      a: data.name_variations?.length ? `Common variations include ${data.name_variations.slice(0, 5).join(', ')}.` : `There are several variations of ${name} used in different languages and cultures.`,
+    },
+    {
+      q: `Why do parents choose the name ${name}?`,
+      a: `${name} is chosen for its spiritual meaning, good origin, and positive cultural associations.`,
+    },
+  ];
+
+  if (languages) {
+    items.push({
+      q: `In which languages is ${name} used?`,
+      a: `${name} appears in languages such as ${languages}.`,
+    });
+  }
+
+  if (data.similar_sounding_names?.length) {
+    items.push({
+      q: `What are names similar to ${name}?`,
+      a: `Names similar to ${name} include ${data.similar_sounding_names.slice(0, 5).join(', ')}.`,
+    });
+  }
+
+  return items.slice(0, 10);
+}
+
+/**
+ * Generate structured data - stable, clean
+ */
+export function generateOptimizedSchemas(data, religion, slug) {
   const pageUrl = `${SITE_URL}/names/${religion}/${slug}`;
+  const name = data.name;
+  const shortMeaning = data.short_meaning || data.meaning || '';
+  const coreEmotion = extractCoreEmotion(shortMeaning);
+  const faqItems = generateDynamicFaqItems(data, religion);
 
-  // 2026 CTR-optimized title patterns - keyword-first approach with emotional hooks
-  const titleVariations = [
-    `${titleName} Name Meaning, Origin & Lucky Number | ${religionTitle} Names`,
-    `${titleName} Meaning: Origin, Numerology & Personality Traits | ${religionTitle}`,
-    `What Does ${titleName} Mean? ${religionTitle} Name Origin + Lucky Stone`,
-    `${titleName} Name Meaning & Origin | ${religionTitle} Baby Names 2026`,
-    `${titleName}: Spiritual Meaning, Numerology & Cultural Significance | ${religionTitle}`
-  ];
+  const languageSnippet = formatLanguages(data);
+  const personality = getPersonalitySummary(data);
+  const luckyPieces = [];
+  if (data.lucky_number) luckyPieces.push(`lucky number ${data.lucky_number}`);
+  if (data.lucky_day) luckyPieces.push(`lucky day ${data.lucky_day}`);
+  if (data.lucky_colors?.length) luckyPieces.push(`lucky colors ${data.lucky_colors.slice(0, 3).join(', ')}`);
 
-  // Advanced title selection based on data richness and CTR potential
-  let title = titleVariations[0];
-  if (data.lucky_number && data.lucky_stone && data.emotional_traits?.length) {
-    title = titleVariations[1]; // Most comprehensive data = most specific title
-  } else if (data.lucky_stone && data.spiritual_meaning) {
-    title = titleVariations[2]; // Question-based for higher CTR
-  } else if (data.popularity_score || data.trending) {
-    title = titleVariations[3]; // Include 2026 for freshness
-  } else if (data.cultural_significance) {
-    title = titleVariations[4]; // Spiritual angle for depth
-  }
-  title = validateMetaTitle(title);
+  const descriptionParts = [`${name} means "${coreEmotion}"`, `${religion} name`];
+  if (data.origin) descriptionParts.push(`${data.origin} origin`);
+  if (personality) descriptionParts.push(`personality ${personality}`);
+  if (languageSnippet) descriptionParts.push(`used in ${languageSnippet}`);
+  if (luckyPieces.length) descriptionParts.push(luckyPieces.slice(0, 2).join(', '));
 
-  // Enhanced meta description with emotional hooks and clear value proposition
-  const descriptionVariations = [
-    `Discover the beautiful meaning of ${titleName}, a ${religionTitle.toLowerCase()} name. Origin, numerology, lucky number ${data.lucky_number || ''}, personality traits & spiritual significance. Find similar names and cultural context.`,
-    `${titleName} name meaning: "${data.short_meaning || ''}". ${religionTitle} origin, lucky stone ${data.lucky_stone || ''}, numerology insights. Perfect for expecting parents seeking meaningful baby names.`,
-    `What does ${titleName} mean? Complete ${religionTitle.toLowerCase()} name guide with pronunciation, origin story, lucky attributes, and personality analysis. Choose wisely for your baby.`,
-    `${titleName}: ${religionTitle} baby name meaning, origin & numerology. Lucky number ${data.lucky_number || ''}, stone ${data.lucky_stone || ''}, spiritual significance & cultural heritage guide.`
-  ];
+  const publishedDate = data.published_date || data.created_at || data.updated_at || new Date().toISOString().split('T')[0];
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": generateOptimizedTitle(data, religion),
+    "description": descriptionParts.join(', ') + '.',
+    "url": pageUrl,
+    "datePublished": publishedDate,
+    "dateModified": new Date().toISOString().split('T')[0],
+    "author": { "@type": "Organization", "name": "NameVerse" },
+    "publisher": { "@type": "Organization", "name": "NameVerse" },
+    "mainEntityOfPage": { "@type": "WebPage", "@id": pageUrl },
+  };
 
-  // Select most appropriate description based on data completeness
-  let description = descriptionVariations[0];
-  if (data.short_meaning && data.lucky_number && data.lucky_stone) {
-    description = descriptionVariations[1]; // Most comprehensive
-  } else if (data.spiritual_meaning) {
-    description = descriptionVariations[2]; // Question-based
-  } else if (data.cultural_significance) {
-    description = descriptionVariations[3]; // Cultural focus
-  }
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqItems.map((item) => ({
+      "@type": "Question",
+      "name": item.q,
+      "acceptedAnswer": { "@type": "Answer", "text": item.a },
+    })),
+  };
 
-  const validatedDescription = validateMetaDescription(description);
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE_URL },
+      { "@type": "ListItem", "position": 2, "name": `${religion.charAt(0).toUpperCase() + religion.slice(1)} Names`, "item": `${SITE_URL}/names/${religion}` },
+      { "@type": "ListItem", "position": 3, "name": name, "item": pageUrl },
+    ],
+  };
 
-  const ogTitle = `${titleName} Name Meaning & Origin | ${religionTitle} Baby Names`;
-  const twitterTitle = `${titleName} Meaning | ${religionTitle} Names`;
+  return {
+    article: articleSchema,
+    faq: faqSchema,
+    faqData: faqItems,
+    breadcrumb: breadcrumbSchema,
+  };
+}
 
-  // Enhanced OpenGraph with better social sharing appeal
+/**
+ * Main metadata generator - Stable, deterministic, SEO-safe
+ */
+export async function generateNamePageMetadata(data, religion, slug) {
+  const pageUrl = `${SITE_URL}/names/${religion}/${slug}`;
+  const name = data.name;
+  const shortMeaning = data.short_meaning || data.meaning || '';
+  
+  // Safe meaning extraction for OG image
+  const safeMeaning = extractCoreEmotion(shortMeaning);
+  
+  const title = generateOptimizedTitle(data, religion);
+  const description = generateOptimizedDescription(data, religion);
+  const keywords = generateOptimizedKeywords(data, religion);
+  
+  // Stable OG title (deterministic, not random)
+  const ogTitle = `${name} Name Meaning in ${religion.charAt(0).toUpperCase() + religion.slice(1)}`;
+  
   return {
     title,
-    description: validatedDescription,
+    description,
     keywords,
-    authors: [{ name: 'NameVerse' }],
     alternates: { canonical: pageUrl },
+    
     openGraph: {
       title: ogTitle,
-      description: validatedDescription,
-      type: 'article',
+      description: description.substring(0, 180),
       url: pageUrl,
       siteName: 'NameVerse',
-      images: [
-        {
-          url: `${SITE_URL}/api/og?name=${encodeURIComponent(titleName)}&meaning=${encodeURIComponent(data.short_meaning || '')}&religion=${religion}`,
-          width: 1200,
-          height: 630,
-          alt: `${titleName} - ${religionTitle} baby name meaning and origin`,
-        },
-      ],
+      type: 'website',
+      images: [{ 
+        url: `${SITE_URL}/api/og?name=${encodeURIComponent(name)}&meaning=${encodeURIComponent(safeMeaning.substring(0, 40))}&religion=${religion}`, 
+        width: 1200, 
+        height: 630 
+      }],
     },
+    
     twitter: {
       card: 'summary_large_image',
-      title: twitterTitle,
-      description: validatedDescription,
-      images: [`${SITE_URL}/api/og?name=${encodeURIComponent(titleName)}&religion=${religion}`],
+      title: ogTitle,
+      description: description.substring(0, 180),
+      images: [`${SITE_URL}/api/og?name=${encodeURIComponent(name)}&religion=${religion}`],
     },
+    
     robots: {
       index: true,
       follow: true,
       'max-image-preview': 'large',
       'max-snippet': -1,
-      'max-video-preview': -1,
     },
-    // Additional 2026 metadata fields
+    
     other: {
-      'og:see_also': [
-        `${SITE_URL}/names/${religion}`,
-        data.similar_sounding_names?.[0] ? `${SITE_URL}/names/${religion}/${data.similar_sounding_names[0].toLowerCase()}` : '',
-      ].filter(Boolean),
+      'theme-color': '#D97706',
+      'article:section': 'Baby Names',
     },
   };
 }
 
-/**
- * Generate all schemas (unchanged from previous excellent version)
- */
 export function generateNamePageSchemas(data, religion, slug) {
-  const productSchema = generateNameProductSchema(data, religion, slug);
-  const faqData = generateNameFAQ(data);
-  const faqSchema = faqData ? generateFAQSchema(faqData) : null;
-
-  const breadcrumbSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
-      { '@type': 'ListItem', position: 2, name: `${religion.charAt(0).toUpperCase() + religion.slice(1)} Names`, item: `${SITE_URL}/names/${religion}` },
-      { '@type': 'ListItem', position: 3, name: data.name, item: `${SITE_URL}/names/${religion}/${slug}` },
-    ],
-  };
-
-  const howToSchema = data.pronunciation ? {
-    '@context': 'https://schema.org',
-    '@type': 'HowTo',
-    name: `How to pronounce ${data.name}`,
-    description: `Learn the correct pronunciation of the name ${data.name}`,
-    step: [{ '@type': 'HowToStep', name: 'Pronunciation', text: data.pronunciation.english || data.pronunciation.ipa || data.name }],
-  } : null;
-
-  return { product: productSchema, faq: faqSchema, breadcrumb: breadcrumbSchema, howTo: howToSchema };
+  return generateOptimizedSchemas(data, religion, slug);
 }

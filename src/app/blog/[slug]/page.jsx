@@ -3,7 +3,13 @@ import { notFound } from 'next/navigation';
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
 import { BookOpen, Heart, Clock, ArrowLeft, Share2, Calendar, User, Tag, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
 import blogPostsData from '../../../../public/data/blog-posts.json';
-import Image from 'next/image';
+import BlogImageWithFallback from '@/components/Blog/BlogImageWithFallback';
+import islamicNames from '../../../../public/islamic_names.json';
+import hinduNames from '../../../../public/hindu_names.json';
+import christianNames from '../../../../public/christians_names.json';
+
+// ISR with 30-day cache for blog posts
+export const revalidate = 2592000; // 30 days
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
@@ -15,36 +21,53 @@ export async function generateMetadata({ params }) {
     return { title: 'Post Not Found | NameVerse' };
   }
 
+  const canonical = `${SITE_URL}/blog/${post.id}`;
+  const ogImage = post.featuredImage
+    ? post.featuredImage.startsWith('http')
+      ? post.featuredImage
+      : `${SITE_URL}${post.featuredImage}`
+    : `${SITE_URL}/api/og?title=${encodeURIComponent(post.title)}`;
+  const seoDescription = validateMetaDescription(
+    `${post.excerpt} Read this expert guide to ${post.category.toLowerCase()} baby names, meaning, and naming trends for modern families.`
+  );
+  const seoTitle = validateMetaTitle(
+    `${post.title} | NameVerse Blog — Expert Baby Naming Advice & Latest Trends`
+  );
+
   return {
-    title: validateMetaTitle(`${post.title} | NameVerse`),
-    description: validateMetaDescription(post.excerpt),
-    keywords: post.seoKeywords || post.tags.join(', '),
+    title: seoTitle,
+    description: seoDescription,
+    keywords: post.seoKeywords || [...(post.tags || []), `${post.category} baby names`, 'baby name trends', 'baby naming guide'].join(', '),
     alternates: {
-      canonical: `${SITE_URL}/blog/${post.id}`,
-      languages: { en: `${SITE_URL}/blog/${post.id}`, 'x-default': `${SITE_URL}/blog/${post.id}` }
+      canonical,
+      languages: { en: canonical, 'x-default': canonical }
     },
     openGraph: {
-      title: validateMetaTitle(post.title),
-      description: validateMetaDescription(post.excerpt),
+      title: seoTitle,
+      description: seoDescription,
       type: 'article',
-      url: `${SITE_URL}/blog/${post.id}`,
+      url: canonical,
+      images: [
+        {
+          url: ogImage,
+          alt: `${post.title} | NameVerse`,
+          width: 1200,
+          height: 630
+        }
+      ],
       publishedTime: post.publishDate,
       modifiedTime: post.lastUpdated,
       authors: [post.author],
       tags: post.tags,
     },
     twitter: {
-      title: validateMetaTitle(post.title),
-      description: validateMetaDescription(post.excerpt),
+      card: 'summary_large_image',
+      title: seoTitle,
+      description: seoDescription,
+      images: [ogImage],
     },
     robots: { index: true, follow: true },
   };
-}
-
-export async function generateStaticParams() {
-  return blogPostsData.map((post) => ({
-    slug: post.id,
-  }));
 }
 
 // FAQ Schema Component
@@ -70,16 +93,38 @@ function FAQSchema({ faqs }) {
   );
 }
 
+// Build name-to-religion lookup sets for fast detection
+const islamicNameSet = new Set(islamicNames.map(n => n.toLowerCase()));
+const hinduNameSet = new Set(hinduNames.map(n => n.toLowerCase()));
+const christianNameSet = new Set(christianNames.map(n => n.toLowerCase()));
+
+/**
+ * Detect the correct religion for a given name by checking which
+ * religion's name list contains it.
+ */
+function detectNameReligion(name) {
+  const normalized = (typeof name === 'string' ? name : (name.name || name)).toLowerCase().trim();
+  if (islamicNameSet.has(normalized)) return 'islamic';
+  if (hinduNameSet.has(normalized)) return 'hindu';
+  if (christianNameSet.has(normalized)) return 'christian';
+  return 'islamic'; // fallback default
+}
+
 // Featured Name Link Component
-function FeaturedNameLink({ name, religion = 'islamic' }) {
+function FeaturedNameLink({ name, religion: blogReligion = 'islamic' }) {
   // Handle both string names and object names with a 'name' property
   const displayName = typeof name === 'string' ? name : name.name;
   // Generate a slug from the name for URL
   const nameSlug = displayName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  // Detect the correct religion for this specific name
+  const detectedReligion = detectNameReligion(name);
+  // If the blog's category maps to a specific religion (e.g. "Hindu Names" -> "hindu"),
+  // use that. Otherwise (generic category like "Baby Naming Tips"), use per-name detection.
+  const finalReligion = blogReligion !== 'islamic' ? blogReligion : detectedReligion;
   
   return (
     <Link
-      href={`/names/${religion}/${nameSlug}`}
+      href={`/names/${finalReligion}/${nameSlug}`}
       className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-medium hover:bg-blue-100 transition-colors border border-blue-200"
     >
       {displayName}
@@ -111,15 +156,23 @@ export default async function BlogPostPage({ params }) {
     .filter(p => p.category === post.category && p.id !== post.id)
     .slice(0, 3);
 
+  const ogImage = post.featuredImage
+    ? post.featuredImage.startsWith('http')
+      ? post.featuredImage
+      : `${SITE_URL}${post.featuredImage}`
+    : `${SITE_URL}/api/og?title=${encodeURIComponent(post.title)}`;
+
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "BlogPosting",
     "headline": post.title,
+    "alternativeHeadline": post.subtitle || post.title,
     "description": post.excerpt,
+    "image": ogImage,
     "author": {
       "@type": "Person",
       "name": post.author,
-      "jobTitle": post.authorCredentials
+      "jobTitle": post.authorCredentials || 'Baby Name Expert'
     },
     "publisher": {
       "@type": "Organization",
@@ -133,13 +186,40 @@ export default async function BlogPostPage({ params }) {
       }
     },
     "datePublished": post.publishDate,
-    "dateModified": post.lastUpdated,
+    "dateModified": post.lastUpdated || post.publishDate,
     "mainEntityOfPage": {
       "@type": "WebPage",
       "@id": `${SITE_URL}/blog/${post.id}`
     },
-    "keywords": post.seoKeywords || post.tags.join(', '),
-    "articleSection": post.category
+    "keywords": post.seoKeywords || (post.tags || []).join(', '),
+    "articleSection": post.category,
+    "genre": 'Baby Naming Advice',
+    "inLanguage": 'en-US'
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": SITE_URL
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Blog",
+        "item": `${SITE_URL}/blog`
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": post.title,
+        "item": `${SITE_URL}/blog/${post.id}`
+      }
+    ]
   };
 
   return (
@@ -147,6 +227,10 @@ export default async function BlogPostPage({ params }) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       {post.content.faqs && post.content.faqs.length > 0 && (
         <FAQSchema faqs={post.content.faqs} />
@@ -192,14 +276,15 @@ export default async function BlogPostPage({ params }) {
             {/* Featured Image */}
             {post.featuredImage && (
               <div className="relative w-full h-64 md:h-96 mb-8 rounded-xl overflow-hidden bg-gray-100">
-                <Image
+                <BlogImageWithFallback
                   src={post.featuredImage.startsWith('http') ? post.featuredImage : `${SITE_URL}${post.featuredImage}`}
                   alt={post.title}
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                </BlogImageWithFallback>
               </div>
             )}
             
@@ -261,9 +346,11 @@ export default async function BlogPostPage({ params }) {
                       Featured Names:
                     </h3>
                     <div className="flex flex-wrap gap-2">
-                      {section.featuredNames.map((name, i) => (
-                        <FeaturedNameLink key={i} name={name} religion={religion} />
-                      ))}
+                  {section.featuredNames.map((name, i) => {
+                        const displayName = typeof name === 'string' ? name : name.name;
+                        const nameSlug = displayName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+                        return <FeaturedNameLink key={nameSlug || i} name={name} religion={religion} />;
+                      })}
                     </div>
                   </div>
                 )}
@@ -321,9 +408,11 @@ export default async function BlogPostPage({ params }) {
                   Click on any name below to explore its meaning and origin:
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {post.content.relatedNames.map((name, i) => (
-                    <FeaturedNameLink key={i} name={name} religion={religion} />
-                  ))}
+                  {post.content.relatedNames.map((name, i) => {
+                    const displayName = typeof name === 'string' ? name : name.name;
+                    const nameSlug = displayName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+                    return <FeaturedNameLink key={nameSlug || i} name={name} religion={religion} />;
+                  })}
                 </div>
               </section>
             )}
@@ -336,7 +425,7 @@ export default async function BlogPostPage({ params }) {
               </div>
               <div className="flex flex-wrap gap-2">
                 {post.tags.map((tag, i) => (
-                  <span key={i} className="bg-gray-100 text-gray-700 px-3 py-1 rounded text-sm">
+                  <span key={tag || i} className="bg-gray-100 text-gray-700 px-3 py-1 rounded text-sm">
                     {tag}
                   </span>
                 ))}

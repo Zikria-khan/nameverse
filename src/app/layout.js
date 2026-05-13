@@ -2,7 +2,6 @@ import "./globals.css";
 import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer/Footer";
 import AppInstallPopup from "./install";
-import SWRegister from "./sw"; // Disable service worker and clear old caches
 import Script from 'next/script';
 import ErrorBoundary from "@/components/ErrorBoundary/ErrorBoundary";
 import ResourceHints from "@/components/Performance/ResourceHints";
@@ -13,39 +12,6 @@ import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpe
 import { AppProvider } from "@/contexts/AppContext";
 import LoadingWrapper from "@/components/LoadingAnimation/LoadingWrapper";
 import { Suspense } from 'react';
-
-const SW_UNREGISTER_SCRIPT = `
-  (function() {
-    if (typeof navigator === 'undefined' || !('serviceWorker' in navigator) || typeof window === 'undefined') return;
-    const reloadFlag = 'nameverse-sw-unregistered';
-    if (sessionStorage.getItem(reloadFlag)) return;
-
-    navigator.serviceWorker.getRegistrations()
-      .then((registrations) => {
-        if (!registrations || registrations.length === 0) return false;
-
-        const unregisterPromises = registrations.map((registration) =>
-          registration.unregister().catch(() => false)
-        );
-
-        return Promise.all(unregisterPromises)
-          .then(() => {
-            if (!('caches' in window)) return true;
-            return caches.keys()
-              .then((cacheNames) => Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName))))
-              .catch(() => {})
-              .then(() => true);
-          });
-      })
-      .then((cleared) => {
-        if (cleared) {
-          sessionStorage.setItem(reloadFlag, '1');
-          window.location.reload();
-        }
-      })
-      .catch(() => {});
-  })();
-`;
 
 // Use environment variable or default - will be overridden client-side if needed
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://nameverse.vercel.app";
@@ -173,34 +139,10 @@ export default function RootLayout({ children }) {
             items: [],
           }}
         />
-        {/* ✅ Service Worker Registration - Proper PWA Setup */}
-        <Script id="sw-register" strategy="afterInteractive">
-          {`
-            if ('serviceWorker' in navigator) {
-              window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js')
-                  .then(function(registration) {
-                    console.log('SW registered: ', registration);
-                  })
-                  .catch(function(registrationError) {
-                    console.log('SW registration failed: ', registrationError);
-                  });
-              });
-            }
-          `}
-        </Script>
         {/* Ahrefs analytics script */}
         <Script
           src="https://analytics.ahrefs.com/analytics.js"
           data-key="Xu6eED27Kx1ZuJhBcJDJsA"
-          strategy="lazyOnload"
-        />
-
-        {/* AdSense Script - for displaying ads on all pages */}
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1510675468129183"
-          crossOrigin="anonymous"
           strategy="lazyOnload"
         />
       </head>
@@ -215,7 +157,6 @@ export default function RootLayout({ children }) {
             {children}
             <Footer />
             <AppInstallPopup />
-            <SWRegister />
           </AppProvider>
         </div>
       </body>

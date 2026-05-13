@@ -1,0 +1,22 @@
+{
+  "title": "NameVerse — #1 Best Baby Names Website 2026 | 65K+ Islamic Hindu Christian Names with Meanings",
+  "titleWords": 16,
+  "h1": 1,
+  "h2": 26,
+  "h3": 50,
+  "wordCount": 14510,
+  "totalLinks": 17,
+  "uniqueHrefs": 17,
+  "brokenLinks": [
+    {
+      "href": "/how-it-works",
+      "reason": "no matching route"
+    },
+    {
+      "href": "/baby-names-by-month",
+      "reason": "no matching route"
+    }
+  ],
+  "routeCount": 45,
+  "homeFilesCount": 29
+}

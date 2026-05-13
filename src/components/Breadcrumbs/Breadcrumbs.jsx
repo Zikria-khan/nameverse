@@ -55,7 +55,7 @@ export default function Breadcrumbs({ items = [], className = '' }) {
         </Link>
 
         {items.map((item, index) => (
-          <div key={index} className="flex items-center gap-2">
+          <div key={item.href || item.label || index} className="flex items-center gap-2">
             <ChevronRight size={16} className="text-gray-400" aria-hidden="true" />
             {index === items.length - 1 ? (
               <span className="font-semibold text-gray-900" aria-current="page">

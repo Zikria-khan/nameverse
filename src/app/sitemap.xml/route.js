@@ -5,7 +5,7 @@ const SITEMAP_FILE = join(process.cwd(), 'public', 'sitemap.xml');
 
 const defaultHeaders = {
   'Content-Type': 'application/xml',
-  'Cache-Control': 'public, max-age=0, s-maxage=600, must-revalidate',
+  'Cache-Control': 'no-store, max-age=0, must-revalidate',
 };
 
 export async function GET() {

@@ -176,10 +176,13 @@ export default function LetterNamesClient({ selectedReligion, letter, page }) {
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
-              {names.map((nameItem, index) => (
-                <Link
-                  key={index}
-                  href={`/names/${selectedReligion}/${generateSlug(nameItem.name)}`}
+              {names.map((nameItem, index) => {
+                const itemKey = nameItem.slug || generateSlug(nameItem.name) || nameItem._id || index;
+
+                return (
+                  <Link
+                    key={itemKey}
+                    href={`/names/${selectedReligion}/${generateSlug(nameItem.name)}`}
                   className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 border border-emerald-100 hover:border-emerald-300 group hover:-translate-y-1 block"
                 >
                   <div className="flex items-start justify-between mb-4">

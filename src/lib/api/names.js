@@ -15,195 +15,6 @@
 import { apiClient } from './client';
 
 /**
- * Generate mock names data for development when API is unavailable
- */
-function getMockNamesForReligion(religion, page, limit) {
-  const mockData = {
-    islamic: [
-      { name: 'Muhammad', slug: 'muhammad', short_meaning: 'Praiseworthy, highly praised', origin: 'Arabic', gender: 'male', lucky_number: 4, religion: 'islamic' },
-      { name: 'Fatima', slug: 'fatima', short_meaning: 'One who abstains', origin: 'Arabic', gender: 'female', lucky_number: 7, religion: 'islamic' },
-      { name: 'Ali', slug: 'ali', short_meaning: 'Exalted, noble', origin: 'Arabic', gender: 'male', lucky_number: 3, religion: 'islamic' },
-      { name: 'Aisha', slug: 'aisha', short_meaning: 'Living, prosperous', origin: 'Arabic', gender: 'female', lucky_number: 6, religion: 'islamic' },
-      { name: 'Omar', slug: 'omar', short_meaning: 'Long-lived, flourishing', origin: 'Arabic', gender: 'male', lucky_number: 5, religion: 'islamic' },
-      { name: 'Maryam', slug: 'maryam', short_meaning: 'Beloved, wished for child', origin: 'Arabic', gender: 'female', lucky_number: 2, religion: 'islamic' },
-      { name: 'Ibrahim', slug: 'ibrahim', short_meaning: 'Father of nations', origin: 'Arabic', gender: 'male', lucky_number: 9, religion: 'islamic' },
-      { name: 'Zahra', slug: 'zahra', short_meaning: 'Radiant, bright', origin: 'Arabic', gender: 'female', lucky_number: 8, religion: 'islamic' },
-      { name: 'Yusuf', slug: 'yusuf', short_meaning: 'God increases', origin: 'Arabic', gender: 'male', lucky_number: 1, religion: 'islamic' },
-      { name: 'Khadija', slug: 'khadija', short_meaning: 'Premature child', origin: 'Arabic', gender: 'female', lucky_number: 4, religion: 'islamic' },
-    ],
-    christian: [
-      { name: 'Noah', slug: 'noah', short_meaning: 'Rest, comfort, peace', origin: 'Hebrew', gender: 'male', lucky_number: 8, religion: 'christian' },
-      { name: 'Sophia', slug: 'sophia', short_meaning: 'Wisdom', origin: 'Greek', gender: 'female', lucky_number: 7, religion: 'christian' },
-      { name: 'James', slug: 'james', short_meaning: 'Supplanter', origin: 'Hebrew', gender: 'male', lucky_number: 3, religion: 'christian' },
-      { name: 'Mary', slug: 'mary', short_meaning: 'Beloved, wished for child', origin: 'Hebrew', gender: 'female', lucky_number: 5, religion: 'christian' },
-      { name: 'David', slug: 'david', short_meaning: 'Beloved', origin: 'Hebrew', gender: 'male', lucky_number: 6, religion: 'christian' },
-      { name: 'Sarah', slug: 'sarah', short_meaning: 'Princess', origin: 'Hebrew', gender: 'female', lucky_number: 9, religion: 'christian' },
-      { name: 'Matthew', slug: 'matthew', short_meaning: 'Gift of God', origin: 'Hebrew', gender: 'male', lucky_number: 4, religion: 'christian' },
-      { name: 'Elizabeth', slug: 'elizabeth', short_meaning: 'God is my oath', origin: 'Hebrew', gender: 'female', lucky_number: 2, religion: 'christian' },
-      { name: 'Joseph', slug: 'joseph', short_meaning: 'He will add', origin: 'Hebrew', gender: 'male', lucky_number: 1, religion: 'christian' },
-      { name: 'Anna', slug: 'anna', short_meaning: 'Grace', origin: 'Hebrew', gender: 'female', lucky_number: 3, religion: 'christian' },
-    ],
-    hindu: [
-      { name: 'Aarav', slug: 'aarav', short_meaning: 'Peaceful, wisdom', origin: 'Sanskrit', gender: 'male', lucky_number: 7, religion: 'hindu' },
-      { name: 'Saanvi', slug: 'saanvi', short_meaning: 'Goddess Lakshmi', origin: 'Sanskrit', gender: 'female', lucky_number: 6, religion: 'hindu' },
-      { name: 'Vihaan', slug: 'vihaan', short_meaning: 'Dawn', origin: 'Sanskrit', gender: 'male', lucky_number: 5, religion: 'hindu' },
-      { name: 'Ananya', slug: 'ananya', short_meaning: 'Unique, unparalleled', origin: 'Sanskrit', gender: 'female', lucky_number: 8, religion: 'hindu' },
-      { name: 'Arjun', slug: 'arjun', short_meaning: 'White, clear', origin: 'Sanskrit', gender: 'male', lucky_number: 9, religion: 'hindu' },
-      { name: 'Diya', slug: 'diya', short_meaning: 'Light', origin: 'Sanskrit', gender: 'female', lucky_number: 1, religion: 'hindu' },
-      { name: 'Krishna', slug: 'krishna', short_meaning: 'Dark, black', origin: 'Sanskrit', gender: 'male', lucky_number: 3, religion: 'hindu' },
-      { name: 'Priya', slug: 'priya', short_meaning: 'Dear, beloved', origin: 'Sanskrit', gender: 'female', lucky_number: 4, religion: 'hindu' },
-      { name: 'Rohan', slug: 'rohan', short_meaning: 'Ascending', origin: 'Sanskrit', gender: 'male', lucky_number: 2, religion: 'hindu' },
-      { name: 'Meera', slug: 'meera', short_meaning: 'Prosperous', origin: 'Sanskrit', gender: 'female', lucky_number: 7, religion: 'hindu' },
-    ]
-  };
-
-  const names = mockData[religion] || mockData.islamic;
-  const startIndex = (page - 1) * limit;
-  const endIndex = startIndex + limit;
-
-  return names.slice(startIndex, endIndex);
-}
-
-export { getMockNamesForReligion };
-
-/**
- * Generate mock name detail data for development when API is unavailable
- */
-function getMockNameDetail(religion, slug) {
-  const mockDetails = {
-    islamic: {
-      muhammad: {
-        name: 'Muhammad',
-        slug: 'muhammad',
-        short_meaning: 'Praiseworthy, highly praised',
-        long_meaning: 'Muhammad is the most praised and beloved name in Islamic tradition. It signifies excellence, honor, and divine favor. The Prophet Muhammad (PBUH) is the final messenger of Allah and the perfect example of human character.',
-        origin: 'Arabic',
-        gender: 'male',
-        religion: 'islamic',
-        lucky_number: 4,
-        lucky_color: 'Green',
-        lucky_stone: 'Emerald',
-        lucky_day: 'Friday',
-        pronunciation: { english: 'moo-HAM-mad', ipa: '/muːˈhæmæd/' },
-        spiritual_meaning: 'The name Muhammad carries immense spiritual significance in Islam. It is mentioned in the Quran and represents the pinnacle of human perfection and divine guidance.',
-        emotional_traits: ['Compassionate', 'Wise', 'Just', 'Merciful'],
-        personality: 'Individuals named Muhammad often exhibit strong leadership qualities, deep spirituality, and a commitment to justice and compassion.',
-        similar_sounding_names: ['Ahmed', 'Hamad', 'Mohammed', 'Mahmood']
-      },
-      fatima: {
-        name: 'Fatima',
-        slug: 'fatima',
-        short_meaning: 'One who abstains',
-        long_meaning: 'Fatima is a revered name in Islamic tradition, symbolizing purity, virtue, and spiritual strength. It represents someone who abstains from worldly temptations and focuses on divine worship.',
-        origin: 'Arabic',
-        gender: 'female',
-        religion: 'islamic',
-        lucky_number: 7,
-        lucky_color: 'White',
-        lucky_stone: 'Pearl',
-        lucky_day: 'Friday',
-        pronunciation: { english: 'fah-TEE-mah', ipa: '/fɑːˈtiːmɑː/' },
-        spiritual_meaning: 'Fatima Zahra was the beloved daughter of Prophet Muhammad (PBUH) and represents purity, patience, and devotion to faith.',
-        emotional_traits: ['Pure', 'Devout', 'Patient', 'Compassionate'],
-        personality: 'Women named Fatima often embody grace, spiritual depth, and unwavering faith in their daily lives.',
-        similar_sounding_names: ['Fatimah', 'Fathima', 'Fatma']
-      },
-      salman: {
-        name: 'Salman',
-        slug: 'salman',
-        short_meaning: 'Safe, secure, healthy',
-        long_meaning: 'Salman is an Arabic name meaning safe, secure, and healthy. It represents protection, safety, and well-being. In Islamic tradition, Salman al-Farisi was a companion of the Prophet Muhammad (PBUH) known for his wisdom and devotion.',
-        origin: 'Arabic',
-        gender: 'male',
-        religion: 'islamic',
-        lucky_number: 8,
-        lucky_color: 'Blue',
-        lucky_stone: 'Sapphire',
-        lucky_day: 'Saturday',
-        pronunciation: { english: 'SAL-maan', ipa: '/ˈsælmɑːn/' },
-        spiritual_meaning: 'Salman represents safety and protection in Islamic tradition. Salman al-Farisi was a companion of the Prophet known for his search for truth and devotion to Islam.',
-        emotional_traits: ['Wise', 'Devout', 'Protective', 'Reliable'],
-        personality: 'Individuals named Salman often exhibit wisdom, reliability, and a strong sense of protection towards others.',
-        similar_sounding_names: ['Salmaan', 'Salmon', 'Solomon']
-      }
-    },
-    christian: {
-      noah: {
-        name: 'Noah',
-        slug: 'noah',
-        short_meaning: 'Rest, comfort, peace',
-        long_meaning: 'Noah is a biblical name symbolizing peace, rest, and divine protection. In Christian tradition, Noah represents faithfulness, perseverance, and God\'s covenant with humanity.',
-        origin: 'Hebrew',
-        gender: 'male',
-        religion: 'christian',
-        lucky_number: 8,
-        lucky_color: 'Blue',
-        lucky_stone: 'Sapphire',
-        lucky_day: 'Saturday',
-        pronunciation: { english: 'NOH-uh', ipa: '/ˈnoʊ.ə/' },
-        spiritual_meaning: 'Noah\'s story in the Bible represents faith, obedience, and God\'s mercy. He built the ark and saved humanity from the flood.',
-        emotional_traits: ['Faithful', 'Peaceful', 'Strong', 'Compassionate'],
-        personality: 'Individuals named Noah often exhibit calmness, reliability, and a deep sense of responsibility.',
-        similar_sounding_names: ['Noa', 'Noam', 'Noah']
-      },
-      olivia: {
-        name: 'Olivia',
-        slug: 'olivia',
-        short_meaning: 'Olive tree',
-        long_meaning: 'Olivia is a beautiful name derived from the olive tree, symbolizing peace, wisdom, and abundance. It represents fertility, prosperity, and eternal life in Christian symbolism.',
-        origin: 'Latin',
-        gender: 'female',
-        religion: 'christian',
-        lucky_number: 6,
-        lucky_color: 'Green',
-        lucky_stone: 'Emerald',
-        lucky_day: 'Friday',
-        pronunciation: { english: 'oh-LIV-ee-uh', ipa: '/oʊˈlɪviə/' },
-        spiritual_meaning: 'The olive tree symbolizes peace and divine blessing in Christian tradition, representing the Holy Land and God\'s promises.',
-        emotional_traits: ['Peaceful', 'Wise', 'Nurturing', 'Graceful'],
-        personality: 'Women named Olivia often embody elegance, intelligence, and a peaceful presence that brings comfort to others.',
-        similar_sounding_names: ['Oliver', 'Olive', 'Livia']
-      }
-    },
-    hindu: {
-      aarav: {
-        name: 'Aarav',
-        slug: 'aarav',
-        short_meaning: 'Peaceful, wisdom',
-        long_meaning: 'Aarav is a beautiful Sanskrit name meaning peaceful and wise. It represents tranquility, intelligence, and spiritual enlightenment in Hindu tradition.',
-        origin: 'Sanskrit',
-        gender: 'male',
-        religion: 'hindu',
-        lucky_number: 7,
-        lucky_color: 'Blue',
-        lucky_stone: 'Sapphire',
-        lucky_day: 'Thursday',
-        pronunciation: { english: 'AH-ruv', ipa: '/ˈɑːrəv/' },
-        spiritual_meaning: 'Aarav represents the peaceful wisdom of the enlightened soul, connecting to Hindu concepts of inner peace and divine knowledge.',
-        emotional_traits: ['Peaceful', 'Wise', 'Calm', 'Intelligent'],
-        personality: 'Individuals named Aarav often exhibit tranquility, wisdom, and a thoughtful approach to life.',
-        similar_sounding_names: ['Arav', 'Aarush', 'Arjun']
-      }
-    }
-  };
-
-  // Try to find the exact name first
-  const religionData = mockDetails[religion];
-  if (religionData && religionData[slug]) {
-    return religionData[slug];
-  }
-
-  // If not found, return a generic mock based on the religion
-  const genericNames = {
-    islamic: mockDetails.islamic.muhammad,
-    christian: mockDetails.christian.noah,
-    hindu: mockDetails.hindu.aarav
-  };
-
-  return genericNames[religion] || mockDetails.islamic.muhammad;
-}
-
-/**
  * Normalize religion value to backend-supported values
  * Backend only supports 'islamic', 'christian', 'hindu'
  * Maps 'muslim' to 'islamic', and any other unsupported value to 'islamic'
@@ -211,7 +22,9 @@ function getMockNameDetail(religion, slug) {
 const normalizeReligion = (religion) => {
   if (!religion) return 'islamic';
   const normalized = religion.toLowerCase();
-  if (normalized === 'muslim') return 'islamic';
+  if (normalized === 'muslim' || normalized === 'islam') return 'islamic';
+  if (normalized === 'christianity') return 'christian';
+  if (normalized === 'hinduism') return 'hindu';
   if (['islamic', 'christian', 'hindu'].includes(normalized)) return normalized;
   return 'islamic';
 };
@@ -788,27 +601,17 @@ export async function fetchNamesWithAdvancedFilters(options = {}) {
       delete params.startsWith;
     }
 
-    const mockNames = getMockNamesForReligion(normalizedReligion, page, limit);
-    const mockTotalCount = Math.max(1, mockNames.length * 5);
-    const mockTotalPages = Math.max(1, Math.ceil(mockTotalCount / limit));
-    const useMockData = process.env.NEXT_PUBLIC_USE_MOCK_NAMES !== 'false';
-
-    if (useMockData) {
-      return {
-        data: mockNames,
-        pagination: {
-          page,
-          limit,
-          totalCount: mockTotalCount,
-          totalPages: mockTotalPages,
-        },
-        success: true,
-        __mockData: true,
-      };
-    }
-
     const { data } = await apiClient.get(`/api/v1/names/${normalizedReligion}`, { params });
-    const payload = data.data || data.names || [];
+    const payload = (data.data || data.names || []).map(item => {
+      if (item.religion) {
+        const normalized = item.religion.toLowerCase();
+        if (normalized === 'muslim' || normalized === 'islamic') item.religion = 'islamic';
+        else if (normalized === 'christianity' || normalized === 'christian') item.religion = 'christian';
+        else if (normalized === 'hinduism' || normalized === 'hindu') item.religion = 'hindu';
+        else item.religion = normalized;
+      }
+      return item;
+    });
     const pagination = data.pagination || {
       page,
       limit,
@@ -820,7 +623,6 @@ export async function fetchNamesWithAdvancedFilters(options = {}) {
       data: payload,
       pagination,
       success: data.success !== false,
-      __mockData: false,
     };
   } catch (error) {
     return {
@@ -904,41 +706,104 @@ export async function fetchSimilarNames(religion, slug) {
 }
 
 /**
+ * In-memory cache for API responses to prevent duplicate calls
+ * within the same ISR regeneration cycle
+ */
+const requestCache = new Map();
+const CACHE_TTL = 60 * 1000; // 1 minute in-memory TTL
+
+/**
+ * Cache wrapper for fetch operations - deduplicates requests
+ * within the same render pass and caches across renders briefly
+ */
+async function cachedFetch(cacheKey, fetchFn) {
+  const now = Date.now();
+  const cached = requestCache.get(cacheKey);
+  
+  if (cached && (now - cached.timestamp) < CACHE_TTL) {
+    return cached.data;
+  }
+  
+  // Check if there's already an in-flight request (deduplication)
+  if (cached && cached.promise) {
+    return cached.promise;
+  }
+  
+  const promise = fetchFn().then(data => {
+    requestCache.set(cacheKey, {
+      data,
+      timestamp: Date.now(),
+      promise: null,
+    });
+    return data;
+  }).catch(err => {
+    requestCache.delete(cacheKey);
+    throw err;
+  });
+  
+  // Store the promise so duplicate calls reuse it
+  requestCache.set(cacheKey, {
+    data: null,
+    timestamp: now,
+    promise,
+  });
+  
+  return promise;
+}
+
+/**
+ * Clear the request cache (useful for development or manual invalidation)
+ */
+export function clearRequestCache() {
+  requestCache.clear();
+}
+
+/**
  * Fetch name detail by religion and slug
- * Backend: GET /api/names/:religion/:slug
+ * Backend: GET /api/v1/names/:religion/:slug
+ * Uses in-memory cache to deduplicate calls between generateMetadata() and page component
  * @param {string} religion - Religion category
  * @param {string} slug - Name slug
  * @returns {Promise<Object|null>} Name detail object or null
  */
 export async function fetchNameDetail(religion, slug) {
-  // For development/demo purposes, always return mock data to ensure pages work
-  return getMockNameDetail(religion, slug);
+   if (!religion || !slug) {
+     return null;
+   }
 
-  /* Original logic - commented out for now
-  try {
-    if (!religion || !slug) {
-      return null;
-    }
+   const cacheKey = `nameDetail:${religion}:${slug}`;
+   
+   return cachedFetch(cacheKey, async () => {
+     const normalizedReligion = normalizeReligion(religion);
+     const safeSlug = encodeURIComponent(String(slug).trim().toLowerCase());
+     let response = await apiClient.get(`/api/v1/names/${normalizedReligion}/${safeSlug}`);
+     let data = response.data;
 
-    const response = await apiClient.get(`/api/v1/names/${religion}/${slug}`);
-    if (!response || response.status >= 400) {
-      // Return mock data when API fails
-      return getMockNameDetail(religion, slug);
-    }
+     if ((!data || data.success === false || !data.data) && normalizedReligion && safeSlug) {
+       const fallbackResponse = await apiClient.get(`/api/names/${normalizedReligion}/${safeSlug}`);
+       data = fallbackResponse.data;
+     }
 
-    const payload = response.data?.data ?? response.data;
-    if (payload && typeof payload === 'object') {
-      return payload;
-    }
+     if (data && data.success && data.data) {
+       const nameData = data.data;
+       // Normalize religion to lowercase for consistent routing
+       if (nameData.religion) {
+         nameData.religion = nameData.religion.toLowerCase();
+         // Handle variations like "Islamic" -> "islamic", "Christianity" -> "christian"
+         if (nameData.religion === 'islamic' || nameData.religion === 'muslim') {
+           nameData.religion = 'islamic';
+         } else if (nameData.religion === 'christianity' || nameData.religion === 'christian') {
+           nameData.religion = 'christian';
+         } else if (nameData.religion === 'hinduism' || nameData.religion === 'hindu') {
+           nameData.religion = 'hindu';
+         }
+       }
+       return nameData;
+     }
 
-    // If no valid data from API, return mock data
-    return getMockNameDetail(religion, slug);
-  } catch (error) {
-    // Return mock data on any error
-    return getMockNameDetail(religion, slug);
-  }
-  */
-}
+     return null;
+   });
+ }
 
 /**
  * Search names across the database

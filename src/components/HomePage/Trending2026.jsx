@@ -168,7 +168,7 @@ const Trending2026 = () => {
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
-                href="/guides"
+                href="/guides/expert-naming-guide"
                 className="px-5 py-2.5 bg-white border-2 border-purple-200 text-purple-700 rounded-xl font-semibold hover:bg-purple-50 transition-all flex items-center gap-2"
               >
                 <Sparkles className="w-4 h-4" />

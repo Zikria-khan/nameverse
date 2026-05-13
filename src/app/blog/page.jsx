@@ -2,7 +2,11 @@ import Link from 'next/link';
 import { BookOpen, Heart, Clock, ArrowRight, Calendar, Award, TrendingUp, User } from 'lucide-react';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import Image from 'next/image';
+import StructuredData from '@/components/SEO/StructuredData';
+import BlogImageWithFallback from '@/components/Blog/BlogImageWithFallback';
+
+// ISR with 30-day cache for blog index
+export const revalidate = 2592000; // 30 days
 
 const blogPostsData = JSON.parse(
   readFileSync(join(process.cwd(), 'public', 'data', 'blog-posts.json'), 'utf8')
@@ -10,14 +14,48 @@ const blogPostsData = JSON.parse(
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
+const blogFaq = [
+  { question: 'How do I choose the perfect baby name?', answer: 'Choose a baby name by balancing meaning, cultural relevance, pronunciation, and family tradition. Our guides help you compare Islamic, Christian, Hindu, and global name choices with trusted origin notes.' },
+  { question: 'What are the most popular Islamic baby names?', answer: 'The most popular Islamic baby names include Muhammad, Ali, Yusuf, Aisha, Fatima, Zainab and Maryam — names with Quranic meaning and modern appeal.' },
+  { question: 'What baby names are trending in 2026?', answer: 'Trending baby names for 2026 include names with spiritual meaning, short modern forms, and cross-cultural appeal such as Rayan, Noor, Elias, Leila, Vihaan, and Zara.' },
+  { question: 'How important is name meaning?', answer: 'Name meaning is very important for cultural identity and long-term satisfaction; choose a name with a positive meaning that reflects your family values and heritage.' }
+];
+
+const blogCollection = {
+  name: 'NameVerse Blog: Baby Names & Guides',
+  description: 'Explore expert baby naming advice, trends, and naming traditions for Islamic, Christian, Hindu, and global names.',
+  url: `${SITE_URL}/blog`,
+  items: [
+    { name: 'Islamic Boy Names', path: 'islamic/boy-names' },
+    { name: 'Islamic Girl Names', path: 'islamic/girl-names' },
+    { name: 'Christian Boy Names', path: 'christian/boy-names' },
+    { name: 'Christian Girl Names', path: 'christian/girl-names' },
+    { name: 'Hindu Boy Names', path: 'hindu/boy-names' },
+    { name: 'Hindu Girl Names', path: 'hindu/girl-names' }
+  ]
+};
+
 export const metadata = {
   title: 'Baby Names Blog & Expert Guides | Naming Tips, Trends & Advice | NameVerse',
-  description: 'Expert guides and articles on choosing the perfect baby name. Learn about Islamic, Christian, and Hindu naming traditions, trends for 2026, and tips from naming experts.',
+  description: 'Expert guides and articles on choosing the perfect baby name. Learn about Islamic, Christian, and Hindu naming traditions, 2026 baby name trends, and expert naming tips.',
   keywords: 'baby names blog, naming guides, baby name trends 2026, Islamic naming guide, Christian naming guide, Hindu naming guide, how to choose baby name, baby naming tips',
   alternates: {
     canonical: `${SITE_URL}/blog`,
   },
   robots: { index: true, follow: true },
+  openGraph: {
+    title: 'Baby Names Blog & Expert Guides | Naming Tips, Trends & Advice | NameVerse',
+    description: 'Expert guides and articles on choosing the perfect baby name. Learn about Islamic, Christian, and Hindu naming traditions, 2026 baby name trends, and expert naming tips.',
+    type: 'website',
+    url: `${SITE_URL}/blog`,
+    images: [`${SITE_URL}/api/og?section=blog&page=1`],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Baby Names Blog & Expert Guides | Naming Tips, Trends & Advice | NameVerse',
+    description: 'Expert guides and articles on choosing the perfect baby name. Learn about Islamic, Christian, and Hindu naming traditions, 2026 baby name trends, and expert naming tips.',
+    images: [`${SITE_URL}/api/og?section=blog&page=1`],
+  },
 };
 
 export default function BlogPage() {
@@ -26,6 +64,17 @@ export default function BlogPage() {
 
   return (
     <main className="min-h-screen bg-white">
+      <StructuredData
+        organization={true}
+        website={true}
+        breadcrumbs={[
+          { name: 'Home', url: SITE_URL },
+          { name: 'Blog', url: `${SITE_URL}/blog` }
+        ]}
+        collectionPage={blogCollection}
+        faq={blogFaq}
+      />
+
       {/* Hero Section - Clean & Professional */}
       <section className="py-16 px-4 bg-white border-b border-gray-200">
         <div className="max-w-6xl mx-auto">
@@ -45,6 +94,52 @@ export default function BlogPage() {
         </div>
       </section>
 
+      {/* Blog internal links */}
+      <section className="py-10 px-4 bg-gradient-to-r from-indigo-50 via-white to-cyan-50 border-b border-gray-200">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-4">Explore name collections from every tradition</h2>
+          <p className="text-gray-600 mb-6 max-w-3xl">Jump directly to curated baby name collections for Islamic, Christian, Hindu and global naming guidance. These links help readers and search engines discover key category pages quickly.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <Link href="/islamic/boy-names" className="block rounded-2xl border border-indigo-200 bg-white p-5 hover:border-indigo-300 hover:shadow-sm transition">
+              <h3 className="font-semibold text-gray-900">Islamic Boy Names</h3>
+              <p className="mt-2 text-sm text-gray-600">Explore Quranic, Arabic, and modern Muslim boy names with meaning and pronunciation.</p>
+            </Link>
+            <Link href="/islamic/girl-names" className="block rounded-2xl border border-indigo-200 bg-white p-5 hover:border-indigo-300 hover:shadow-sm transition">
+              <h3 className="font-semibold text-gray-900">Islamic Girl Names</h3>
+              <p className="mt-2 text-sm text-gray-600">Discover meaningful Islamic girl names with cultural context and modern appeal.</p>
+            </Link>
+            <Link href="/christian/boy-names" className="block rounded-2xl border border-sky-200 bg-white p-5 hover:border-sky-300 hover:shadow-sm transition">
+              <h3 className="font-semibold text-gray-900">Christian Boy Names</h3>
+              <p className="mt-2 text-sm text-gray-600">Browse biblical and contemporary Christian boy names with strong spiritual meaning.</p>
+            </Link>
+            <Link href="/christian/girl-names" className="block rounded-2xl border border-sky-200 bg-white p-5 hover:border-sky-300 hover:shadow-sm transition">
+              <h3 className="font-semibold text-gray-900">Christian Girl Names</h3>
+              <p className="mt-2 text-sm text-gray-600">Find popular and timeless Christian girl names that honor faith and family heritage.</p>
+            </Link>
+            <Link href="/hindu/boy-names" className="block rounded-2xl border border-amber-200 bg-white p-5 hover:border-amber-300 hover:shadow-sm transition">
+              <h3 className="font-semibold text-gray-900">Hindu Boy Names</h3>
+              <p className="mt-2 text-sm text-gray-600">Explore Sanskrit, Vedic, and devotional boy names for modern Hindu families.</p>
+            </Link>
+            <Link href="/hindu/girl-names" className="block rounded-2xl border border-amber-200 bg-white p-5 hover:border-amber-300 hover:shadow-sm transition">
+              <h3 className="font-semibold text-gray-900">Hindu Girl Names</h3>
+              <p className="mt-2 text-sm text-gray-600">Discover beautiful Hindu girl names with meanings rooted in myth, nature, and virtue.</p>
+            </Link>
+            <Link href="/names/religion/islamic/1" className="block rounded-2xl border border-gray-200 bg-white p-5 hover:border-gray-300 hover:shadow-sm transition">
+              <h3 className="font-semibold text-gray-900">All Islamic Names</h3>
+              <p className="mt-2 text-sm text-gray-600">Browse the complete Islamic names collection, all paginated and fully searchable.</p>
+            </Link>
+            <Link href="/names/religion/christian/1" className="block rounded-2xl border border-gray-200 bg-white p-5 hover:border-gray-300 hover:shadow-sm transition">
+              <h3 className="font-semibold text-gray-900">All Christian Names</h3>
+              <p className="mt-2 text-sm text-gray-600">Access the full Christian names directory with meanings, origins, and filters.</p>
+            </Link>
+            <Link href="/names/religion/hindu/1" className="block rounded-2xl border border-gray-200 bg-white p-5 hover:border-gray-300 hover:shadow-sm transition">
+              <h3 className="font-semibold text-gray-900">All Hindu Names</h3>
+              <p className="mt-2 text-sm text-gray-600">Explore the full Hindu names collection, searchable by origin, gender, and letter.</p>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Featured Articles */}
       <section className="py-12 px-4 bg-gray-50">
         <div className="max-w-6xl mx-auto">
@@ -58,22 +153,23 @@ export default function BlogPage() {
                   key={post.id}
                   className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-200 overflow-hidden"
                 >
-                  <div className="relative h-48 overflow-hidden">
-                    <Image
+                   <div className="relative h-48 overflow-hidden">
+                    <BlogImageWithFallback
                       src={imageUrl}
                       alt={post.title}
                       fill
                       className="object-cover transition-transform duration-300 hover:scale-105"
-                      loading="lazy"
-                    />
-                    <div className="absolute top-3 left-3 flex gap-2">
-                      <span className="bg-blue-100 text-blue-700 px-2.5 py-1 rounded text-xs font-medium">
-                        {post.category}
-                      </span>
-                      <span className="bg-amber-100 text-amber-700 px-2.5 py-1 rounded text-xs font-medium">
-                        Featured
-                      </span>
-                    </div>
+                      containerClassName="h-full w-full"
+                    >
+                      <div className="absolute top-3 left-3 flex gap-2">
+                        <span className="bg-blue-100 text-blue-700 px-2.5 py-1 rounded text-xs font-medium">
+                          {post.category}
+                        </span>
+                        <span className="bg-amber-100 text-amber-700 px-2.5 py-1 rounded text-xs font-medium">
+                          Featured
+                        </span>
+                      </div>
+                    </BlogImageWithFallback>
                   </div>
                   <div className="p-6">
                     <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
@@ -158,12 +254,12 @@ export default function BlogPage() {
                 >
                   <div className="flex flex-col md:flex-row md:items-center gap-4">
                     <div className="relative w-full md:w-48 h-32 flex-shrink-0 overflow-hidden rounded-lg">
-                      <Image
+                      <BlogImageWithFallback
                         src={imageUrl}
                         alt={post.title}
                         fill
                         className="object-cover"
-                        loading="lazy"
+                        containerClassName="w-full h-full"
                       />
                     </div>
                     <div className="flex-1">
@@ -195,6 +291,21 @@ export default function BlogPage() {
                 </article>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-16 px-4 bg-slate-50">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {blogFaq.map((item, index) => (
+              <div key={index} className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">{item.question}</h3>
+                <p className="text-gray-600 leading-relaxed">{item.answer}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

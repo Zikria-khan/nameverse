@@ -74,9 +74,9 @@ const SeasonalNamesSection = () => {
             </span>
           </div>
           
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+          <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
             Seasonal Baby Names & Monthly Trends — Names by Birth Month
-          </h2>
+          </h3>
           <p className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto">
             Discover the most popular baby names by season and month. Whether your baby arrives in spring, summer, autumn, or winter, find names that match the season's energy. Explore trending names for January babies, February babies, and every month of 2026. Seasonal baby names are gaining popularity as parents seek names that reflect birth timing and nature.
           </p>
@@ -176,7 +176,7 @@ const SeasonalNamesSection = () => {
 
           <div className="mt-6 text-center">
             <Link 
-              href="/baby-names-by-month"
+              href="/popular-names"
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-lg hover:shadow-lg transition-all"
             >
               <Calendar className="w-5 h-5" />

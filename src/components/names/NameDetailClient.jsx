@@ -3,10 +3,10 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import Link from 'next/link'
 import {
-  Sparkles, BookOpen, Book, Heart, Brain, Gem, Calendar, Hash,
+  Sparkles, Book, Heart, Brain, Gem, Calendar, Hash,
   Languages, Volume2, Users, Link2, Share2, Bookmark, TrendingUp,
   Globe, ChevronDown, ChevronUp, Home, AlignLeft, History, Star,
-  MessageCircle, Copy, Check, ExternalLink
+  MessageCircle, Copy, Check, ExternalLink, Palette
 } from 'lucide-react'
 import FavoriteButton from '@/components/FavoriteButton'
 
@@ -44,14 +44,35 @@ const religionThemes = {
   }
 }
 
-// Tab configuration with proper semantic structure
-const tabConfig = [
-  { id: 'meaning', label: 'Meaning', icon: AlignLeft },
-  { id: 'origin', label: 'Origin', icon: History },
-  { id: 'personality', label: 'Personality', icon: Brain },
-  { id: 'similar', label: 'Similar', icon: Link2 },
-  { id: 'faq', label: 'FAQ', icon: MessageCircle },
+// Translation tabs configuration (tabs ONLY for translations)
+const translationTabs = [
+  { id: 'english', label: 'English', flag: '🇺🇸' },
+  { id: 'urdu', label: 'Urdu', flag: '🇵🇰' },
+  { id: 'arabic', label: 'Arabic', flag: '🇸🇦' },
+  { id: 'hindi', label: 'Hindi', flag: '🇮🇳' },
 ]
+
+// Mobile navigation sections
+const mobileNavSections = [
+  { id: 'hero', label: 'Name', icon: Star },
+  { id: 'meaning', label: 'Meaning', icon: AlignLeft },
+  { id: 'translations', label: 'Languages', icon: Languages },
+  { id: 'personality', label: 'Personality', icon: Brain },
+  { id: 'lucky', label: 'Lucky', icon: Star },
+  { id: 'faq', label: 'FAQ', icon: MessageCircle },
+  { id: 'related', label: 'Similar', icon: Link2 },
+  { id: 'trending', label: 'Trending', icon: TrendingUp },
+]
+
+// Get color hex for lucky colors
+const getColorHex = (colorName) => {
+  const colors = {
+    red: '#EF4444', blue: '#3B82F6', green: '#10B981', yellow: '#F59E0B',
+    purple: '#A855F7', pink: '#EC4899', orange: '#F97316', teal: '#14B8A6',
+    indigo: '#6366F1', emerald: '#10B981', rose: '#F43F5E', amber: '#F59E0B'
+  }
+  return colors[colorName?.toLowerCase()] || '#6B7280'
+}
 
 // Accessible Badge Component
 const Badge = ({ children, variant = 'default', className = '', icon: Icon, ...props }) => {
@@ -60,9 +81,9 @@ const Badge = ({ children, variant = 'default', className = '', icon: Icon, ...p
     primary: 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white',
     outline: 'bg-transparent border-2 border-gray-200 text-gray-700',
   }
-  
+
   return (
-    <span 
+    <span
       className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all ${variants[variant]} ${className}`}
       {...props}
     >
@@ -74,7 +95,7 @@ const Badge = ({ children, variant = 'default', className = '', icon: Icon, ...p
 
 // Card Component with consistent styling
 const Card = ({ children, className = '', hover = true, ...props }) => (
-  <div 
+  <div
     className={`bg-white rounded-2xl p-6 shadow-sm border border-gray-100 ${hover ? 'hover:shadow-lg hover:border-gray-200 transition-all duration-300' : ''} ${className}`}
     {...props}
   >
@@ -83,8 +104,8 @@ const Card = ({ children, className = '', hover = true, ...props }) => (
 )
 
 // Section Title Component
-const SectionTitle = ({ icon: Icon, title, subtitle, theme }) => (
-  <div className="mb-6">
+const SectionTitle = ({ icon: Icon, title, subtitle, theme, id }) => (
+  <div className="mb-6" id={id}>
     <div className="flex items-center gap-3 mb-2">
       {Icon && (
         <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${theme.gradient} flex items-center justify-center shadow-sm`}>
@@ -144,53 +165,82 @@ const TranslationCard = ({ language, nativeName, meaning, longMeaning, flag }) =
   )
 }
 
-// FAQ Item Component with proper accessibility
-const FAQItem = ({ question, answer, isOpen, onToggle }) => (
-  <div className="border border-gray-200 rounded-xl overflow-hidden transition-all duration-200">
-    <button
-      onClick={onToggle}
-      className="w-full px-6 py-4 text-left font-semibold text-gray-900 hover:bg-gray-50 flex justify-between items-center transition-colors"
-      aria-expanded={isOpen}
-    >
-      <span className="pr-8">{question}</span>
-      <ChevronDown 
-        size={20} 
-        className={`flex-shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
-      />
-    </button>
-    {isOpen && (
-      <div className="px-6 pb-4 text-gray-700 leading-relaxed border-t border-gray-200 animate-in slide-in-from-top-2">
-        {answer}
+// FAQ Item Component with accordion for mobile
+const FAQItem = ({ question, answer, isOpen, onToggle, isMobile }) => {
+  if (isMobile) {
+    return (
+      <div className="border border-gray-200 rounded-xl overflow-hidden transition-all duration-200">
+        <button
+          onClick={onToggle}
+          className="w-full px-6 py-4 text-left font-semibold text-gray-900 hover:bg-gray-50 flex justify-between items-center transition-colors"
+          aria-expanded={isOpen}
+        >
+          <span className="pr-8">{question}</span>
+          <ChevronDown
+            size={20}
+            className={`flex-shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          />
+        </button>
+        {isOpen && (
+          <div className="px-6 pb-4 text-gray-700 leading-relaxed border-t border-gray-200 animate-in slide-in-from-top-2">
+            {answer}
+          </div>
+        )}
       </div>
-    )}
-  </div>
-)
+    )
+  }
+
+  return (
+    <div className="grid md:grid-cols-2 gap-6">
+      <div className="font-semibold text-gray-900">{question}</div>
+      <div className="text-gray-700 leading-relaxed">{answer}</div>
+    </div>
+  )
+}
 
 // Main Component
 export default function NameDetailClient({ data, initialLanguage }) {
   const [isFavorite, setIsFavorite] = useState(false)
-  const [isScrolled, setIsScrolled] = useState(false)
-  const [activeTab, setActiveTab] = useState('meaning')
-  const [openFAQ, setOpenFAQ] = useState(0)
+  const [activeTranslationTab, setActiveTranslationTab] = useState('english')
+  const [openFAQ, setOpenFAQ] = useState(null)
   const [copied, setCopied] = useState(false)
   const [mounted, setMounted] = useState(false)
-  const tabRefs = useRef({})
+  const [activeMobileSection, setActiveMobileSection] = useState('hero')
 
   const religion = data.religion?.toLowerCase() || 'islamic'
   const theme = religionThemes[religion] || religionThemes.islamic
-  
-  // Compute hover gradient class separately to avoid Turbopack parsing issues
-  const hoverGradientClass = `hover:bg-gradient-to-r hover:${theme.gradient} hover:text-white hover:border-transparent`
-  
-  // Pre-compute related name link classes to avoid multi-line template literal issues
-  const relatedNameLinkClass = `inline-flex items-center px-4 py-2 rounded-full font-medium transition-all bg-white border-2 ${theme.border} text-gray-700 ${hoverGradientClass}`
 
-  // Track scroll position
+  // Detect mobile
+  const isMobile = useMemo(() => {
+    if (typeof window === 'undefined') return false
+    return window.innerWidth < 768
+  }, [])
+
+  // Track scroll position and active section
   useEffect(() => {
     setMounted(true)
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50)
+      const scrollY = window.scrollY
+
+      // Update active mobile section based on scroll position
+      const sections = mobileNavSections.map(section => {
+        const element = document.getElementById(section.id)
+        if (element) {
+          const rect = element.getBoundingClientRect()
+          return { id: section.id, top: rect.top + scrollY }
+        }
+        return null
+      }).filter(Boolean)
+
+      const currentSection = sections.reduce((closest, section) => {
+        return Math.abs(section.top - scrollY) < Math.abs(closest.top - scrollY) ? section : closest
+      }, sections[0])
+
+      if (currentSection) {
+        setActiveMobileSection(currentSection.id)
+      }
     }
+
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
@@ -214,6 +264,17 @@ export default function NameDetailClient({ data, initialLanguage }) {
     return translations
   }, [data])
 
+  // Current translation data
+  const currentTranslation = useMemo(() => {
+    const tabMap = {
+      english: data.in_english || { name: data.name, meaning: data.short_meaning || data.long_meaning },
+      urdu: data.in_urdu,
+      arabic: data.in_arabic,
+      hindi: data.in_hindi
+    }
+    return tabMap[activeTranslationTab] || tabMap.english
+  }, [data, activeTranslationTab])
+
   // Load favorites
   useEffect(() => {
     if (!mounted) return
@@ -224,64 +285,18 @@ export default function NameDetailClient({ data, initialLanguage }) {
     }
   }, [data, mounted])
 
-  // Toggle favorite
-  const handleFavoriteToggle = useCallback(() => {
-    try {
-      const favorites = JSON.parse(localStorage.getItem('favoriteNames') || '[]')
-      const nameId = data.slug || data.name.toLowerCase()
-
-      if (favorites.includes(nameId)) {
-        const updated = favorites.filter(id => id !== nameId)
-        localStorage.setItem('favoriteNames', JSON.stringify(updated))
-        setIsFavorite(false)
-      } else {
-        favorites.push(nameId)
-        localStorage.setItem('favoriteNames', JSON.stringify(favorites))
-        setIsFavorite(true)
-      }
-    } catch (error) {
+  // Smooth scroll to section
+  const scrollToSection = useCallback((sectionId) => {
+    const element = document.getElementById(sectionId)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
-  }, [data])
+  }, [])
 
-  // Share handler
-  const handleShare = useCallback(async () => {
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: `${data.name} - Baby Name Meaning`,
-          text: `${data.name}: ${data.short_meaning}`,
-          url: window.location.href
-        })
-      } else {
-        await navigator.clipboard.writeText(window.location.href)
-        setCopied(true)
-        setTimeout(() => setCopied(false), 2000)
-      }
-    } catch (error) {
-      if (error.name !== 'AbortError') {
-      }
-    }
-  }, [data])
-
-  // Copy name to clipboard
-  const handleCopyName = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(data.name)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch (error) {
-    }
-  }, [data.name])
-
-  // Get color hex
-  const getColorHex = (colorName) => {
-    const colors = {
-      red: '#EF4444', blue: '#3B82F6', green: '#10B981', yellow: '#F59E0B',
-      purple: '#A855F7', pink: '#EC4899', orange: '#F97316', teal: '#14B8A6',
-      indigo: '#6366F1', emerald: '#10B981', rose: '#F43F5E', amber: '#F59E0B'
-    }
-    return colors[colorName?.toLowerCase()] || '#6B7280'
-  }
+  // Handle FAQ toggle
+  const handleFAQToggle = useCallback((index) => {
+    setOpenFAQ(openFAQ === index ? null : index)
+  }, [openFAQ])
 
   // Generate FAQ data
   const faqData = useMemo(() => data.seo?.faq || [
@@ -299,7 +314,7 @@ export default function NameDetailClient({ data, initialLanguage }) {
     },
     {
       q: `How do you pronounce ${data.name}?`,
-      a: data.pronunciation?.english 
+      a: data.pronunciation?.english
         ? `${data.name} is pronounced as "${data.pronunciation.english}" in English.`
         : `${data.name} has a unique pronunciation that varies by culture and region.`
     }
@@ -318,44 +333,33 @@ export default function NameDetailClient({ data, initialLanguage }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Sticky Mini Header for Mobile */}
-      <div className={`fixed top-0 left-0 right-0 z-50 bg-white shadow-sm transition-all duration-300 ${isScrolled ? 'translate-y-0' : '-translate-y-full'}`}>
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3 min-w-0">
-            <a
-              href={`/names/religion/${religion}/1`}
-              className="text-gray-500 hover:text-gray-900 transition-colors flex-shrink-0"
-              aria-label="Back to names list"
-            >
-              <Home size={20} />
-            </a>
-            <div className="min-w-0">
-              <h2 className="font-bold text-gray-900 truncate">{data.name}</h2>
-              <p className="text-xs text-gray-500 truncate">{data.short_meaning}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <button
-              onClick={handleShare}
-              className="p-2 text-gray-500 hover:text-gray-900 transition-colors rounded-full hover:bg-gray-100"
-              aria-label="Share this name"
-            >
-              <Share2 size={18} />
-            </button>
-            <button
-              onClick={handleFavoriteToggle}
-              className={`p-2 transition-colors rounded-full hover:bg-gray-100 ${isFavorite ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}`}
-              aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-              aria-pressed={isFavorite}
-            >
-              <Bookmark size={18} className={isFavorite ? 'fill-current' : ''} />
-            </button>
+      {/* Sticky Mobile Navigation */}
+      {isMobile && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg">
+          <div className="flex justify-around py-2 px-2">
+            {mobileNavSections.map((section) => {
+              const Icon = section.icon
+              const isActive = activeMobileSection === section.id
+              return (
+                <button
+                  key={section.id}
+                  onClick={() => scrollToSection(section.id)}
+                  className={`flex flex-col items-center p-2 rounded-lg transition-all ${
+                    isActive ? 'text-blue-600 bg-blue-50' : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
+                  }`}
+                  aria-label={`Go to ${section.label} section`}
+                >
+                  <Icon size={18} />
+                  <span className="text-xs mt-1">{section.label}</span>
+                </button>
+              )
+            })}
           </div>
         </div>
-      </div>
+      )}
 
       {/* Hero Section */}
-      <header className={`bg-gradient-to-br ${theme.gradient} pt-24 pb-16 px-4`}>
+      <header id="hero" className={`bg-gradient-to-br ${theme.gradient} pt-24 pb-16 px-4 relative`}>
         <div className="max-w-5xl mx-auto">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm mb-8 text-white/80 flex-wrap" aria-label="Breadcrumb">
@@ -367,12 +371,6 @@ export default function NameDetailClient({ data, initialLanguage }) {
             <a href={`/names/religion/${religion}/1`} className="hover:text-white transition-colors">Names</a>
             <span className="text-white/60">/</span>
             <a href={`/names/religion/${religion}/1`} className="hover:text-white transition-colors capitalize">{religion}</a>
-            {data.gender && (
-              <>
-                <span className="text-white/60">/</span>
-                <span className="text-white/80 capitalize">{data.gender}</span>
-              </>
-            )}
             <span className="text-white/60">/</span>
             <span className="text-white font-semibold">{data.name}</span>
           </nav>
@@ -396,7 +394,11 @@ export default function NameDetailClient({ data, initialLanguage }) {
                   className="p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors"
                 />
                 <button
-                  onClick={handleCopyName}
+                  onClick={() => {
+                    navigator.clipboard.writeText(data.name)
+                    setCopied(true)
+                    setTimeout(() => setCopied(false), 2000)
+                  }}
                   className="p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors text-white"
                   aria-label="Copy name to clipboard"
                   title="Copy name"
@@ -413,25 +415,26 @@ export default function NameDetailClient({ data, initialLanguage }) {
               </p>
             )}
 
-            {/* Quick Info Badges */}
-            <div className="flex flex-wrap justify-center gap-3 mb-6">
-              <Badge variant="default" className="bg-white/20 text-white backdrop-blur-sm border-0">
-                <Globe size={14} />
-                {data.origin || 'Ancient'}
-              </Badge>
-              <Badge variant="default" className="bg-white/20 text-white backdrop-blur-sm border-0">
-                <Users size={14} />
-                {data.gender || 'Unisex'}
-              </Badge>
-              <Badge variant="default" className="bg-white/20 text-white backdrop-blur-sm border-0">
-                {religion}
-              </Badge>
-              {data.luckyNumber && (
-                <Badge variant="default" className="bg-white/20 text-white backdrop-blur-sm border-0">
-                  <Star size={14} />
-                  Lucky: {data.luckyNumber}
-                </Badge>
-              )}
+            {/* Quick Info Card */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-8 max-w-md mx-auto">
+              <div className="grid grid-cols-2 gap-4 text-center">
+                <div>
+                  <div className="text-white/90 text-sm mb-1">Religion</div>
+                  <div className="text-white font-semibold capitalize">{religion}</div>
+                </div>
+                <div>
+                  <div className="text-white/90 text-sm mb-1">Origin</div>
+                  <div className="text-white font-semibold">{data.origin || 'Ancient'}</div>
+                </div>
+                <div>
+                  <div className="text-white/90 text-sm mb-1">Gender</div>
+                  <div className="text-white font-semibold capitalize">{data.gender || 'Unisex'}</div>
+                </div>
+                <div>
+                  <div className="text-white/90 text-sm mb-1">Lucky Number</div>
+                  <div className="text-white font-semibold">{data.lucky_number || '?'}</div>
+                </div>
+              </div>
             </div>
 
             {/* Meaning */}
@@ -442,14 +445,42 @@ export default function NameDetailClient({ data, initialLanguage }) {
             {/* Action Buttons */}
             <div className="flex flex-wrap justify-center gap-4">
               <button
-                onClick={handleShare}
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({
+                      title: `${data.name} - Baby Name Meaning`,
+                      text: `${data.name}: ${data.short_meaning}`,
+                      url: window.location.href
+                    })
+                  } else {
+                    navigator.clipboard.writeText(window.location.href)
+                    setCopied(true)
+                    setTimeout(() => setCopied(false), 2000)
+                  }
+                }}
                 className="px-6 py-3 bg-white text-gray-900 rounded-full font-semibold hover:bg-gray-100 transition-all flex items-center gap-2 shadow-lg hover:shadow-xl"
               >
                 <Share2 size={18} />
                 Share
               </button>
               <button
-                onClick={handleFavoriteToggle}
+                onClick={() => {
+                  try {
+                    const favorites = JSON.parse(localStorage.getItem('favoriteNames') || '[]')
+                    const nameId = data.slug || data.name.toLowerCase()
+
+                    if (favorites.includes(nameId)) {
+                      const updated = favorites.filter(id => id !== nameId)
+                      localStorage.setItem('favoriteNames', JSON.stringify(updated))
+                      setIsFavorite(false)
+                    } else {
+                      favorites.push(nameId)
+                      localStorage.setItem('favoriteNames', JSON.stringify(favorites))
+                      setIsFavorite(true)
+                    }
+                  } catch (error) {
+                  }
+                }}
                 className={`px-6 py-3 rounded-full font-semibold transition-all flex items-center gap-2 shadow-lg hover:shadow-xl ${
                   isFavorite
                     ? 'bg-red-500 text-white hover:bg-red-600'
@@ -459,144 +490,224 @@ export default function NameDetailClient({ data, initialLanguage }) {
                 <Bookmark size={18} className={isFavorite ? 'fill-white' : ''} />
                 {isFavorite ? 'Saved' : 'Save'}
               </button>
-              {data.pronunciation && (
-                <button 
-                  className="px-6 py-3 bg-white/20 text-white backdrop-blur-sm rounded-full font-semibold hover:bg-white/30 transition-all flex items-center gap-2"
-                  aria-label="Listen to pronunciation"
-                >
-                  <Volume2 size={18} />
-                  Pronounce
-                </button>
-              )}
             </div>
           </div>
         </div>
       </header>
 
-      {/* Quick Info Bar */}
-      {(data.category || data.themes || data.language) && (
-        <div className="bg-white border-b border-gray-200">
-          <div className="max-w-5xl mx-auto px-4 py-4">
-            <div className="flex flex-wrap gap-4">
-              {data.category && data.category.length > 0 && (
-                <div>
-                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-2">Categories</span>
-                  <div className="flex flex-wrap gap-2">
-                    {data.category.map((cat, idx) => (
-                      <Badge key={idx} className="bg-blue-50 text-blue-700">{cat}</Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {data.themes && data.themes.length > 0 && (
-                <div>
-                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-2">Themes</span>
-                  <div className="flex flex-wrap gap-2">
-                    {data.themes.map((themeItem, idx) => (
-                      <Badge key={idx} className="bg-purple-50 text-purple-700">{themeItem}</Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {data.language && data.language.length > 0 && (
-                <div>
-                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-2">Languages</span>
-                  <div className="flex flex-wrap gap-2">
-                    {data.language.map((lang, idx) => (
-                      <Badge key={idx} className="bg-green-50 text-green-700">{lang}</Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Main Content - Scrollable Layout */}
+      <main className="max-w-5xl mx-auto px-4 py-8 pb-20 md:pb-8">
 
-      {/* Tab Navigation */}
-      <nav className="bg-white border-b border-gray-200 sticky top-14 z-40" aria-label="Name information tabs">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="flex gap-0 overflow-x-auto scrollbar-hide">
-            {tabConfig.map((tab) => {
-              const Icon = tab.icon
-              const isActive = activeTab === tab.id
-              return (
-                <button
-                  key={tab.id}
-                  ref={el => tabRefs.current[tab.id] = el}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`
-                    flex items-center gap-2 px-4 py-4 text-sm font-semibold whitespace-nowrap transition-all relative
-                    border-b-2 min-w-fit
-                    ${isActive 
-                      ? `border-${theme.primary?.replace('#', '')} text-gray-900` 
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200'}
-                  `}
-                  role="tab"
-                  aria-selected={isActive}
-                  aria-controls={`tab-panel-${tab.id}`}
-                  id={`tab-${tab.id}`}
-                >
-                  <Icon size={16} />
-                  <span className="hidden sm:inline">{tab.label}</span>
-                </button>
-              )
-            })}
-          </div>
-        </div>
-      </nav>
-
-      {/* Main Content - Above Fold for SEO */}
-      <div className="max-w-5xl mx-auto px-4 py-8">
-        {/* Primary Content Section - H1 and Core Information */}
-        <article className="prose prose-lg max-w-none mb-12">
-          <header>
-            <h1 className={`text-3xl sm:text-4xl font-bold mb-6 ${theme.text}`}>
-              {data.name} Name Meaning: Origin, Numerology & Spiritual Significance
-            </h1>
-
-            {/* Core Meaning - Above Fold */}
-            {data.short_meaning && (
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 mb-8 border-l-4 border-blue-500">
-                <h2 className="text-xl font-bold text-gray-900 mb-3">What Does {data.name} Mean?</h2>
-                <p className="text-lg text-gray-700 leading-relaxed">{data.short_meaning}</p>
-                {data.long_meaning && data.long_meaning !== data.short_meaning && (
-                  <p className="text-gray-600 mt-3 leading-relaxed">{data.long_meaning}</p>
-                )}
+        {/* Meaning Section */}
+        <section className="mb-12">
+          <SectionTitle
+            icon={AlignLeft}
+            title="Name Meaning"
+            subtitle="Complete meaning and significance"
+            theme={theme}
+            id="meaning"
+          />
+          <Card>
+            <h3 className="text-xl font-bold text-gray-900 mb-4">What Does {data.name} Mean?</h3>
+            <p className="text-lg text-gray-700 leading-relaxed mb-4">
+              {data.long_meaning || data.short_meaning}
+            </p>
+            {data.spiritual_meaning && (
+              <div className="bg-blue-50 rounded-xl p-4 mt-6">
+                <h4 className="font-semibold text-blue-900 mb-2">Spiritual Significance</h4>
+                <p className="text-blue-800">{data.spiritual_meaning}</p>
               </div>
             )}
+          </Card>
+        </section>
 
-            {/* Key Facts Summary */}
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
-              {data.origin && (
-                <div className="text-center">
-                  <h3 className="font-bold text-gray-900 mb-2">Origin</h3>
-                  <p className="text-gray-600">{Array.isArray(data.origin) ? data.origin.join(', ') : data.origin}</p>
-                </div>
-              )}
-              {data.gender && (
-                <div className="text-center">
-                  <h3 className="font-bold text-gray-900 mb-2">Gender</h3>
-                  <p className="text-gray-600 capitalize">{data.gender}</p>
-                </div>
-              )}
-              {data.lucky_number && (
-                <div className="text-center">
-                  <h3 className="font-bold text-gray-900 mb-2">Lucky Number</h3>
-                  <p className="text-gray-600">{data.lucky_number}</p>
-                </div>
-              )}
-            </div>
-          </header>
-        </article>
-
-        {/* Related Names Section - Above Fold for Better SEO */}
+        {/* Translation Tabs Section */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Similar {data.name} Names</h2>
+          <SectionTitle
+            icon={Languages}
+            title="Translations & Languages"
+            subtitle="How the name is written and understood across cultures"
+            theme={theme}
+            id="translations"
+          />
+          <Card>
+            {/* Translation Tabs */}
+            <div className="flex gap-2 mb-6 overflow-x-auto scrollbar-hide pb-2">
+              {translationTabs.map((tab) => {
+                const hasData = tab.id === 'english' || data[`in_${tab.id}`]
+                if (!hasData) return null
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTranslationTab(tab.id)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                      activeTranslationTab === tab.id
+                        ? 'bg-blue-600 text-white shadow-md'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    <span>{tab.flag}</span>
+                    <span>{tab.label}</span>
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Current Translation Content */}
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-2">Name</h4>
+                <p className="text-2xl font-bold text-gray-900 mb-4">
+                  {currentTranslation?.name || data.name}
+                </p>
+                {currentTranslation?.pronunciation && (
+                  <div className="text-sm text-gray-600">
+                    <span className="font-medium">Pronunciation:</span> {currentTranslation.pronunciation}
+                  </div>
+                )}
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-2">Meaning</h4>
+                <p className="text-gray-700 leading-relaxed">
+                  {currentTranslation?.meaning || currentTranslation?.long_meaning || data.short_meaning}
+                </p>
+                {currentTranslation?.long_meaning && currentTranslation.long_meaning !== currentTranslation.meaning && (
+                  <p className="text-gray-600 mt-3 text-sm leading-relaxed">
+                    {currentTranslation.long_meaning}
+                  </p>
+                )}
+              </div>
+            </div>
+          </Card>
+        </section>
+
+        {/* Personality Traits Section */}
+        <section className="mb-12">
+          <SectionTitle
+            icon={Brain}
+            title="Personality Traits"
+            subtitle="Characteristics associated with the name"
+            theme={theme}
+            id="personality"
+          />
+          <div className="grid md:grid-cols-2 gap-6">
+            {data.emotional_traits && data.emotional_traits.length > 0 && (
+              <Card>
+                <div className="flex items-center gap-3 mb-4">
+                  <Heart className="text-rose-500" size={24} />
+                  <h3 className="font-bold text-gray-900 text-lg">Emotional Traits</h3>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {data.emotional_traits.map((trait) => (
+                    <Badge key={trait} className="bg-rose-50 text-rose-700">{trait}</Badge>
+                  ))}
+                </div>
+              </Card>
+            )}
+            {data.hidden_personality_traits && data.hidden_personality_traits.length > 0 && (
+              <Card>
+                <div className="flex items-center gap-3 mb-4">
+                  <Sparkles className="text-amber-500" size={24} />
+                  <h3 className="font-bold text-gray-900 text-lg">Hidden Traits</h3>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {data.hidden_personality_traits.map((trait) => (
+                    <Badge key={trait} className="bg-amber-50 text-amber-700">{trait}</Badge>
+                  ))}
+                </div>
+              </Card>
+            )}
+          </div>
+        </section>
+
+        {/* Lucky Traits Section */}
+        <section className="mb-12">
+          <SectionTitle
+            icon={Star}
+            title="Lucky Attributes"
+            subtitle="Numerology and lucky elements"
+            theme={theme}
+            id="lucky"
+          />
+          <div className="grid md:grid-cols-3 gap-6">
+            {data.lucky_number && (
+              <Card className="text-center">
+                <div className="text-6xl font-bold bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent mb-2">
+                  {data.lucky_number}
+                </div>
+                <div className="text-sm text-gray-600">Lucky Number</div>
+              </Card>
+            )}
+            {data.lucky_day && (
+              <Card className="text-center">
+                <Calendar className={`mx-auto mb-3 ${theme.text}`} size={32} />
+                <div className="text-xl font-bold text-gray-900 mb-1">{data.lucky_day}</div>
+                <div className="text-sm text-gray-600">Lucky Day</div>
+              </Card>
+            )}
+            {data.lucky_stone && (
+              <Card className="text-center">
+                <Gem className="text-purple-500 mx-auto mb-3" size={32} />
+                <div className="text-xl font-bold text-gray-900 mb-1">{data.lucky_stone}</div>
+                <div className="text-sm text-gray-600">Lucky Stone</div>
+              </Card>
+            )}
+          </div>
+          {data.lucky_colors && data.lucky_colors.length > 0 && (
+            <Card className="mt-6">
+              <SectionTitle icon={Palette} title="Lucky Colors" theme={theme} />
+              <div className="flex flex-wrap gap-4">
+                {data.lucky_colors.map((color) => (
+                  <div key={color.toLowerCase()} className="text-center">
+                    <div
+                      className="w-16 h-16 rounded-full shadow-md mb-2 border-2 border-white"
+                      style={{ backgroundColor: color.toLowerCase() }}
+                      title={color}
+                    />
+                    <span className="text-xs text-gray-600 capitalize">{color}</span>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
+        </section>
+
+        {/* FAQs Section */}
+        <section className="mb-12">
+          <SectionTitle
+            icon={MessageCircle}
+            title="Frequently Asked Questions"
+            subtitle="Common questions about the name"
+            theme={theme}
+            id="faq"
+          />
+          <div className="space-y-4">
+            {faqData.map((faq, idx) => (
+              <FAQItem
+                key={faq.q || idx}
+                question={faq.q}
+                answer={faq.a}
+                isOpen={openFAQ === idx}
+                onToggle={() => handleFAQToggle(idx)}
+                isMobile={isMobile}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* Related Names Section */}
+        <section className="mb-12">
+          <SectionTitle
+            icon={Link2}
+            title="Similar Names"
+            subtitle="Names with similar meanings or sounds"
+            theme={theme}
+            id="related"
+          />
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {data.similar_sounding_names?.slice(0, 8).map((similarName, index) => (
+            {data.similar_sounding_names?.slice(0, 8).map((similarName) => (
               <Link
-                key={index}
+                key={similarName}
                 href={`/names/${data.religion}/${similarName.toLowerCase().replace(/\s+/g, '-')}`}
                 className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all text-center"
               >
@@ -607,19 +718,40 @@ export default function NameDetailClient({ data, initialLanguage }) {
           </div>
         </section>
 
-        {/* Quick Links Section */}
+        {/* Trending Names Section */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Explore More {religion.charAt(0).toUpperCase() + religion.slice(1)} Names</h2>
+          <SectionTitle
+            icon={TrendingUp}
+            title="Trending Names"
+            subtitle="Popular names in this category"
+            theme={theme}
+            id="trending"
+          />
+          <Card>
+            <p className="text-gray-600 text-center py-8">
+              Trending names feature coming soon. Check back for popular {religion} names!
+            </p>
+          </Card>
+        </section>
+
+        {/* Internal Linking Section */}
+        <section className="mb-12">
+          <SectionTitle
+            icon={ExternalLink}
+            title="Explore More"
+            subtitle="Related categories and collections"
+            theme={theme}
+          />
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Link
-              href={`/names/${data.religion}`}
+              href={`/names/${religion}`}
               className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4 text-center hover:shadow-md transition-all"
             >
               <div className="font-semibold text-blue-700">All {religion.charAt(0).toUpperCase() + religion.slice(1)} Names</div>
               <div className="text-xs text-blue-600 mt-1">Browse Complete List</div>
             </Link>
             <Link
-              href={`/names/${data.religion}/letter/${data.name.charAt(0).toUpperCase()}/1`}
+              href={`/names/${religion}/letter/${data.name.charAt(0).toUpperCase()}/1`}
               className="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4 text-center hover:shadow-md transition-all"
             >
               <div className="font-semibold text-green-700">Names Starting with {data.name.charAt(0).toUpperCase()}</div>
@@ -627,376 +759,23 @@ export default function NameDetailClient({ data, initialLanguage }) {
             </Link>
             {data.gender && (
               <Link
-                href={`/${data.religion}/${data.gender}-names`}
+                href={`/${religion}/${data.gender}-names`}
                 className="bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg p-4 text-center hover:shadow-md transition-all"
               >
                 <div className="font-semibold text-purple-700">{data.gender.charAt(0).toUpperCase() + data.gender.slice(1)} Names</div>
                 <div className="text-xs text-purple-600 mt-1">{religion.charAt(0).toUpperCase() + religion.slice(1)} {data.gender}s</div>
               </Link>
             )}
-            {data.origin && (
-              <Link
-                href={`/names/${data.religion}/origin/${Array.isArray(data.origin) ? data.origin[0] : data.origin}/1`}
-                className="bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg p-4 text-center hover:shadow-md transition-all"
-              >
-                <div className="font-semibold text-orange-700">{Array.isArray(data.origin) ? data.origin[0] : data.origin} Names</div>
-                <div className="text-xs text-orange-600 mt-1">Same Origin</div>
-              </Link>
-            )}
+            <Link
+              href={`/search`}
+              className="bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg p-4 text-center hover:shadow-md transition-all"
+            >
+              <div className="font-semibold text-orange-700">Search Names</div>
+              <div className="text-xs text-orange-600 mt-1">Find Your Perfect Name</div>
+            </Link>
           </div>
         </section>
-      </div>
 
-      {/* Tab Content - Below Fold */}
-      <main className="max-w-5xl mx-auto px-4 py-8">
-        {/* Meaning Tab */}
-        {activeTab === 'meaning' && (
-          <div 
-            id="tab-panel-meaning" 
-            role="tabpanel" 
-            aria-labelledby="tab-meaning"
-            className="animate-in fade-in duration-200"
-          >
-            {/* Main Meaning */}
-            <Card className="mb-6">
-              <SectionTitle icon={BookOpen} title="Name Meaning" theme={theme} />
-              <p className="text-lg text-gray-700 leading-relaxed">
-                {data.long_meaning || data.short_meaning}
-              </p>
-            </Card>
-
-            {/* Additional Meanings Grid */}
-            {(data.spiritual_meaning || data.numerology_meaning) && (
-              <div className="grid md:grid-cols-2 gap-6 mb-6">
-                {data.spiritual_meaning && (
-                  <Card>
-                    <div className="flex items-center gap-3 mb-3">
-                      <Heart className={theme.text} size={20} />
-                      <h3 className="font-bold text-gray-900">Spiritual Significance</h3>
-                    </div>
-                    <p className="text-gray-700">{data.spiritual_meaning}</p>
-                  </Card>
-                )}
-                {data.numerology_meaning && (
-                  <Card>
-                    <div className="flex items-center gap-3 mb-3">
-                      <Sparkles className={theme.text} size={20} />
-                      <h3 className="font-bold text-gray-900">Numerology</h3>
-                    </div>
-                    <p className="text-gray-700">{data.numerology_meaning}</p>
-                  </Card>
-                )}
-              </div>
-            )}
-
-            {/* Translations */}
-            {availableTranslations.length > 0 && (
-              <div className="mb-6">
-                <SectionTitle icon={Languages} title="Translations" subtitle="How the name is written and understood in different languages" theme={theme} />
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {availableTranslations.map(trans => (
-                    <TranslationCard
-                      key={trans.key}
-                      language={trans.language}
-                      nativeName={trans.name}
-                      meaning={trans.meaning}
-                      longMeaning={trans.long_meaning}
-                      flag={trans.flag}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Pronunciation */}
-            {data.pronunciation && (
-              <Card className="mb-6">
-                <SectionTitle icon={Volume2} title="Pronunciation" theme={theme} />
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6">
-                    <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider block mb-2">English</span>
-                    <p className="text-2xl font-bold text-gray-900 mb-1">
-                      {data.pronunciation.english || data.pronunciation}
-                    </p>
-                    {data.pronunciation.ipa && (
-                      <p className="text-sm text-gray-600">IPA: {data.pronunciation.ipa}</p>
-                    )}
-                  </div>
-                  {data.pronunciation.urdu && (
-                    <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-6 text-right">
-                      <span className="text-xs font-semibold text-orange-600 uppercase tracking-wider block mb-2">Urdu</span>
-                      <p className="text-2xl font-bold text-gray-900 font-arabic mb-1">
-                        {data.pronunciation.urdu}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </Card>
-            )}
-          </div>
-        )}
-
-        {/* Origin Tab */}
-        {activeTab === 'origin' && (
-          <div 
-            id="tab-panel-origin" 
-            role="tabpanel" 
-            aria-labelledby="tab-origin"
-            className="animate-in fade-in duration-200"
-          >
-            {/* Origin Card */}
-            <Card className="mb-6">
-              <SectionTitle icon={Globe} title="Origin & History" theme={theme} />
-              <div className="flex items-start gap-4">
-                <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${theme.gradient} flex items-center justify-center flex-shrink-0`}>
-                  <Globe className="w-7 h-7 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{data.origin || 'Ancient Origin'}</h3>
-                  <p className="text-gray-700 leading-relaxed mb-4">
-                    The name <strong>{data.name}</strong> has its roots in {data.origin || 'ancient traditions'} 
-                    and is predominantly used in {religion} cultures. {data.long_meaning && `It carries the beautiful meaning "${data.short_meaning}" and has been cherished for generations.`}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    <Badge className="bg-gray-100 text-gray-700">Origin: {data.origin || 'Ancient'}</Badge>
-                    <Badge className="bg-gray-100 text-gray-700">Religion: {religion}</Badge>
-                    <Badge className="bg-gray-100 text-gray-700">Gender: {data.gender || 'Unisex'}</Badge>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            {/* Biblical Reference */}
-            {data.biblical_reference && data.biblical_reference.is_biblical && (
-              <Card className="mb-6 bg-blue-50 border-blue-100">
-                <SectionTitle icon={Book} title="Biblical Reference" theme={theme} />
-                <div className="bg-white rounded-xl p-6 shadow-sm">
-                  <Badge className="bg-blue-100 text-blue-800 mb-4">
-                    {data.biblical_reference.verse_reference}
-                  </Badge>
-                  <p className="text-lg text-gray-700 mb-3 italic border-l-4 border-blue-400 pl-4">
-                    {data.biblical_reference.origin_scripture}
-                  </p>
-                  <p className="text-sm text-gray-600">{data.biblical_reference.note}</p>
-                </div>
-              </Card>
-            )}
-
-            {/* Vedic Reference */}
-            {data.vedic_reference && data.vedic_reference.is_vedic && (
-              <Card className="mb-6 bg-orange-50 border-orange-100">
-                <SectionTitle icon={Book} title="Vedic Origin" theme={theme} />
-                <div className="bg-white rounded-xl p-6 shadow-sm">
-                  <Badge className="bg-orange-100 text-orange-800 mb-4">
-                    {data.vedic_reference.root_origin}
-                  </Badge>
-                  <p className="text-lg text-gray-700">{data.vedic_reference.note}</p>
-                </div>
-              </Card>
-            )}
-
-            {/* Celebrity Usage */}
-            {data.celebrity_usage && data.celebrity_usage.length > 0 && (
-              <Card className="mb-6">
-                <SectionTitle icon={Users} title={`Famous People Named ${data.name}`} theme={theme} />
-                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {data.celebrity_usage.map((celebrity, idx) => (
-                    <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                      <div className={`w-10 h-10 bg-gradient-to-br ${theme.gradient} rounded-full flex items-center justify-center text-white font-bold flex-shrink-0`}>
-                        {celebrity.charAt(0)}
-                      </div>
-                      <span className="font-medium text-gray-900">{celebrity}</span>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            )}
-          </div>
-        )}
-
-        {/* Personality Tab */}
-        {activeTab === 'personality' && (
-          <div 
-            id="tab-panel-personality" 
-            role="tabpanel" 
-            aria-labelledby="tab-personality"
-            className="animate-in fade-in duration-200"
-          >
-            {/* Lucky Number */}
-            {data.luckyNumber && (
-              <Card className="mb-6 text-center">
-                <div className="py-4">
-                  <span className="text-sm font-semibold text-gray-500 uppercase tracking-wider block mb-2">Lucky Number</span>
-                  <div className="text-7xl font-bold bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
-                    {data.luckyNumber}
-                  </div>
-                </div>
-              </Card>
-            )}
-
-            {/* Personality Traits */}
-            {(data.emotional_traits || data.hidden_personality_traits) && (
-              <div className="grid md:grid-cols-2 gap-6 mb-6">
-                {data.emotional_traits && data.emotional_traits.length > 0 && (
-                  <Card>
-                    <div className="flex items-center gap-3 mb-4">
-                      <Heart className="text-rose-500" size={24} />
-                      <h3 className="font-bold text-gray-900 text-lg">Emotional Traits</h3>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {data.emotional_traits.map((trait, idx) => (
-                        <Badge key={idx} className="bg-rose-50 text-rose-700">{trait}</Badge>
-                      ))}
-                    </div>
-                  </Card>
-                )}
-                {data.hidden_personality_traits && data.hidden_personality_traits.length > 0 && (
-                  <Card>
-                    <div className="flex items-center gap-3 mb-4">
-                      <Sparkles className="text-amber-500" size={24} />
-                      <h3 className="font-bold text-gray-900 text-lg">Hidden Traits</h3>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {data.hidden_personality_traits.map((trait, idx) => (
-                        <Badge key={idx} className="bg-amber-50 text-amber-700">{trait}</Badge>
-                      ))}
-                    </div>
-                  </Card>
-                )}
-              </div>
-            )}
-
-            {/* Lucky Attributes */}
-            <div className="grid md:grid-cols-3 gap-6 mb-6">
-              {data.lucky_day && (
-                <Card className="text-center">
-                  <Calendar className={`mx-auto mb-3 ${theme.text}`} size={28} />
-                  <span className="text-sm text-gray-500 block mb-1">Lucky Day</span>
-                  <span className="font-bold text-gray-900 text-lg">{data.lucky_day}</span>
-                </Card>
-              )}
-              {data.life_path_number && (
-                <Card className="text-center">
-                  <Hash className={`mx-auto mb-3 ${theme.text}`} size={28} />
-                  <span className="text-sm text-gray-500 block mb-1">Life Path Number</span>
-                  <span className="font-bold text-gray-900 text-lg">{data.life_path_number}</span>
-                </Card>
-              )}
-              {data.lucky_stone && (
-                <Card className="text-center">
-                  <Gem className="text-purple-500" size={28} />
-                  <span className="text-sm text-gray-500 block mb-1">Lucky Stone</span>
-                  <span className="font-bold text-gray-900 text-lg">{data.lucky_stone}</span>
-                </Card>
-              )}
-            </div>
-
-            {/* Lucky Colors */}
-            {data.lucky_colors && data.lucky_colors.length > 0 && (
-              <Card className="mb-6">
-                <SectionTitle icon={Palette} title="Lucky Colors" theme={theme} />
-                <div className="flex flex-wrap gap-4">
-                  {data.lucky_colors.map((color, idx) => (
-                    <div key={idx} className="text-center">
-                      <div
-                        className="w-16 h-16 rounded-full shadow-md mb-2 border-2 border-white"
-                        style={{ backgroundColor: getColorHex(color) }}
-                        title={color}
-                        role="img"
-                        aria-label={`Lucky color: ${color}`}
-                      />
-                      <span className="text-xs text-gray-600 capitalize">{color}</span>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            )}
-          </div>
-        )}
-
-        {/* Similar Names Tab */}
-        {activeTab === 'similar' && (
-          <div 
-            id="tab-panel-similar" 
-            role="tabpanel" 
-            aria-labelledby="tab-similar"
-            className="animate-in fade-in duration-200"
-          >
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* Related Names */}
-              {data.related_names && data.related_names.length > 0 && (
-                <div>
-                  <SectionTitle icon={Link2} title="Related Names" subtitle="Names with similar origins or meanings" theme={theme} />
-                  <div className="flex flex-wrap gap-3">
-                    {data.related_names.map((relatedName, idx) => (
-                      <a
-                        key={idx}
-                        href={`/names/religion/${religion}/1`}
-                        className={relatedNameLinkClass}
-                      >
-                        {relatedName}
-                        <ExternalLink size={14} className="ml-1" />
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Similar Sounding Names */}
-              {data.similar_sounding_names && data.similar_sounding_names.length > 0 && (
-                <div>
-                  <SectionTitle icon={Volume2} title="Similar Sounding" subtitle="Names that sound alike" theme={theme} />
-                  <div className="flex flex-wrap gap-3">
-                    {data.similar_sounding_names.map((similarName, idx) => (
-                      <a
-                        key={idx}
-                        href={`/names/religion/${religion}/1`}
-                        className="inline-flex items-center px-4 py-2 rounded-full font-medium transition-all bg-white border-2 border-gray-200 text-gray-700 hover:border-emerald-500 hover:text-emerald-600 hover:shadow-md"
-                      >
-                        {similarName}
-                        <ExternalLink size={14} className="ml-1" />
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Empty state */}
-              {!data.related_names?.length && !data.similar_sounding_names?.length && (
-                <div className="col-span-2 text-center py-12">
-                  <div className={`w-16 h-16 mx-auto rounded-full bg-gradient-to-br ${theme.gradient} flex items-center justify-center mb-4`}>
-                    <Link2 className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Similar Names</h3>
-                  <p className="text-gray-600">Similar names for {data.name} will be available soon.</p>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* FAQ Tab */}
-        {activeTab === 'faq' && (
-          <div 
-            id="tab-panel-faq" 
-            role="tabpanel" 
-            aria-labelledby="tab-faq"
-            className="animate-in fade-in duration-200"
-          >
-            <SectionTitle icon={MessageCircle} title="Frequently Asked Questions" theme={theme} />
-            <div className="space-y-4 max-w-3xl">
-              {faqData.map((faq, idx) => (
-                <FAQItem
-                  key={idx}
-                  question={faq.q}
-                  answer={faq.a}
-                  isOpen={openFAQ === idx}
-                  onToggle={() => setOpenFAQ(openFAQ === idx ? -1 : idx)}
-                />
-              ))}
-            </div>
-          </div>
-        )}
       </main>
 
       {/* Footer CTA */}
@@ -1010,14 +789,42 @@ export default function NameDetailClient({ data, initialLanguage }) {
           </p>
           <div className="flex justify-center gap-4">
             <button
-              onClick={handleShare}
+              onClick={() => {
+                if (navigator.share) {
+                  navigator.share({
+                    title: `${data.name} - Baby Name Meaning`,
+                    text: `${data.name}: ${data.short_meaning}`,
+                    url: window.location.href
+                  })
+                } else {
+                  navigator.clipboard.writeText(window.location.href)
+                  setCopied(true)
+                  setTimeout(() => setCopied(false), 2000)
+                }
+              }}
               className={`px-6 py-3 bg-gradient-to-r ${theme.gradient} text-white rounded-full font-semibold hover:shadow-lg transition-all flex items-center gap-2`}
             >
               <Share2 size={18} />
               Share Name
             </button>
             <button
-              onClick={handleFavoriteToggle}
+              onClick={() => {
+                try {
+                  const favorites = JSON.parse(localStorage.getItem('favoriteNames') || '[]')
+                  const nameId = data.slug || data.name.toLowerCase()
+
+                  if (favorites.includes(nameId)) {
+                    const updated = favorites.filter(id => id !== nameId)
+                    localStorage.setItem('favoriteNames', JSON.stringify(updated))
+                    setIsFavorite(false)
+                  } else {
+                    favorites.push(nameId)
+                    localStorage.setItem('favoriteNames', JSON.stringify(favorites))
+                    setIsFavorite(true)
+                  }
+                } catch (error) {
+                }
+              }}
               className={`px-6 py-3 rounded-full font-semibold transition-all flex items-center gap-2 border-2 ${
                 isFavorite
                   ? 'bg-red-500 border-red-500 text-white'
@@ -1030,23 +837,6 @@ export default function NameDetailClient({ data, initialLanguage }) {
           </div>
         </div>
       </footer>
-
-      {/* AdSense Script */}
-      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1510675468129183" crossOrigin="anonymous" />
-
-      {/* Custom Styles */}
-      <style jsx global>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        .font-arabic {
-          font-family: 'Noto Sans Arabic', 'Noto Nastaliq Urdu', serif;
-        }
-      `}</style>
     </div>
   )
 }

@@ -1,15 +1,8 @@
-import { Globe, Heart, Award, BookOpen, Languages, CheckCircle, Star, ArrowRight, Sparkles, Zap } from 'lucide-react';
+﻿import { Globe, Heart, Award, BookOpen, Languages, CheckCircle, Star, Sparkles } from 'lucide-react';
 import SearchBar from './SearchSection';
 import Link from 'next/link';
-import Image from 'next/image';
 
 const HeroSection = () => {
-  // Use Next.js Image for optimal loading
-  const backgroundImage = {
-    url: '/img1.png',
-    alt: 'Cute baby - NameVerse baby names platform',
-  };
-
   const categories = [
     {
       id: 'islamic',
@@ -17,7 +10,7 @@ const HeroSection = () => {
       icon: Globe,
       url: '/names/religion/islamic/1',
       count: '25,000+',
-      description: 'Quranic & Arabic names for boys & girls. A-Z listings with Urdu meanings.',
+      description: 'Quranic and Arabic names for boys and girls.',
       color: 'from-emerald-500 to-teal-600',
       bgColor: 'bg-emerald-50',
       borderColor: 'border-emerald-200',
@@ -29,7 +22,7 @@ const HeroSection = () => {
       icon: Sparkles,
       url: '/names/religion/hindu/1',
       count: '20,000+',
-      description: 'Sanskrit & Vedic names for boys & girls. Traditional & modern A-Z listings.',
+      description: 'Sanskrit and Vedic names with trusted meanings.',
       color: 'from-orange-500 to-amber-600',
       bgColor: 'bg-orange-50',
       borderColor: 'border-orange-200',
@@ -41,7 +34,7 @@ const HeroSection = () => {
       icon: Award,
       url: '/names/religion/christian/1',
       count: '15,000+',
-      description: 'Biblical names with spiritual meanings. Classic & contemporary A-Z listings.',
+      description: 'Biblical and modern Christian baby names.',
       color: 'from-blue-500 to-indigo-600',
       bgColor: 'bg-blue-50',
       borderColor: 'border-blue-200',
@@ -50,215 +43,71 @@ const HeroSection = () => {
   ];
 
   const features = [
-    { icon: Star, text: 'Trusted by 5M+ Parents' },
-    { icon: CheckCircle, text: 'Expert Verified' },
-    { icon: Languages, text: '15+ Languages' },
-    { icon: Zap, text: 'Instant Search' }
+    { icon: Star, text: '5M+ parents trust NameVerse' },
+    { icon: CheckCircle, text: 'Scholar-verified meanings' },
+    { icon: Languages, text: '15+ languages supported' }
   ];
 
   return (
-    <section 
-      className="relative w-full py-8 sm:py-10 md:py-12 overflow-hidden" 
-      itemScope 
-      itemType="https://schema.org/WebPageElement"
-      aria-label="NameVerse Hero Section - Baby Names Platform"
-    >
-      {/* Background baby image with overlay */}
-      <div className="absolute inset-0 z-0">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
-          style={{ 
-            backgroundImage: `url(${backgroundImage.url})`,
-            filter: 'blur(3px)'
-          }}
-          role="img"
-          aria-label={backgroundImage.alt}
-        />
-        <div className={`absolute inset-0 ${backgroundImage.overlay}`} />
-      </div>
-      
-      {/* Content */}
+    <section className="relative w-full py-12 overflow-hidden" aria-label="NameVerse hero section">
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6">
-        <div className="space-y-8 sm:space-y-10">
-
-          {/* Main heading */}
-          <div className="text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full mb-4 shadow-md">
-              <Star className="w-4 h-4 text-white fill-white" />
-              <span className="text-xs font-semibold text-white">
-                World's #1 Baby Names Database — 65K+ Verified Names
-              </span>
-            </div>
-
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-3" itemProp="name">
-              NameVerse — Best Baby Names 2026 with Meanings
-            </h1>
-            
-            <p className="text-lg sm:text-xl font-semibold text-blue-600 mb-4">
-              Islamic • Hindu • Christian • Quranic • Sanskrit • Biblical
-            </p>
-
-            <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2 leading-relaxed" itemProp="description">
-              Discover 65,000+ verified baby names with meanings, origins, and numerology. Find Quranic, Biblical, Sanskrit & modern names for boys and girls in English, Urdu, Arabic & Hindi. Expert-verified religious names with cultural accuracy.
-            </p>
-            
-            <div className="flex flex-wrap justify-center gap-4 mt-6 text-sm text-gray-600">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-emerald-600" />
-                <span>Scholar-Verified Meanings</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Languages className="w-4 h-4 text-blue-600" />
-                <span>4 Languages: English • Urdu • Arabic • Hindi</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Heart className="w-4 h-4 text-red-600" />
-                <span>Trusted by 5M+ Parents Worldwide</span>
-              </div>
-            </div>
+        <div className="space-y-8 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full text-white font-semibold shadow-md">
+            <Star className="w-4 h-4" />
+            NameVerse — Baby names with trusted meanings
           </div>
 
-          {/* Authority Stats */}
-          <div className="max-w-3xl mx-auto mb-8">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-              {[
-                { number: '65K+', label: 'Verified Baby Names', icon: BookOpen, color: 'text-emerald-600', bgColor: 'bg-emerald-50' },
-                { number: '15+', label: 'Languages Supported', icon: Languages, color: 'text-blue-600', bgColor: 'bg-blue-50' },
-                { number: '99%', label: 'Accuracy Rate Scholar-Verified', icon: CheckCircle, color: 'text-purple-600', bgColor: 'bg-purple-50' },
-                { number: '5M+', label: 'Happy Parents Worldwide', icon: Heart, color: 'text-orange-600', bgColor: 'bg-orange-50' }
-              ].map((stat, index) => {
-                const Icon = stat.icon;
-                return (
-                  <div key={index} className={`text-center p-3 sm:p-4 rounded-xl ${stat.bgColor} border border-gray-100 shadow-sm hover:shadow-md transition-shadow`}>
-                    <div className={`text-xl sm:text-2xl md:text-3xl font-bold ${stat.color}`}>{stat.number}</div>
-                    <div className="text-xs sm:text-sm text-gray-700 mt-1 font-semibold">{stat.label}</div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
+            Find the perfect Islamic, Hindu, or Christian baby name in minutes.
+          </h1>
 
-          {/* Search Bar */}
-          <div className="max-w-lg mx-auto w-full mb-8">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-2xl blur opacity-20"></div>
-              <SearchBar />
-            </div>
-          </div>
+          <p className="mx-auto max-w-2xl text-base sm:text-lg text-gray-600 leading-relaxed">
+            Search 65,000+ verified baby names with meanings, origins, and religious context. Fast results, accurate translations, and expert guidance for every family.
+          </p>
 
-          {/* Trust Badges */}
-          <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 max-w-2xl mx-auto mb-8">
+          <div className="flex flex-wrap justify-center gap-3">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
-                <div 
-                  key={index}
-                  className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-700 bg-white px-3 py-1.5 rounded-full border border-gray-200 shadow-sm hover:shadow-md transition-all"
-                >
-                  <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600" />
-                  <span className="font-medium">{feature.text}</span>
+                <div key={index} className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-gray-700">
+                  <Icon className="w-4 h-4 text-teal-600" />
+                  {feature.text}
                 </div>
               );
             })}
           </div>
 
-          {/* Categories Grid */}
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-6">
-              <p className="text-xs sm:text-sm font-semibold text-gray-500 uppercase tracking-wider">
-                Browse by Tradition
-              </p>
+          <div className="max-w-3xl mx-auto">
+            <div className="relative rounded-3xl overflow-visible border border-slate-200 shadow-lg">
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-800 to-slate-900 opacity-10" />
+              <div className="relative p-4 sm:p-6 bg-white">
+                <SearchBar />
+              </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-              {categories.map((category) => {
-                const Icon = category.icon;
-                return (
-                  <Link
-                    key={category.id}
-                    href={category.url}
-                    className={`group p-4 sm:p-5 border-2 ${category.borderColor} rounded-xl ${category.bgColor} hover:shadow-lg transition-all duration-300 hover:-translate-y-1`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className={`p-2 rounded-lg bg-gradient-to-br ${category.color} flex-shrink-0`}>
-                        <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className={`font-bold ${category.textColor} text-sm sm:text-base`}>
-                          {category.name} Baby Names
-                        </h3>
-                        <p className="text-xs text-gray-600 mt-0.5 font-medium">
-                          {category.count} Names
-                        </p>
-                        <p className="text-xs text-gray-600 mt-1.5 hidden sm:block">
-                          {category.description}
-                        </p>
-                        <div className={`flex items-center gap-1 mt-2 ${category.textColor} group-hover:gap-2 transition-all`}>
-                          <span className="text-xs font-semibold">Explore</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </div>
-                      </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-3">
+            {categories.map((category) => {
+              const Icon = category.icon;
+              return (
+                <Link
+                  key={category.id}
+                  href={category.url}
+                  className={`group rounded-3xl border ${category.borderColor} ${category.bgColor} p-5 transition hover:-translate-y-1 hover:shadow-lg`}
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className={`rounded-2xl p-3 bg-gradient-to-br ${category.color} text-white`}>
+                      <Icon className="w-5 h-5" />
                     </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Brand keyword content - Enhanced for SEO */}
-          <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-8 mt-8 mb-8" itemScope itemType="https://schema.org/Article">
-            <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3" itemProp="headline">
-                NameVerse - The Best Baby Names Website for Faith-Based Meanings & Cultural Accuracy
-              </h2>
-              <p className="text-sm sm:text-base text-gray-600 leading-relaxed" itemProp="description">
-                Explore Islamic baby names with Urdu and Arabic meanings, Hindu baby names rooted in Sanskrit and Vedic tradition, and Christian baby names inspired by the Bible. Use NameVerse to search names by religion, gender, origin, meaning, and numerology. NameVerse is the top baby name search engine.
-              </p>
-              <p className="text-sm sm:text-base text-gray-600 leading-relaxed mt-3">
-                NameVerse is the ultimate resource for baby names, offering a comprehensive collection of meaningful names from every religion. Whether you're looking for traditional or modern baby names, our NameVerse platform provides accurate meanings, cultural context, and pronunciation guides to help you choose the perfect name for your child.
-              </p>
-              <p className="text-sm sm:text-base text-gray-600 leading-relaxed mt-3">
-                The NameVerse brand is trusted by parents worldwide as the top baby names website and baby name meaning resource. Our NameVerse name search experience is built to rank for baby names, NameVerse keywords, and the best baby names platform searches. NameVerse offers the most comprehensive baby names database.
-              </p>
-              <p className="text-sm sm:text-base text-gray-600 leading-relaxed mt-3">
-                Browse our NameVerse homepage for baby names, top names lists, popular baby names 2026, unique baby names, rare baby names, and expert recommendations so you can quickly discover the best name ideas for your family. NameVerse is the #1 choice for baby name search.
-              </p>
-              <p className="text-sm sm:text-base text-gray-600 leading-relaxed mt-3">
-                NameVerse provides Muslim baby names, Quranic names, Arabic names, Hindu names with Sanskrit meanings, Christian biblical names, unisex baby names, gender neutral baby names, and name meanings in Urdu, Arabic, Hindi, and English. Trust NameVerse for authentic baby names.
-              </p>
-              <div className="mt-4 flex flex-wrap justify-center gap-2 text-sm">
-                <Link href="/names/religion/islamic/1" className="rounded-full bg-emerald-50 text-emerald-700 px-4 py-2 border border-emerald-100 hover:bg-emerald-100 transition">Islamic Names on NameVerse</Link>
-                <Link href="/names/religion/hindu/1" className="rounded-full bg-orange-50 text-orange-700 px-4 py-2 border border-orange-100 hover:bg-orange-100 transition">Hindu Names on NameVerse</Link>
-                <Link href="/names/religion/christian/1" className="rounded-full bg-blue-50 text-blue-700 px-4 py-2 border border-blue-100 hover:bg-blue-100 transition">Christian Names on NameVerse</Link>
-              </div>
-              <div className="mt-3 flex flex-wrap justify-center gap-2 text-sm">
-                <Link href="/islamic/boy-names" className="rounded-full bg-emerald-50 text-emerald-700 px-4 py-2 border border-emerald-100 hover:bg-emerald-100 transition">Islamic Boy Names</Link>
-                <Link href="/islamic/girl-names" className="rounded-full bg-emerald-50 text-emerald-700 px-4 py-2 border border-emerald-100 hover:bg-emerald-100 transition">Islamic Girl Names</Link>
-                <Link href="/hindu/boy-names" className="rounded-full bg-orange-50 text-orange-700 px-4 py-2 border border-orange-100 hover:bg-orange-100 transition">Hindu Boy Names</Link>
-                <Link href="/hindu/girl-names" className="rounded-full bg-orange-50 text-orange-700 px-4 py-2 border border-orange-100 hover:bg-orange-100 transition">Hindu Girl Names</Link>
-                <Link href="/christian/boy-names" className="rounded-full bg-blue-50 text-blue-700 px-4 py-2 border border-blue-100 hover:bg-blue-100 transition">Christian Boy Names</Link>
-                <Link href="/christian/girl-names" className="rounded-full bg-blue-50 text-blue-700 px-4 py-2 border border-blue-100 hover:bg-blue-100 transition">Christian Girl Names</Link>
-              </div>
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div className="max-w-3xl mx-auto pt-2">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-              {[
-                { number: '65K+', label: 'Verified Names', icon: BookOpen, color: 'text-emerald-600', bgColor: 'bg-emerald-50' },
-                { number: '15+', label: 'Languages', icon: Languages, color: 'text-blue-600', bgColor: 'bg-blue-50' },
-                { number: '99%', label: 'Accuracy', icon: CheckCircle, color: 'text-purple-600', bgColor: 'bg-purple-50' },
-                { number: '5M+', label: 'Happy Parents', icon: Heart, color: 'text-orange-600', bgColor: 'bg-orange-50' }
-              ].map((stat, index) => {
-                const Icon = stat.icon;
-                return (
-                  <div key={index} className={`text-center p-3 sm:p-4 rounded-xl ${stat.bgColor} border border-gray-100`}>
-                    <div className={`text-xl sm:text-2xl md:text-3xl font-bold ${stat.color}`}>{stat.number}</div>
-                    <div className="text-xs sm:text-sm text-gray-600 mt-1 font-medium">{stat.label}</div>
+                    <div>
+                      <p className={`text-sm font-semibold ${category.textColor}`}>{category.name} Names</p>
+                      <p className="text-xs text-gray-500">{category.count}</p>
+                    </div>
                   </div>
-                );
-              })}
-            </div>
+                  <p className="text-sm text-gray-600 leading-relaxed">{category.description}</p>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </div>

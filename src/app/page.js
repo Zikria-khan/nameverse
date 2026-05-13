@@ -3,6 +3,9 @@ import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpe
 import fs from 'fs';
 import path from 'path';
 
+// ISR with 30-day cache for the homepage
+export const revalidate = 2592000; // 30 days
+
 // ✅ Read domain from .env
 const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || "https://nameverse.vercel.app";
 
@@ -16,7 +19,7 @@ try {
   const sortedPosts = allPosts
     .filter(post => post.publishDate)
     .sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate));
-  latestArticles = sortedPosts.slice(0, 6);
+  latestArticles = sortedPosts.slice(0, 3);
 } catch (error) {
 }
 
@@ -27,8 +30,9 @@ const homepageStructuredData = {
       "@type": "WebSite",
       "@id": `${DOMAIN}/#website`,
       "url": DOMAIN,
-      "name": "NameVerse - Baby Names with Meanings",
-      "description": "60,000+ verified baby names from Islamic, Hindu & Christian traditions with meanings in English, Urdu, Arabic & Hindi",
+      "name": "NameVerse — 65,000+ Baby Names with Meanings 2026",
+      "description": "Discover 65,000+ verified Islamic Quranic, Christian Biblical & Hindu Sanskrit baby names A–Z with authentic meanings, origins, lucky numbers, and 2026 trending data. Fast search by religion, gender, letter & meaning.",
+      "inLanguage": "en-US",
       "publisher": {
         "@id": `${DOMAIN}/#organization`
       },
@@ -39,6 +43,10 @@ const homepageStructuredData = {
           "urlTemplate": `${DOMAIN}/search?q={search_term_string}`
         },
         "query-input": "required name=search_term_string"
+      },
+      "about": {
+        "@type": "Thing",
+        "name": "Baby Names by Religion"
       }
     },
     {
@@ -51,9 +59,60 @@ const homepageStructuredData = {
         "url": `${DOMAIN}/logo.png`,
         "width": 512,
         "height": 512,
-        "caption": "NameVerse - Baby Names & Meanings"
+        "caption": "NameVerse — 65,000+ Baby Names with Meanings 2026"
       },
-      "description": "NameVerse - Discover 60,000+ baby names with meanings from Islamic, Hindu, and Christian traditions."
+      "description": "NameVerse is the leading baby names platform with 65,000+ verified Islamic, Christian & Hindu baby names with authentic meanings, origins, and 2026 trending data.",
+      "foundingDate": "2025",
+      "founders": [{ "@type": "Person", "name": "Zakriya Khan" }]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${DOMAIN}/#faq`,
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is NameVerse and how does it help find baby names?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "NameVerse is the world's most comprehensive baby name platform with 65,000+ verified names from Islamic, Christian, and Hindu traditions. You can search by religion, gender, starting letter, origin, and meaning to find the perfect name with authentic meanings and 2026 trending data."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What are the best baby names in 2026?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Top trending baby names in 2026 include Muhammad, Rayan, Ayan, and Zayn (Islamic), Liam, Noah, Elijah, and Ezra (Christian), and Vihaan, Arjun, Ananya, and Diya (Hindu). NameVerse tracks real-time popularity across all traditions."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Are NameVerse name meanings verified and accurate?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, NameVerse verifies Islamic names against Quranic text and classical Arabic dictionaries, Christian names against Biblical concordances, and Hindu names against Sanskrit etymological references with a 98% verification accuracy rate."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I search baby names by religion on NameVerse?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You can browse 18,000+ Islamic Quranic names, 11,000+ Christian Biblical names, and 15,000+ Hindu Sanskrit names A–Z. Each section allows filtering by boy/girl, starting letter, origin, and meaning with lucky numbers and trending data."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": `${DOMAIN}/#breadcrumb`,
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": DOMAIN },
+        { "@type": "ListItem", "position": 2, "name": "Baby Names", "item": `${DOMAIN}/names` },
+        { "@type": "ListItem", "position": 3, "name": "Islamic Names", "item": `${DOMAIN}/names/religion/islamic/1` },
+        { "@type": "ListItem", "position": 4, "name": "Christian Names", "item": `${DOMAIN}/names/religion/christian/1` },
+        { "@type": "ListItem", "position": 5, "name": "Hindu Names", "item": `${DOMAIN}/names/religion/hindu/1` }
+      ]
     }
   ]
 };
@@ -66,39 +125,28 @@ const homepageStructuredData = {
 
 // World-class SEO metadata with comprehensive keyword targeting for GSC ranking — optimized for "NameVerse" keyword dominance
 export const metadata = {
-  title: {
-    default: validateMetaTitle("NameVerse — #1 Best Baby Names Website 2026 | 65K+ Islamic Hindu Christian Names with Meanings"),
-    template: "%s | NameVerse — America's #1 Baby Names Database"
-  },
+  title: "NameVerse | 65K+ Baby Names with Meanings",
   description: validateMetaDescription(
-    "NameVerse is America's #1 baby names website — the best baby names platform with 65,000+ verified Islamic, Hindu & Christian names. Find Quranic, Biblical & Sanskrit names with meanings in English, Urdu, Arabic & Hindi. NameVerse platform is scholar-verified, 100% free, and trusted by 5M+ parents worldwide for baby name search, meaning verification, trend predictions, and cultural authenticity. Search 'NameVerse' — the top baby names database online."
+    "NameVerse is America's #1 baby names website with 65,000+ verified Islamic, Hindu & Christian names. Search names by meaning, origin, religion, and popularity with fast, trusted results."
   ),
   keywords: [
     "NameVerse",
     "baby names",
     "baby names with meanings",
+    "popular baby names",
+    "unique baby names",
     "Islamic baby names",
     "Hindu baby names",
     "Christian baby names",
     "name meanings",
-    "baby name search",
-    "Quranic baby names",
-    "Arabic baby names",
-    "Sanskrit baby names",
-    "Biblical baby names",
-    "boy names",
-    "girl names",
-    "baby names 2026",
-    "popular baby names",
-    "unique baby names",
-    "Muslim baby names",
-    "Urdu name meanings",
-    "Arabic name meanings"
+    "religious baby names",
+    "name origins",
+    "trending baby names"
   ].join(', '),
   openGraph: {
-    title: validateMetaTitle("NameVerse — #1 Best Baby Names Website 2026 | 65K+ Islamic Hindu Christian Names with Meanings"),
+    title: "NameVerse | 65K+ Baby Names with Meanings",
     description: validateMetaDescription(
-      "NameVerse is America's #1 baby names website with 65,000+ verified Islamic, Hindu & Christian names. Find authentic meanings in Urdu, Arabic, Hindi, English. Scholar-verified, 100% free. Trusted by 5M+ parents. Search the NameVerse platform for baby names with meanings, trends 2026, popular names, and unique names."
+      "NameVerse is America's #1 baby names website with 65,000+ verified Islamic, Hindu & Christian names. Find authentic meanings, origins, and trending baby names with fast search results."
     ),
     url: DOMAIN + "/",
     type: "website",
@@ -108,27 +156,18 @@ export const metadata = {
       width: 1200, 
       height: 630, 
       type: "image/png", 
-      alt: "NameVerse — America's #1 Baby Names Website with 65,000+ names" 
+      alt: "NameVerse — 65K+ baby names with meanings" 
     }],
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: validateMetaTitle("NameVerse — Best Baby Names 2026 | #1 Baby Names Website in America"),
-    description: validateMetaDescription(
-      "NameVerse: America's #1 baby names website with 65,000+ verified names. Find Islamic, Hindu, Christian names with meanings. Free, scholar-verified, 5M+ parents trust NameVerse platform."
-    ),
-    images: [`${DOMAIN}/logo.png`],
-    creator: "@NameVerseOfficial",
     site: "@NameVerseOfficial",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: validateMetaTitle("60,000+ Baby Names with Meanings | NameVerse"),
+    title: "NameVerse | 65K+ Baby Names with Meanings",
     description: validateMetaDescription(
-      "Find baby names on NameVerse - 60,000+ verified Islamic, Hindu & Christian names with meanings and cultural significance."
+      "Explore 65K+ baby names with meanings, origins, and trend insights on NameVerse. Fast search, trusted sources, and expert name guidance."
     ),
-    images: [DOMAIN + "/logo.png"],
+    images: [`${DOMAIN}/og-image.jpg`],
   },
   alternates: {
     canonical: DOMAIN + "/",

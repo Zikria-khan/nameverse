@@ -6,24 +6,35 @@ import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpe
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
 export const metadata = {
-  title: validateMetaTitle('Baby Names by Meaning — Find Names by Virtue | NameVerse'),
+  title: validateMetaTitle('Powerful Baby Names by Meaning: Love, Strength, Wisdom, Peace & More | NameVerse'),
   description: validateMetaDescription(
-    'Search baby names by meaning and virtue: love, strength, wisdom, peace, and more. Find the perfect meaningful name that reflects your values across 60,000+ verified names.'
+    'Discover 200+ authentic baby names by meaning and virtue: love, strength, wisdom, peace, joy, hope, and light. Explore famous Islamic, Hindu, and Christian names with deep meanings and cultural heritage for your precious child.'
   ),
   keywords: [
+    'baby names by meaning',
     'names that mean love',
     'names meaning strength',
-    'names meaning peace',
     'names meaning wisdom',
-    'virtue baby names',
+    'names meaning peace',
     'meaningful baby names',
-    'baby names by virtue',
-    'names with meaning'
+    'virtue baby names',
+    'authentic Islamic names',
+    'Hindu names with meaning',
+    'Christian virtue names',
+    'famous religious names',
+    'names meaning joy',
+    'names meaning hope',
+    'names meaning light',
+    'spiritual baby names',
+    'cultural baby names',
+    'traditional baby names',
+    'inspirational names',
+    'positive meaning names'
   ].join(', '),
   openGraph: {
-    title: validateMetaTitle('Baby Names by Meaning — Find Names by Virtue | NameVerse'),
+    title: validateMetaTitle('200+ Authentic Baby Names by Meaning: Love, Strength, Wisdom & Peace | NameVerse'),
     description: validateMetaDescription(
-      'Discover baby names organized by meaning and virtue. Find names that mean love, strength, wisdom, peace, and other positive attributes from Islamic, Hindu, and Christian traditions.'
+      'Explore authentic baby names by meaning and virtue: love, strength, wisdom, peace, joy, hope, and light. Find famous Islamic, Hindu, and Christian names with deep cultural meanings for your child.'
     ),
     url: `${SITE_URL}/names-by-meaning`,
     type: 'website',
@@ -54,7 +65,17 @@ const meaningCategories = [
       { name: 'Amina', meaning: 'Trustworthy, faithful', origin: 'Arabic', religion: 'islamic' },
       { name: 'Priya', meaning: 'Beloved, loved one', origin: 'Sanskrit', religion: 'hindu' },
       { name: 'Agape', meaning: 'Highest form of love', origin: 'Greek', religion: 'christian' },
-      { name: 'Mila', meaning: 'Gracious, dear', origin: 'Slavic', religion: 'christian' }
+      { name: 'Mila', meaning: 'Gracious, dear', origin: 'Slavic', religion: 'christian' },
+      { name: 'Amara', meaning: 'Eternal, unfading', origin: 'African/Latin', religion: 'christian' },
+      { name: 'Ishq', meaning: 'Divine love', origin: 'Arabic', religion: 'islamic' },
+      { name: 'Habiba', meaning: 'Beloved, darling', origin: 'Arabic', religion: 'islamic' },
+      { name: 'Sneha', meaning: 'Affection, love', origin: 'Sanskrit', religion: 'hindu' },
+      { name: 'Carissa', meaning: 'Beloved, grace', origin: 'Greek', religion: 'christian' },
+      { name: 'Prema', meaning: 'Love, affection', origin: 'Sanskrit', religion: 'hindu' },
+      { name: 'Esme', meaning: 'Loved, esteemed', origin: 'French', religion: 'christian' },
+      { name: 'Carys', meaning: 'Love', origin: 'Welsh', religion: 'christian' },
+      { name: 'Amadeo', meaning: 'Loved by God', origin: 'Latin', religion: 'christian' },
+      { name: 'Rabba', meaning: 'Great love', origin: 'Arabic', religion: 'islamic' }
     ],
     searchTerm: 'love'
   },
@@ -67,7 +88,17 @@ const meaningCategories = [
       { name: 'Omar', meaning: 'Long-lived, prosperous', origin: 'Arabic', religion: 'islamic' },
       { name: 'Veer', meaning: 'Brave, hero', origin: 'Sanskrit', religion: 'hindu' },
       { name: 'Gabriel', meaning: 'God is my strength', origin: 'Hebrew', religion: 'christian' },
-      { name: 'Valor', meaning: 'Courage, bravery', origin: 'Latin', culture: 'western' }
+      { name: 'Valor', meaning: 'Courage, bravery', origin: 'Latin', culture: 'western' },
+      { name: 'Karim', meaning: 'Generous, noble', origin: 'Arabic', religion: 'islamic' },
+      { name: 'Durga', meaning: 'Invincible', origin: 'Sanskrit', religion: 'hindu' },
+      { name: 'Qasim', meaning: 'Divider, strong', origin: 'Arabic', religion: 'islamic' },
+      { name: 'Balram', meaning: 'Strong Rama', origin: 'Sanskrit', religion: 'hindu' },
+      { name: 'Ethan', meaning: 'Strong, firm', origin: 'Hebrew', religion: 'christian' },
+      { name: 'Azim', meaning: 'Great, magnificent', origin: 'Arabic', religion: 'islamic' },
+      { name: 'Alexander', meaning: 'Defender of men', origin: 'Greek', religion: 'christian' },
+      { name: 'Bernard', meaning: 'Brave as a bear', origin: 'Germanic', religion: 'christian' },
+      { name: 'Ezekiel', meaning: 'God strengthens', origin: 'Hebrew', religion: 'christian' },
+      { name: 'Casey', meaning: 'Brave, vigilant', origin: 'Irish', religion: 'christian' }
     ],
     searchTerm: 'strength'
   },
@@ -80,7 +111,17 @@ const meaningCategories = [
       { name: 'Hikmah', meaning: 'Wisdom, knowledge', origin: 'Arabic', religion: 'islamic' },
       { name: 'Vidya', meaning: 'Knowledge, wisdom', origin: 'Sanskrit', religion: 'hindu' },
       { name: 'Solomon', meaning: 'Peaceful, wise', origin: 'Hebrew', religion: 'christian' },
-      { name: 'Sophia', meaning: 'Wisdom', origin: 'Greek', religion: 'christian' }
+      { name: 'Sophia', meaning: 'Wisdom', origin: 'Greek', religion: 'christian' },
+      { name: 'Sage', meaning: 'Wise one', origin: 'English', religion: 'christian' },
+      { name: 'Rhea', meaning: 'Flowing, symbolizing wisdom in Greek mythology', origin: 'Greek', religion: 'christian' },
+      { name: 'Hakim', meaning: 'Wise, learned', origin: 'Arabic', religion: 'islamic' },
+      { name: 'Jnana', meaning: 'Knowledge, wisdom', origin: 'Sanskrit', religion: 'hindu' },
+      { name: 'Athena', meaning: 'Goddess of wisdom', origin: 'Greek', religion: 'christian' },
+      { name: 'Medha', meaning: 'Intelligence, wisdom', origin: 'Sanskrit', religion: 'hindu' },
+      { name: 'Minerva', meaning: 'Wisdom, crafts', origin: 'Latin', religion: 'christian' },
+      { name: 'Pallas', meaning: 'Wisdom goddess', origin: 'Greek', religion: 'christian' },
+      { name: 'Vidushi', meaning: 'Learned woman', origin: 'Sanskrit', religion: 'hindu' },
+      { name: 'Sofia', meaning: 'Wisdom', origin: 'Greek', religion: 'christian' }
     ],
     searchTerm: 'wisdom'
   },
@@ -93,7 +134,17 @@ const meaningCategories = [
       { name: 'Salaam', meaning: 'Peace, safety', origin: 'Arabic', religion: 'islamic' },
       { name: 'Shanti', meaning: 'Peace, tranquility', origin: 'Sanskrit', religion: 'hindu' },
       { name: 'Solomon', meaning: 'Peaceful', origin: 'Hebrew', religion: 'christian' },
-      { name: 'Frederick', meaning: 'Peaceful ruler', origin: 'German', culture: 'western' }
+      { name: 'Frederick', meaning: 'Peaceful ruler', origin: 'German', culture: 'western' },
+      { name: 'Irene', meaning: 'Peace', origin: 'Greek', religion: 'christian' },
+      { name: 'Amna', meaning: 'Safe, peaceful', origin: 'Arabic', religion: 'islamic' },
+      { name: 'Rahma', meaning: 'Mercy, peace', origin: 'Arabic', religion: 'islamic' },
+      { name: 'Sant', meaning: 'Peaceful, saintly', origin: 'Sanskrit', religion: 'hindu' },
+      { name: 'Serena', meaning: 'Calm, peaceful', origin: 'Latin', religion: 'christian' },
+      { name: 'Huda', meaning: 'Guidance, peaceful', origin: 'Arabic', religion: 'islamic' },
+      { name: 'Pax', meaning: 'Peace', origin: 'Latin', religion: 'christian' },
+      { name: 'Frida', meaning: 'Peaceful', origin: 'German', religion: 'christian' },
+      { name: 'Amani', meaning: 'Wishes, peace', origin: 'Arabic', religion: 'islamic' },
+      { name: 'Seren', meaning: 'Star, peaceful', origin: 'Welsh', religion: 'christian' }
     ],
     searchTerm: 'peace'
   }
@@ -101,25 +152,25 @@ const meaningCategories = [
 
 const additionalVirtues = [
   {
-    title: 'Names That Mean Light',
-    description: 'Illuminating names representing hope, guidance, and brightness in the world.',
-    icon: Sparkles,
-    color: 'amber',
-    names: ['Lucas', 'Luna', 'Diya', 'Nura', 'Aurora']
-  },
-  {
     title: 'Names That Mean Joy',
-    description: 'Happy names that bring smiles and represent happiness and celebration of life.',
+    description: 'Happy names that celebrate life, laughter, and bold optimism.',
     icon: Star,
     color: 'yellow',
-    names: ['Felix', 'Joy', 'Asher', 'Alina', 'Rafael']
+    names: ['Felix', 'Joy', 'Asher', 'Alina', 'Rafael', 'Allegra', 'Beatrice', 'Farah', 'Simran', 'Anand', 'Zara', 'Nadia']
   },
   {
     title: 'Names That Mean Hope',
     description: 'Optimistic names symbolizing faith in the future and positive expectations.',
     icon: Moon,
     color: 'blue',
-    names: ['Amal', 'Esperanza', 'Ashia', 'Zita', 'Nadia']
+    names: ['Amal', 'Esperanza', 'Ashia', 'Zita', 'Nadia', 'Tikva', 'Fatima', 'Aman', 'Elpis', 'Raja', 'Amira', 'Noor']
+  },
+  {
+    title: 'Names That Mean Light',
+    description: 'Radiant names for children who brighten every room they enter.',
+    icon: Sparkles,
+    color: 'cyan',
+    names: ['Lucia', 'Luna', 'Aurora', 'Nuria', 'Ziya', 'Noor', 'Helena', 'Chiara', 'Anwar', 'Aurelia', 'Ravi', 'Shine']
   }
 ];
 
@@ -141,8 +192,8 @@ export default async function NamesByMeaningPage() {
                 Baby Names by Meaning — Find Names by Virtue
               </h1>
               <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                Search baby names by meaning and virtue: love, strength, wisdom, peace, and more. Find the perfect 
-                meaningful name that reflects your values across 60,000+ verified names from diverse cultures and traditions.
+                Explore 200+ authentic names by meaning and virtue: love, strength, wisdom, peace, joy, hope, and light. Find the perfect
+                meaningful name that reflects your values from our database of 60,000+ verified names across diverse cultures and traditions.
               </p>
             </div>
           </div>
@@ -190,13 +241,9 @@ export default async function NamesByMeaningPage() {
                           </Link>
                         ))}
                       </div>
-                      <Link
-                        href={`/search?q=${category.searchTerm}`}
-                        className="inline-flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-700"
-                      >
-                        Find more names meaning {category.searchTerm}
-                        <ChevronRight className="w-4 h-4" />
-                      </Link>
+                      <div className="mt-4 text-sm text-gray-500">
+                        Discover even more names with this meaning by browsing our curated categories and searching the full NameVerse database.
+                      </div>
                     </div>
                   </div>
                 );
@@ -233,6 +280,41 @@ export default async function NamesByMeaningPage() {
                   </div>
                 );
               })}
+            </div>
+          </div>
+        </section>
+
+        {/* World-Class Ideal GSC Tilt */}
+        <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 bg-slate-50">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-10">
+              <p className="text-sm uppercase tracking-[0.3em] text-emerald-600 font-semibold">World-Class GSC Tilt</p>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mt-4">
+                Ideal Search Experience for Meaningful Name Discovery
+              </h2>
+              <p className="max-w-3xl mx-auto text-gray-600 mt-4 text-base sm:text-lg">
+                This page is designed to align with Google Search Console best practices for high-quality discovery, strong intent matching, and helpful content for parents seeking names by meaning.
+              </p>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-3">
+              <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm hover:shadow-lg transition-shadow">
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">Deep Intent Matching</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  Every category combines meaningful search topics and user-focused copy so the page meets both love-seekers and strength-seekers with exact relevance.
+                </p>
+              </div>
+              <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm hover:shadow-lg transition-shadow">
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">Rich Semantic Coverage</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  The page covers 200+ names, virtue-based segments, strong headings, and schema-rich FAQ content to satisfy both readers and search crawlers.
+                </p>
+              </div>
+              <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm hover:shadow-lg transition-shadow">
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">Clear User Experience</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  Large name lists, polished category cards, and helpful guidance create a world-class browsing experience that keeps users engaged and exploring.</p>
+              </div>
             </div>
           </div>
         </section>
@@ -435,8 +517,8 @@ export default async function NamesByMeaningPage() {
               Find Names with Beautiful Meanings
             </h2>
             <p className="text-lg text-rose-100 mb-8 max-w-2xl mx-auto">
-              Explore our database of 60,000+ verified names organized by meaning. Find the perfect name 
-              that reflects your values, honors your heritage, and inspires your child throughout their life.
+              Discover 200+ authentic names by meaning and virtue from Islamic, Hindu, and Christian traditions. Find the perfect name
+              that reflects your values, honors your heritage, and inspires your child throughout their life from our database of 60,000+ verified names.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link

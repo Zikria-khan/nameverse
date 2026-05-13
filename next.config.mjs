@@ -50,7 +50,7 @@ dangerouslyAllowSVG: true,
           headers: [
             {
               key: 'Cache-Control',
-              value: 'public, max-age=0, s-maxage=3600, stale-while-revalidate=3600',
+              value: 'no-store, max-age=0, must-revalidate',
             },
           ],
         },
@@ -75,19 +75,16 @@ dangerouslyAllowSVG: true,
             },
             {
               key: 'Content-Security-Policy',
-              value: "default-src 'self' https: data:; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://analytics.ahrefs.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; connect-src 'self' https://analytics.ahrefs.com https://name-meaning-site-backend.vercel.app; font-src 'self' data:; frame-ancestors 'self'; object-src 'none'; base-uri 'self';",
+              value: "default-src 'self' https: data:; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://analytics.ahrefs.com https://www.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; connect-src 'self' https://analytics.ahrefs.com https://name-meaning-site-backend.vercel.app https://ep1.adtrafficquality.google https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; frame-ancestors 'self'; object-src 'none'; base-uri 'self';",
             },
             {
               key: 'Referrer-Policy',
               value: 'strict-origin-when-cross-origin'
             },
-            // Optimized for Edge Caching & ISR
-            // max-age=0 ensures browsers always revalidate
-            // s-maxage=86400 allows CDN to cache for 24 hours (reduces origin load)
-            // stale-while-revalidate=86400 serves stale during revalidation (24h)
+            // CDN-friendly caching: allow ISR-generated HTML to be cached at edge
             {
               key: 'Cache-Control',
-              value: "public, max-age=0, s-maxage=86400, stale-while-revalidate=86400",
+              value: 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800',
             },
           ],
         },
@@ -96,7 +93,7 @@ dangerouslyAllowSVG: true,
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=0, s-maxage=86400, stale-while-revalidate=86400',
+            value: 'no-store, max-age=0, must-revalidate',
           },
         ],
       },

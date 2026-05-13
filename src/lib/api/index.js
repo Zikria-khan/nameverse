@@ -9,7 +9,7 @@
  */
 
 // Export API client
-export { apiClient, clearCache, getCacheStats, prefetch } from './client';
+export { apiClient } from './client';
 
 // Export Names API
 export { default as namesAPI } from './names';

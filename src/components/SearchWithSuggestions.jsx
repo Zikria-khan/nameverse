@@ -4,6 +4,20 @@ import React, { useState, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
+const NAME_FILES = [
+  { filename: 'islamic_names.json', religion: 'islamic' },
+  { filename: 'hindu_names.json', religion: 'hindu' },
+  { filename: 'christians_names.json', religion: 'christian' }
+];
+
+function generateSlug(name) {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '');
+}
+
 const SearchWithSuggestions = () => {
   const [query, setQuery] = useState('');
   const [names, setNames] = useState([]);
@@ -12,32 +26,38 @@ const SearchWithSuggestions = () => {
   const [hasLoaded, setHasLoaded] = useState(false);
   const router = useRouter();
 
-  // Load name data from JSON files with localStorage caching - triggered on focus
   const loadNames = async () => {
     if (hasLoaded) return;
 
-    const cacheKey = 'cached_names';
-    const cachedData = localStorage.getItem(cacheKey);
-
-    if (cachedData) {
-      // Load from cache
-      setNames(JSON.parse(cachedData));
-      setHasLoaded(true);
-      return;
-    }
-
     setLoading(true);
+
     try {
-      const files = ['islamic_names.json', 'hindu_names.json', 'christians_names.json'];
       const allNames = [];
-      for (const file of files) {
-        const res = await fetch(`/${file}`);
-        const data = await res.json();
-        allNames.push(...data);
-      }
-      // Cache the combined data
-      localStorage.setItem(cacheKey, JSON.stringify(allNames));
-      setNames(allNames);
+      await Promise.all(
+        NAME_FILES.map(async ({ filename, religion }) => {
+          const res = await fetch(`/${filename}`);
+          if (!res.ok) return;
+          const json = await res.json();
+          if (!Array.isArray(json)) return;
+
+          allNames.push(
+            ...json.map((name) => {
+              const normalized = typeof name === 'string' ? name : String(name || '');
+              return {
+                name: normalized,
+                religion,
+                slug: generateSlug(normalized)
+              };
+            })
+          );
+        })
+      );
+
+      const uniqueNames = Array.from(
+        new Map(allNames.map((item) => [`${item.religion}:${item.slug}`, item])).values()
+      );
+
+      setNames(uniqueNames);
     } catch (error) {
       console.error('Error loading name data:', error);
     } finally {
@@ -56,10 +76,9 @@ const SearchWithSuggestions = () => {
   // Update suggestions based on query
   useEffect(() => {
     if (query.length > 0 && names.length > 0) {
+      const lowerQuery = query.toLowerCase();
       const filtered = names
-        .filter(name =>
-          name.toLowerCase().startsWith(query.toLowerCase())
-        )
+        .filter((item) => item.name.toLowerCase().includes(lowerQuery))
         .slice(0, 10);
       setSuggestions(filtered);
     } else {
@@ -70,15 +89,31 @@ const SearchWithSuggestions = () => {
   // Handle form submit
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    if (query.trim()) {
-      router.push(`/search/${encodeURIComponent(query.trim())}`);
+    const trimmed = query.trim();
+    if (!trimmed) return;
+
+    const exactMatch = names.find(
+      (item) => item.name.toLowerCase() === trimmed.toLowerCase()
+    );
+
+    if (exactMatch) {
+      router.push(`/names/${exactMatch.religion}/${exactMatch.slug}`);
+      return;
     }
+
+    router.push(`/search/${encodeURIComponent(trimmed)}`);
   };
 
   // Clear search
   const clearSearch = () => {
     setQuery('');
     setSuggestions([]);
+  };
+
+  const handleSelect = (item) => {
+    setQuery(item.name);
+    setSuggestions([]);
+    router.push(`/names/${item.religion}/${item.slug}`);
   };
 
   return (
@@ -97,6 +132,7 @@ const SearchWithSuggestions = () => {
             aria-label="Search for baby names"
             name="search"
             id="universal-search-input"
+            autoComplete="off"
           />
 
           {/* Right side icons */}
@@ -115,20 +151,21 @@ const SearchWithSuggestions = () => {
         </div>
       </form>
 
-      {/* Suggestions Dropdown */}
       {suggestions.length > 0 && (
-        <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 shadow-lg z-10">
-          {suggestions.map((name, index) => (
+        <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 shadow-lg z-50 overflow-hidden">
+          {suggestions.map((item, index) => (
             <button
-              key={index}
-              onClick={() => {
-                setQuery(name);
-                setSuggestions([]);
-                router.push(`/search/${encodeURIComponent(name)}`);
-              }}
-              className="w-full text-left px-4 py-2 hover:bg-gray-100"
+              key={`${item.religion}-${item.slug}-${index}`}
+              type="button"
+              onClick={() => handleSelect(item)}
+              className="w-full text-left px-4 py-3 hover:bg-gray-100 transition-colors duration-200"
             >
-              {name}
+              <div className="flex items-center justify-between gap-3">
+                <span className="font-medium text-gray-900">{item.name}</span>
+                <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-slate-700">
+                  {item.religion}
+                </span>
+              </div>
             </button>
           ))}
         </div>

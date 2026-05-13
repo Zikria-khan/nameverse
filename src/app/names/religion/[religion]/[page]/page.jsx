@@ -1,6 +1,7 @@
-import { cache } from 'react';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
+import StructuredData from '@/components/SEO/StructuredData.jsx';
+import Breadcrumbs from '@/components/Breadcrumbs/Breadcrumbs.jsx';
 import { fetchNamesWithAdvancedFilters } from '@/lib/api/names';
 import { validateMetaTitle, validateMetaDescription, generateCanonicalUrl } from '@/lib/seo/meta-helpers';
 import { ChevronLeft, ChevronRight, Sparkles, Moon, Globe, BookOpen, Heart, Star, TrendingUp, Users, Languages, Award } from 'lucide-react';
@@ -13,24 +14,12 @@ const RELIGION_LABELS = {
   hindu: 'Hindu',
 };
 
-// Use static rendering with ISR for pagination pages
-export const dynamic = 'force-static';
-export const revalidate = 2592000;
+// Force dynamic rendering to avoid static page caching
+export const dynamic = 'force-dynamic';
 export const dynamicParams = true;
 
-// Pre-generate first 5 pages for all religions at build time
-export function generateStaticParams() {
-  const params = [];
-  for (const religion of VALID_RELIGIONS) {
-    for (let page = 1; page <= 5; page++) {
-      params.push({
-        religion,
-        page: page.toString(),
-      });
-    }
-  }
-  return params;
-}
+// Site URL (use public env var on client-safe code paths)
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
 function normalizeReligion(religion) {
   if (!religion || typeof religion !== 'string') return null;
@@ -201,20 +190,24 @@ export async function generateMetadata({ params }) {
     'spiritual names'
   ];
 
+  const pageTitle = `${RELIGION_LABELS[religion]} Baby Names — Authentic ${RELIGION_LABELS[religion]} Names & Meanings | Page ${page}`;
+  const pageDescription = validateMetaDescription(
+    `Explore ${label} baby names — Page ${page}. Browse authentic ${label} names with meanings, origins, pronunciations, and popular picks from Quranic, Sanskrit, and Biblical traditions. Find meaningful names for your child across cultures.`
+  );
+
   return {
-    title: validateMetaTitle(`${label} Baby Names Database | Quranic, Sanskrit & Biblical Names with Meanings - NameVerse`),
-    description: validateMetaDescription(
-      `Discover authentic ${label.toLowerCase()} baby names with deep spiritual meaning. Browse ${label} names from sacred texts - Quranic names with Arabic/Urdu meanings, Sanskrit names with Hindi translations, Biblical names with Christian heritage. Page ${page} of comprehensive ${label} name collection with origins, pronunciations, and cultural insights.`
-    ),
+    title: validateMetaTitle(pageTitle),
+    description: pageDescription,
     keywords: keywords.join(', '),
     openGraph: {
-      title: validateMetaTitle(`${label} Baby Names | Quranic, Sanskrit & Biblical Names Database - NameVerse`),
-      description: validateMetaDescription(
-        `Explore comprehensive ${label.toLowerCase()} baby names collection. Find meaningful names from ${label} traditions with detailed meanings, origins, pronunciations. Browse page ${page} of authentic ${label} names for boys and girls with spiritual significance.`
-      ),
+      title: validateMetaTitle(`${RELIGION_LABELS[religion]} Baby Names — NameVerse`),
+      description: pageDescription.substring(0, 180),
       url: canonical,
       type: 'website',
       siteName: 'NameVerse',
+      images: [
+        { url: `${SITE_URL}/api/og?section=${encodeURIComponent(religion)}&page=${page}`, width: 1200, height: 630 }
+      ]
     },
     alternates: {
       canonical,
@@ -223,11 +216,6 @@ export async function generateMetadata({ params }) {
     robots: { index: true, follow: true },
   };
 }
-
-// Cached fetch to deduplicate identical requests within the same request cycle
-const fetchCachedNames = cache(async (params) => {
-  return await fetchNamesWithAdvancedFilters(params);
-});
 
 export default async function ReligionByPage({ params }) {
   const awaitedParams = await params;
@@ -238,18 +226,15 @@ export default async function ReligionByPage({ params }) {
     return notFound();
   }
 
-  const response = await fetchCachedNames({
+  const response = await fetchNamesWithAdvancedFilters({
     religion,
     page,
     limit: 50,
     sort: 'asc',
   });
 
-  if (!response.success) {
-    return notFound();
-  }
-
-  const names = Array.isArray(response.data) ? response.data : [];
+  // If backend fails, don't return 404 — show an empty 'No names found' state instead.
+  const names = Array.isArray(response.data) && response.success ? response.data : [];
   const pagination = response.pagination || { page: 1, limit: 50, totalCount: 0, totalPages: 1 };
   const { totalPages = 1, totalCount = 0 } = pagination;
   const hasPrev = page > 1;
@@ -257,12 +242,33 @@ export default async function ReligionByPage({ params }) {
   const prevUrl = hasPrev ? `/names/religion/${religion}/${page - 1}` : null;
   const nextUrl = hasNext ? `/names/religion/${religion}/${page + 1}` : null;
   const title = `${RELIGION_LABELS[religion]} Names`;
+  const canonical = generateCanonicalUrl(`/names/religion/${religion}/${page}`);
 
   return (
+    <>
+      <StructuredData
+        organization={true}
+        website={true}
+        breadcrumbs={[
+          { name: 'Home', url: process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app' },
+          { name: `${RELIGION_LABELS[religion]} Names`, url: canonical }
+        ]}
+        collectionPage={{
+          name: title,
+          description: `A curated list of ${RELIGION_LABELS[religion]} baby names with meanings and origins. Page ${page}.`,
+          url: canonical,
+          items: (names || []).slice(0, 20).map((n) => ({
+            title: n.name || n.title,
+            path: `names/${religion}/${(n.slug || (n.name || n.title || '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, ''))}`
+          }))
+        }}
+      />
+    
     <main className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100">
       <section className="relative py-16 px-4 bg-gradient-to-r from-indigo-600 via-violet-600 to-pink-600 text-white overflow-hidden">
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.3)_0%,transparent_52%)]"></div>
         <div className="max-w-6xl mx-auto relative z-10">
+          <Breadcrumbs items={[{ label: 'Names', href: '/names' }, { label: RELIGION_LABELS[religion], href: `/names/religion/${religion}/1` }]} className="mb-4" />
           <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-semibold mb-6">
             <Sparkles className="w-5 h-5 text-white" />
             <span>{RELIGION_LABELS[religion]} Names</span>
@@ -495,7 +501,7 @@ export default async function ReligionByPage({ params }) {
                 const slug = nameItem.slug || generateSlug(displayName);
 
                 return (
-                  <div className="group block rounded-3xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+                  <div key={slug} className="group block rounded-3xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
                     <div className="flex items-center justify-between gap-4 mb-4">
                       <div className="flex-1">
                         <h2 className="text-2xl font-semibold text-gray-900 group-hover:text-indigo-600">{displayName}</h2>
@@ -719,5 +725,6 @@ export default async function ReligionByPage({ params }) {
         </div>
       </section>
     </main>
+    </>
   );
 }

@@ -1,34 +1,28 @@
+﻿import dynamic from 'next/dynamic';
 import HeroSection from './HeroSection';
+import ContentSection from './ContentSection';
 import AuthorityStats from './AuthorityStats';
 import SearchTools from './SearchTools';
 import ReligiousNamesSection from './ReligiousNamesSection';
-import QuickFiltersGrid from './QuickFiltersGrid';
-import NameCategories from './NameCategories';
-import AlphabetNavigation from './AlphabetNavigation';
-import TableOfContents from './TableOfContents';
-import PopularNamesSection from './PopularNamesSection';
-import TrendingNames from './TrendingNames';
-import WhyNameVerse from './WhyNameVerse';
-import PlatformOverview from './PlatformOverview';
-import SeasonalNamesSection from './SeasonalNamesSection';
-import LatestArticles from './LatestArticles';
+import FaqSection from './FaqSection';
+
+const PopularNamesSection = dynamic(() => import('./PopularNamesSection'), {
+  loading: () => <div className="py-16 text-center">Loading trending & popular names…</div>,
+});
+const LatestArticles = dynamic(() => import('./LatestArticles'), {
+  loading: () => <div className="py-16 text-center">Loading latest articles…</div>,
+});
 
 export default function HomePageClient({ latestArticles = [] }) {
   return (
     <main role="main" className="min-h-screen flex flex-col bg-slate-50">
       <HeroSection />
+      <ContentSection />
       <AuthorityStats />
       <SearchTools />
       <ReligiousNamesSection />
-      <QuickFiltersGrid />
-      <NameCategories />
-      <AlphabetNavigation />
-      <TableOfContents />
       <PopularNamesSection />
-      <TrendingNames />
-      <WhyNameVerse />
-      <PlatformOverview />
-      <SeasonalNamesSection />
+      <FaqSection />
       <LatestArticles articles={latestArticles} />
     </main>
   );

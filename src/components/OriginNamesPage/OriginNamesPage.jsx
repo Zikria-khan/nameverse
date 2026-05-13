@@ -160,10 +160,11 @@ export default async function OriginNamesPage({ religionFromRoute, params }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
               {names.map((nameItem, index) => {
                 const displayMeaning = nameItem.short_meaning || nameItem.meaning || nameItem.long_meaning || 'No meaning available';
+                const itemKey = nameItem.slug || generateSlug(nameItem.name) || nameItem._id || index;
 
                 return (
                   <Link
-                    key={index}
+                    key={itemKey}
                     href={`/names/${nameItem.religion || 'islamic'}/${generateSlug(nameItem.name)}`}
                     className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 border border-emerald-100 hover:border-emerald-300 group hover:-translate-y-1 block"
                   >

@@ -9,27 +9,9 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.a
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
 const STATIC_ORIGINS = ['arabic', 'persian', 'turkish', 'indian', 'english', 'other'];
 
-// Use static generation with ISR for pagination pages
-export const dynamic = 'force-static';
-export const revalidate = 2592000;
+// Force dynamic rendering to avoid static page caching
+export const dynamic = 'force-dynamic';
 export const dynamicParams = true;
-
-// Pre-generate first 5 pages for all religion/origin combinations
-export async function generateStaticParams() {
-  const params = [];
-  for (const religion of VALID_RELIGIONS) {
-    for (const origin of STATIC_ORIGINS) {
-      for (let page = 1; page <= 5; page++) {
-        params.push({
-          religion,
-          origin,
-          page: page.toString(),
-        });
-      }
-    }
-  }
-  return params;
-}
 
 function resolveOrigin(origin, availableOrigins) {
   if (!origin) return 'arabic';
@@ -67,39 +49,51 @@ export async function generateMetadata({ params }) {
   const religionLabel = religion.charAt(0).toUpperCase() + religion.slice(1);
   const originLabel = origin.charAt(0).toUpperCase() + origin.slice(1);
   const canonical = generateCanonicalUrl(`/names/${religion}/origin/${origin}/${page}`);
+  const ogImage = `${SITE_URL}/api/og?section=origin&religion=${religion}&origin=${encodeURIComponent(originLabel)}`;
+  const seoTitle = validateMetaTitle(`Explore ${originLabel} Origin ${religionLabel} Baby Names | NameVerse`);
+  const seoDescription = validateMetaDescription(
+    `Discover authentic ${religionLabel} baby names from ${originLabel} origin with meaning, pronunciation, and cultural background. Browse page ${page} of origin-based names on NameVerse — your trusted source for meaningful baby names.`
+  );
 
   return {
-    title: validateMetaTitle(`Search ${religionLabel} Baby Names from ${originLabel} Origin | NameVerse`),
-    description: validateMetaDescription(
-      `Search and discover ${religionLabel} baby names from ${originLabel} origin with meaning, pronunciation, and cultural context. Explore page ${page} of origin-based names on NameVerse.`
-    ),
+    title: seoTitle,
+    description: seoDescription,
     keywords: [
-      `search ${religionLabel} names from ${originLabel} origin`,
-      `${originLabel} origin baby names`,
-      `${religionLabel} names by origin`,
+      `authentic ${originLabel} origin baby names`,
+      `${religionLabel} names from ${originLabel}`,
       `${originLabel} name meanings`,
-      `find ${originLabel} baby names`,
-      `meaning of ${originLabel} names`,
-      `${religionLabel} baby names list`,
-      `best ${originLabel} origin names`,
-      `cultural baby names`,
-      'NameVerse'
+      `${originLabel} origin name list`,
+      `${religionLabel} baby names origin`,
+      `2026 ${originLabel} baby names`,
+      `NameVerse`
     ].join(', '),
-    openGraph: {
-      title: validateMetaTitle(`${religionLabel} Baby Names from ${originLabel} Origin | NameVerse`),
-      description: validateMetaDescription(
-        `Discover ${religionLabel} baby names from ${originLabel} origin with meanings, pronunciation, and cultural context.`
-      ),
-      url: canonical,
-      type: 'website',
-      siteName: 'NameVerse',
-    },
     alternates: {
       canonical,
       languages: {
         en: canonical,
         'x-default': canonical,
       },
+    },
+    openGraph: {
+      title: seoTitle,
+      description: seoDescription,
+      url: canonical,
+      type: 'website',
+      siteName: 'NameVerse',
+      images: [
+        {
+          url: ogImage,
+          alt: `${originLabel} origin ${religionLabel} names | NameVerse`,
+          width: 1200,
+          height: 630
+        }
+      ]
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: seoTitle,
+      description: seoDescription,
+      images: [ogImage],
     },
     robots: { index: true, follow: true },
   };
@@ -214,9 +208,11 @@ export default async function OriginNamesPage({ params }) {
               {names.map((nameItem, index) => {
                 const displayMeaning = nameItem.short_meaning || nameItem.meaning || nameItem.long_meaning || 'No meaning available';
 
+                const itemKey = nameItem.slug || generateSlug(nameItem.name) || nameItem._id || index;
+
                 return (
                   <Link
-                    key={index}
+                    key={itemKey}
                     href={`/names/${religion}/${generateSlug(nameItem.name)}`}
                     className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 border border-emerald-100 hover:border-emerald-300 group hover:-translate-y-1 block"
                   >

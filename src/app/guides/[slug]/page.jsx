@@ -37,12 +37,6 @@ export async function generateMetadata({ params }) {
 }
 
 // Generate static params for all guides
-export async function generateStaticParams() {
-  return blogPostsData.map((post) => ({
-    slug: post.id,
-  }));
-}
-
 export default async function GuidePage({ params }) {
   const resolvedParams = await params;
   const post = blogPostsData.find(p => p.id === resolvedParams.slug);

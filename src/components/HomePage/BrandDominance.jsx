@@ -244,7 +244,7 @@ const BrandDominance = () => {
                  <Star className="w-5 h-5" />
                </Link>
             <Link 
-              href="/guides"
+              href="/guides/expert-naming-guide"
               className="inline-flex items-center gap-2 px-6 py-3 border-2 border-gray-300 text-gray-700 font-bold rounded-xl hover:border-blue-500 hover:text-blue-600 transition-all"
             >
               Read NameVerse Guides

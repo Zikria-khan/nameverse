@@ -7,6 +7,55 @@ import { useRouter } from 'next/navigation';
 import { searchNames } from '@/lib/api/names';
 import { searchArticles } from '@/lib/api/articles';
 
+const NAME_FILES = [
+  { filename: 'islamic_names.json', religion: 'islamic' },
+  { filename: 'hindu_names.json', religion: 'hindu' },
+  { filename: 'christians_names.json', religion: 'christian' },
+];
+
+function generateSlug(name) {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '');
+}
+
+async function loadLocalNames() {
+  const allNames = [];
+
+  await Promise.all(
+    NAME_FILES.map(async ({ filename, religion }) => {
+      const response = await fetch(`/${filename}`);
+      if (!response.ok) return;
+      const json = await response.json();
+      if (!Array.isArray(json)) return;
+
+      allNames.push(
+        ...json.map((name) => ({
+          _id: `${religion}:${name}`,
+          name: String(name || ''),
+          religion,
+          slug: generateSlug(String(name || '')),
+          gender: 'Unisex',
+          short_meaning: '',
+          meaning: '',
+        }))
+      );
+    })
+  );
+
+  return allNames;
+}
+
+function filterLocalNames(localNames, query) {
+  const term = query.trim().toLowerCase();
+  if (!term) return [];
+  return localNames
+    .filter((item) => item.name.toLowerCase().includes(term))
+    .slice(0, 8);
+}
+
 const UniversalSearch = () => {
   const [query, setQuery] = useState('');
   const [nameResults, setNameResults] = useState([]);
@@ -17,6 +66,7 @@ const UniversalSearch = () => {
   const [error, setError] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
   const [recentSearches, setRecentSearches] = useState([]);
+  const [localNames, setLocalNames] = useState([]);
   const searchRef = useRef(null);
   const inputRef = useRef(null);
   const debounceRef = useRef(null);
@@ -31,6 +81,19 @@ const UniversalSearch = () => {
       } catch (e) {
       }
     }
+  }, []);
+
+  // Load local suggestion data once
+  useEffect(() => {
+    loadLocalNames()
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setLocalNames(data);
+        }
+      })
+      .catch(() => {
+        // Ignore local name load failure
+      });
   }, []);
 
   // Save recent search
@@ -85,12 +148,16 @@ const UniversalSearch = () => {
         searchArticles(searchQuery.trim(), { limit: 5 })
       ]);
 
-      const names = Array.isArray(namesResult?.data) ? namesResult.data : [];
+      let names = Array.isArray(namesResult?.data) ? namesResult.data : [];
       const articles = Array.isArray(articlesResult)
         ? articlesResult
         : Array.isArray(articlesResult?.data)
           ? articlesResult.data
           : [];
+
+      if (names.length === 0 && localNames.length > 0) {
+        names = filterLocalNames(localNames, searchQuery.trim());
+      }
 
       setNameResults(names);
       setArticleResults(articles);
@@ -101,9 +168,14 @@ const UniversalSearch = () => {
         setError('No results found. Try different keywords.');
       }
     } catch (err) {
-      setError('Connection error. Please check your internet.');
-      setNameResults([]);
+      const fallbackNames = localNames.length > 0 ? filterLocalNames(localNames, searchQuery.trim()) : [];
+      setNameResults(fallbackNames);
       setArticleResults([]);
+      if (fallbackNames.length > 0) {
+        setIsOpen(true);
+      } else {
+        setError('Connection error. Please check your internet.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -368,7 +440,7 @@ const UniversalSearch = () => {
                 <div className="py-2">
                   {recentSearches.map((term, index) => (
                     <button
-                      key={index}
+                      key={term || index}
                       onClick={() => handleRecentSearchClick(term)}
                       className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 transition-colors group"
                     >

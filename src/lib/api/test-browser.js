@@ -5,7 +5,7 @@
  */
 
 import namesAPI from './names';
-import { apiClient, getCacheStats, clearCache } from './client';
+import { apiClient } from './client';
 
 /**
  * Test all API endpoints
@@ -41,9 +41,8 @@ export async function testAllEndpoints(options = { verbose: true }) {
     }
   };
 
-  // Clear cache before tests
-  clearCache();
-  log('🗑️  Cache cleared\n');
+  // No cache system is used in the current frontend API layer.
+  log('🗑️  Cache layer disabled\n');
 
   // 1. Health Check
   log('📡 Testing Health Endpoint...');
@@ -143,18 +142,7 @@ export async function testAllEndpoints(options = { verbose: true }) {
   });
 
   // 7. Caching
-  log('\n💾 Testing Cache...');
-  const cacheStatsBefore = getCacheStats();
-  await runTest('Cache Functionality', async () => {
-    // First request
-    await namesAPI.fetchNames({ religion: 'islamic', limit: 5 });
-    // Second request (should be cached)
-    await namesAPI.fetchNames({ religion: 'islamic', limit: 5 });
-    const cacheStatsAfter = getCacheStats();
-    if (cacheStatsAfter.size <= cacheStatsBefore.size) {
-      throw new Error('Cache not working');
-    }
-  });
+  log('\n💾 Skipping cache tests because caching has been removed from the frontend API layer.');
 
   // Print summary
   log('\n' + '='.repeat(50));
@@ -259,8 +247,7 @@ if (typeof window !== 'undefined') {
     testAll: testAllEndpoints,
     quick: quickTest,
     test: testEndpoint,
-    clearCache,
-    getCacheStats,
+    // cache disabled
   };
 }
 

@@ -10,9 +10,8 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.a
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
 const STATIC_CATEGORIES = ['modern', 'traditional', 'nature', 'religious', 'classical', 'unique'];
 
-// Static generation with ISR revalidation
-export const dynamic = 'force-static';
-export const revalidate = 2592000;
+// Force dynamic rendering to avoid static page caching
+export const dynamic = 'force-dynamic';
 export const dynamicParams = true;
 
 function normalizeReligion(religion) {
@@ -100,22 +99,6 @@ export async function generateMetadata({ params }) {
     },
     robots: { index: true, follow: true },
   };
-}
-
-export async function generateStaticParams() {
-  const params = [];
-  for (const religion of VALID_RELIGIONS) {
-    for (const category of STATIC_CATEGORIES) {
-      for (let page = 1; page <= 5; page++) {
-        params.push({
-          religion,
-          category,
-          page: page.toString(),
-        });
-      }
-    }
-  }
-  return params;
 }
 
 export default async function CategoryNamesPage({ params }) {
@@ -231,10 +214,11 @@ export default async function CategoryNamesPage({ params }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
               {names.map((nameItem, index) => {
                 const displayMeaning = nameItem.short_meaning || nameItem.meaning || nameItem.long_meaning || 'No meaning available';
+                const itemKey = nameItem.slug || generateSlug(nameItem.name) || nameItem._id || index;
 
                 return (
                   <Link
-                    key={index}
+                    key={itemKey}
                     href={`/names/${religion}/${generateSlug(nameItem.name)}`}
                     className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 border border-emerald-100 hover:border-emerald-300 group hover:-translate-y-1 block"
                   >
