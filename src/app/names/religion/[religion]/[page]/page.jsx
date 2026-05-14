@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import StructuredData from '@/components/SEO/StructuredData.jsx';
 import Breadcrumbs from '@/components/Breadcrumbs/Breadcrumbs.jsx';
-import { fetchNamesWithAdvancedFilters } from '@/lib/api/names';
+import { serverFetchNamesWithAdvancedFilters } from '@/lib/api/server-fetch';
 import { validateMetaTitle, validateMetaDescription, generateCanonicalUrl } from '@/lib/seo/meta-helpers';
 import { ChevronLeft, ChevronRight, Sparkles, Moon, Globe, BookOpen, Heart, Star, TrendingUp, Users, Languages, Award } from 'lucide-react';
 import FavoriteButton from '@/components/FavoriteButton';
@@ -226,7 +226,7 @@ export default async function ReligionByPage({ params }) {
     return notFound();
   }
 
-  const response = await fetchNamesWithAdvancedFilters({
+  const response = await serverFetchNamesWithAdvancedFilters({
     religion,
     page,
     limit: 50,

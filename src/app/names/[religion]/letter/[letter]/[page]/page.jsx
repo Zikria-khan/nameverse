@@ -1,6 +1,6 @@
 import { validateMetaTitle, validateMetaDescription, generateCanonicalUrl } from '@/lib/seo/meta-helpers';
 import { generateOptimizedTitle, generateOptimizedDescription, generateOptimizedKeywords, generateNamePageSchemas } from '@/lib/seo/name-page-seo';
-import { fetchNamesByLetter } from '@/lib/api/names';
+import { serverFetchNamesByLetter } from '@/lib/api/server-fetch';
 import { Sparkles, Moon, ChevronLeft, ChevronRight, Search, Star, BookOpen, Heart } from 'lucide-react';
 import Link from 'next/link';
 import Script from 'next/script';
@@ -222,7 +222,7 @@ export default async function LetterNamesPage({ params }) {
   const gradient = getReligionGradient(religion);
   const emoji = getReligionEmoji(religion);
 
-  const response = await fetchNamesByLetter(letter, {
+  const response = await serverFetchNamesByLetter(letter, {
     religion,
     page,
     limit: NAMES_PER_PAGE,

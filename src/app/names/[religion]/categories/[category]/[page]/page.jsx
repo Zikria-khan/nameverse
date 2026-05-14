@@ -1,6 +1,6 @@
 // src/app/names/categories/[category]/[page]/page.jsx
 import Link from 'next/link';
-import { fetchNamesWithAdvancedFilters } from '@/lib/api/names';
+import { serverFetchNamesWithAdvancedFilters } from '@/lib/api/server-fetch';
 import { validateMetaTitle, validateMetaDescription, generateCanonicalUrl } from '@/lib/seo/meta-helpers';
 import { Sparkles, Moon, ChevronLeft, ChevronRight } from 'lucide-react';
 import FavoriteButton from '@/components/FavoriteButton';
@@ -111,7 +111,7 @@ export default async function CategoryNamesPage({ params }) {
   let success = false;
 
   try {
-    const response = await fetchNamesWithAdvancedFilters({
+    const response = await serverFetchNamesWithAdvancedFilters({
       religion,
       category,
       page,

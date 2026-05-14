@@ -96,7 +96,6 @@ export function middleware(request) {
 // ==========================================
 export const config = {
   matcher: [
-    '/names/:religion/:slug',   // Only sanitize specific name slugs
     '/search/:path*',
     '/blog/:path*',             // Keep blog for redirects
   ],

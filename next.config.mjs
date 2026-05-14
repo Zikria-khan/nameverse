@@ -81,11 +81,8 @@ dangerouslyAllowSVG: true,
               key: 'Referrer-Policy',
               value: 'strict-origin-when-cross-origin'
             },
-            // CDN-friendly caching: allow ISR-generated HTML to be cached at edge
-            {
-              key: 'Cache-Control',
-              value: 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800',
-            },
+            // NOTE: No Cache-Control here! ISR manages caching via route-level revalidate exports
+            // Setting a global Cache-Control would conflict with ISR's native caching behavior
           ],
         },
       {
