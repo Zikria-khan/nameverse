@@ -66,28 +66,51 @@ function collectAllUrls() {
   return Array.from(urls);
 }
 
-// Submit a batch of URLs to IndexNow
-async function submitBatch(batch) {
-  try {
-    const res = await axios.post(
-      'https://api.indexnow.org/indexnow',
-      {
-        host: 'nameverse.vercel.app',
-        key: INDEXNOW_KEY,
-        urlList: batch,
-      },
-      {
-        headers: { 'Content-Type': 'application/json' },
-        timeout: 30000,
+// Submit a batch of URLs to IndexNow with retry logic
+async function submitBatch(batch, maxRetries = 3) {
+  // Try multiple endpoints
+  const endpoints = [
+    'https://api.indexnow.org/indexnow',
+    'https://www.bing.com/indexnow',
+  ];
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    for (const endpoint of endpoints) {
+      try {
+        const res = await axios.post(
+          endpoint,
+          {
+            host: 'nameverse.vercel.app',
+            key: INDEXNOW_KEY,
+            urlList: batch,
+          },
+          {
+            headers: { 'Content-Type': 'application/json' },
+            timeout: 30000,
+          }
+        );
+        console.log(`  ✓ Submitted ${batch.length} URLs — Status: ${res.status} (${endpoint})`);
+        return { success: true, status: res.status };
+      } catch (err) {
+        const errorData = err.response?.data || err.message;
+        const isVerificationError = errorData?.errorCode === 'SiteVerificationNotCompleted';
+        
+        // If verification not completed, wait longer and retry
+        if (isVerificationError && attempt < maxRetries) {
+          console.log(`  ⚠ Verification pending, waiting ${attempt * 30}s before retry...`);
+          await new Promise(resolve => setTimeout(resolve, attempt * 30000));
+          continue;
+        }
+        
+        if (attempt === maxRetries) {
+          console.error(`  ✗ Batch failed (${batch.length} URLs) after ${attempt} attempts:`, JSON.stringify(errorData).slice(0, 200));
+          return { success: false, error: errorData };
+        }
       }
-    );
-    console.log(`  ✓ Submitted ${batch.length} URLs — Status: ${res.status}`);
-    return { success: true, status: res.status };
-  } catch (err) {
-    const errorData = err.response?.data || err.message;
-    console.error(`  ✗ Batch failed (${batch.length} URLs):`, JSON.stringify(errorData).slice(0, 200));
-    return { success: false, error: errorData };
+    }
   }
+  
+  return { success: false, error: 'Max retries exceeded' };
 }
 
 // Main submission loop
