@@ -16,7 +16,7 @@ export async function POST(req) {
       "https://api.indexnow.org/indexnow",
       {
         host: "nameverse.vercel.app",
-        key: "d8127789-72bd-4672-b48e-9c0b5aa7f220",
+        key: process.env.INDEXNOW_KEY,
         urlList: urls,
       },
       {

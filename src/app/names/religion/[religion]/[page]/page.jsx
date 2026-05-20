@@ -6,6 +6,7 @@ import { serverFetchNamesWithAdvancedFilters } from '@/lib/api/server-fetch';
 import { validateMetaTitle, validateMetaDescription, generateCanonicalUrl } from '@/lib/seo/meta-helpers';
 import { ChevronLeft, ChevronRight, Sparkles, Moon, Globe, BookOpen, Heart, Star, TrendingUp, Users, Languages, Award } from 'lucide-react';
 import FavoriteButton from '@/components/FavoriteButton';
+import { getSiteUrl } from '@/lib/seo/site';
 
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
 const RELIGION_LABELS = {
@@ -14,8 +15,8 @@ const RELIGION_LABELS = {
   hindu: 'Hindu',
 };
 
-// ISR with 30-day cache - name lists rarely change
-export const revalidate = 2592000; // 30 days
+// ISR with 7-day cache — religion name list refreshed as data grows
+export const revalidate = 604800; // 7 days
 export const dynamicParams = true;
 
 // Pre-generate religion pages at build time
@@ -37,8 +38,6 @@ export async function generateStaticParams() {
 }
 
 // Site URL (use public env var on client-safe code paths)
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
-
 function normalizeReligion(religion) {
   if (!religion || typeof religion !== 'string') return null;
   const normalized = religion.toLowerCase();
@@ -67,6 +66,15 @@ export async function generateMetadata({ params }) {
   const page = normalizePage(awaitedParams?.page);
   const label = RELIGION_LABELS[religion] || 'Baby';
   const canonical = generateCanonicalUrl(`/names/religion/${religion}/${page}`);
+
+  // Guard: if religion is invalid, don't generate metadata
+  if (!religion || !VALID_RELIGIONS.includes(religion)) {
+    return {
+      title: validateMetaTitle('Baby Names — NameVerse'),
+      description: validateMetaDescription('Browse baby names on NameVerse'),
+      robots: { index: false, follow: false },
+    };
+  }
 
   // Religion-specific keywords with 30+ engaging terms
   const religionKeywords = {
@@ -208,9 +216,11 @@ export async function generateMetadata({ params }) {
     'spiritual names'
   ];
 
-  const pageTitle = `${RELIGION_LABELS[religion]} Baby Names — Authentic ${RELIGION_LABELS[religion]} Names & Meanings | Page ${page}`;
+  const pageTitle = `${RELIGION_LABELS[religion]} Baby Names - Boy & Girl Names with Meanings | NameVerse`;
+  const religionCounts = { islamic: '18,000+', hindu: '15,000+', christian: '11,000+' };
+  const nameType = { islamic: 'Quranic', hindu: 'Vedic', christian: 'Biblical' };
   const pageDescription = validateMetaDescription(
-    `Explore ${label} baby names — Page ${page}. Browse authentic ${label} names with meanings, origins, pronunciations, and popular picks from Quranic, Sanskrit, and Biblical traditions. Find meaningful names for your child across cultures.`
+    `Browse ${religionCounts[religion]} verified ${RELIGION_LABELS[religion]} baby names. ${nameType[religion]} boy & girl names with meanings, lucky numbers & origins. Page ${page} — NameVerse.`
   );
 
   return {
@@ -224,7 +234,7 @@ export async function generateMetadata({ params }) {
       type: 'website',
       siteName: 'NameVerse',
       images: [
-        { url: `${SITE_URL}/api/og?section=${encodeURIComponent(religion)}&page=${page}`, width: 1200, height: 630 }
+        { url: `${getSiteUrl()}/api/og?section=${encodeURIComponent(religion)}&page=${page}`, width: 1200, height: 630 }
       ]
     },
     alternates: {
@@ -268,7 +278,7 @@ export default async function ReligionByPage({ params }) {
         organization={true}
         website={true}
         breadcrumbs={[
-          { name: 'Home', url: process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app' },
+          { name: 'Home', url: getSiteUrl() },
           { name: `${RELIGION_LABELS[religion]} Names`, url: canonical }
         ]}
         collectionPage={{

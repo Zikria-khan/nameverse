@@ -1,8 +1,7 @@
 import GlobalSearchClient from './GlobalSearchClient';
 import { Suspense } from 'react';
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
+import { getSiteUrl } from '@/lib/seo/site';
 
 export const metadata = {
   title: validateMetaTitle('Search Baby Names by Meaning, Origin & Letter | NameVerse'),
@@ -28,13 +27,13 @@ export const metadata = {
     description: validateMetaDescription(
       'Find the perfect baby name on NameVerse. Search by meaning, origin, gender, lucky number, and pronunciation for Islamic, Hindu, and Christian names.'
     ),
-    url: `${SITE_URL}/search`,
+    url: `${getSiteUrl()}/search`,
     type: 'website',
     siteName: 'NameVerse',
   },
   alternates: {
-    canonical: `${SITE_URL}/search`,
-    languages: { en: `${SITE_URL}/search`, 'x-default': `${SITE_URL}/search` }
+    canonical: `${getSiteUrl()}/search`,
+    languages: { en: `${getSiteUrl()}/search`, 'x-default': `${getSiteUrl()}/search` }
   }
 };
 

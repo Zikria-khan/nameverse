@@ -49,6 +49,7 @@ const ArticleCard = ({ article, index }) => {
           url: `/blog/${article.slug}`,
         });
       } catch {
+        // Share cancelled or not supported — expected non-error
       }
     }
   };

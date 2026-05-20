@@ -8,10 +8,8 @@ import islamicNames from '../../../../public/islamic_names.json';
 import hinduNames from '../../../../public/hindu_names.json';
 import christianNames from '../../../../public/christians_names.json';
 
-// ISR with 30-day cache for blog posts
-export const revalidate = 2592000; // 30 days
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
+// ISR with 7-day cache for blog posts — keep content fresher
+export const revalidate = 604800; // 7 days
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
@@ -21,12 +19,12 @@ export async function generateMetadata({ params }) {
     return { title: 'Post Not Found | NameVerse' };
   }
 
-  const canonical = `${SITE_URL}/blog/${post.id}`;
+  const canonical = `${getSiteUrl()}/blog/${post.id}`;
   const ogImage = post.featuredImage
     ? post.featuredImage.startsWith('http')
       ? post.featuredImage
-      : `${SITE_URL}${post.featuredImage}`
-    : `${SITE_URL}/api/og?title=${encodeURIComponent(post.title)}`;
+      : `${getSiteUrl()}${post.featuredImage}`
+    : `${getSiteUrl()}/api/og?title=${encodeURIComponent(post.title)}`;
   const seoDescription = validateMetaDescription(
     `${post.excerpt} Read this expert guide to ${post.category.toLowerCase()} baby names, meaning, and naming trends for modern families.`
   );
@@ -172,8 +170,8 @@ export default async function BlogPostPage({ params }) {
   const ogImage = post.featuredImage
     ? post.featuredImage.startsWith('http')
       ? post.featuredImage
-      : `${SITE_URL}${post.featuredImage}`
-    : `${SITE_URL}/api/og?title=${encodeURIComponent(post.title)}`;
+      : `${getSiteUrl()}${post.featuredImage}`
+    : `${getSiteUrl()}/api/og?title=${encodeURIComponent(post.title)}`;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -190,10 +188,10 @@ export default async function BlogPostPage({ params }) {
     "publisher": {
       "@type": "Organization",
       "name": "NameVerse",
-      "url": SITE_URL,
+      "url": getSiteUrl(),
       "logo": {
         "@type": "ImageObject",
-        "url": `${SITE_URL}/logo.png`,
+        "url": `${getSiteUrl()}/logo.png`,
         "width": 192,
         "height": 192
       }
@@ -202,7 +200,7 @@ export default async function BlogPostPage({ params }) {
     "dateModified": post.lastUpdated || post.publishDate,
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `${SITE_URL}/blog/${post.id}`
+      "@id": `${getSiteUrl()}/blog/${post.id}`
     },
     "keywords": post.seoKeywords || (post.tags || []).join(', '),
     "articleSection": post.category,
@@ -218,19 +216,19 @@ export default async function BlogPostPage({ params }) {
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": SITE_URL
+        "item": getSiteUrl()
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "Blog",
-        "item": `${SITE_URL}/blog`
+        "item": `${getSiteUrl()}/blog`
       },
       {
         "@type": "ListItem",
         "position": 3,
         "name": post.title,
-        "item": `${SITE_URL}/blog/${post.id}`
+        "item": `${getSiteUrl()}/blog/${post.id}`
       }
     ]
   };
@@ -290,7 +288,7 @@ export default async function BlogPostPage({ params }) {
             {post.featuredImage && (
               <div className="relative w-full h-64 md:h-96 mb-8 rounded-xl overflow-hidden bg-gray-100">
                 <BlogImageWithFallback
-                  src={post.featuredImage.startsWith('http') ? post.featuredImage : `${SITE_URL}${post.featuredImage}`}
+                  src={post.featuredImage.startsWith('http') ? post.featuredImage : `${getSiteUrl()}${post.featuredImage}`}
                   alt={post.title}
                   fill
                   className="object-cover"
@@ -449,7 +447,7 @@ export default async function BlogPostPage({ params }) {
             <div className="flex items-center gap-4 mt-6 pt-6 border-t border-gray-200">
               <span className="text-sm font-medium text-gray-700">Share:</span>
               <a
-                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(`${SITE_URL}/blog/${post.id}`)}`}
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(`${getSiteUrl()}/blog/${post.id}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"

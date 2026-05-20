@@ -1,8 +1,7 @@
 import Link from 'next/link';
+import { getSiteUrl } from '@/lib/seo/site';
 import { Heart, Star, BookOpen, Sparkles, Flower2 } from 'lucide-react';
 import namesData from '../../../../public/data/hindu-girl-names.json';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
 // ==========================================
 // METADATA - World Class SEO
@@ -10,19 +9,19 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.a
 export const metadata = {
   title: '150+ Hindu Girl Names with Meanings | Sanskrit Baby Girl Names | NameVerse',
   description: 'Discover 150+ beautiful Hindu girl names with meanings, origins & lucky numbers. Find the perfect Sanskrit baby girl name with Vedic roots. Complete guide to authentic Hindu names for your baby girl.',
-  keywords: 'Hindu girl names, Sanskrit girl names, Hindu baby girl names, Vedic girl names, Indian girl names, Hindu names with meanings, popular Hindu girl names, unique Hindu girl names, Sanskrit names from Vedas, best Hindu girl names 2025, Hindu girl names with lucky numbers, Brahmin girl names, Hindu names for newborn girls, traditional Indian girl names',
+  keywords: 'Hindu girl names, Sanskrit girl names, Hindu baby girl names, Vedic girl names, Indian girl names, Hindu names with meanings, popular Hindu girl names, unique Hindu girl names, Sanskrit names from Vedas, best Hindu girl names 20252026, Hindu girl names with lucky numbers, Brahmin girl names, Hindu names for newborn girls, traditional Indian girl names',
   alternates: {
-    canonical: `${SITE_URL}/hindu/girl-names`,
+    canonical: getSiteUrl() + '/hindu/girl-names',
   },
   openGraph: {
     title: '150+ Hindu Girl Names with Meanings | Sanskrit Baby Girl Names',
     description: 'Discover 150+ beautiful Hindu girl names with meanings, origins & lucky numbers. Find the perfect Sanskrit baby girl name.',
     type: 'website',
-    url: `${SITE_URL}/hindu/girl-names`,
+    url: getSiteUrl() + '/hindu/girl-names',
     siteName: 'NameVerse',
     images: [
       {
-        url: `${SITE_URL}/logo.png`,
+        url: getSiteUrl() + '/logo.png',
         width: 1200,
         height: 630,
         alt: 'Hindu Girl Names with Meanings - NameVerse',
@@ -33,7 +32,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: '150+ Hindu Girl Names with Meanings | Sanskrit Baby Girl Names',
     description: 'Discover 150+ beautiful Hindu girl names with meanings, origins & lucky numbers.',
-    images: [`${SITE_URL}/logo.png`],
+    images: [getSiteUrl() + '/logo.png'],
   },
   robots: { 
     index: true, 
@@ -51,7 +50,7 @@ function generateStructuredData(names) {
     "@type": "ListItem",
     position: index + 1,
     name: n.name,
-    url: `${SITE_URL}/hindu/girl-names#${n.name.toLowerCase()}`,
+    url: getSiteUrl() + '/hindu/girl-names#${n.name.toLowerCase()}',
     description: `${n.name} means "${n.meaning}" - ${n.origin} origin`
   }));
 
@@ -60,21 +59,21 @@ function generateStructuredData(names) {
     "@graph": [
       {
         "@type": "CollectionPage",
-        "@id": `${SITE_URL}/hindu/girl-names#webpage`,
+        "@id": getSiteUrl() + '/hindu/girl-names#webpage',
         "name": "Hindu Girl Names with Meanings",
         "description": "Complete collection of 150+ Hindu girl names with meanings, origins and lucky numbers",
-        "url": `${SITE_URL}/hindu/girl-names`,
+        "url": getSiteUrl() + '/hindu/girl-names',
         "isPartOf": {
           "@type": "WebSite",
-          "@id": `${SITE_URL}/#website`,
+          "@id": getSiteUrl() + '/#website',
           "name": "NameVerse"
         },
         "breadcrumb": {
           "@type": "BreadcrumbList",
           "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE_URL },
-            { "@type": "ListItem", "position": 2, "name": "Hindu Names", "item": `${SITE_URL}/names/religion/hindu/1` },
-            { "@type": "ListItem", "position": 3, "name": "Hindu Girl Names", "item": `${SITE_URL}/hindu/girl-names` }
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": getSiteUrl() },
+            { "@type": "ListItem", "position": 2, "name": "Hindu Names", "item": getSiteUrl() + '/names/religion/hindu/1' },
+            { "@type": "ListItem", "position": 3, "name": "Hindu Girl Names", "item": getSiteUrl() + '/hindu/girl-names' }
           ]
         },
         "mainEntity": {
@@ -90,13 +89,13 @@ function generateStructuredData(names) {
           {
             "@type": "Question",
             "name": "What are the most popular Hindu girl names?",
-            "datePublished": "2025-01-01",
+            "datePublished": "2026-05-19",
             "author": { "@type": "Organization", "name": "NameVerse" },
             "answerCount": 1,
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "The most popular Hindu girl names include Aadhya, Aahana, Aanya, Aaradhya, Aarohi, Aarushi, Aashi, Aastha, Aditi, Advika, Ananya, Anika, Anvi, Aria, Avani, Diya, Gauri, Ishani, Jiya, Kavya, Kiara, Myra, Nisha, Pari, Prisha, Riya, Saanvi, Sara, Shanvi, Siya, Tara, and Vanya. These names have deep roots in Sanskrit and Hindu tradition.",
-              "datePublished": "2025-01-01",
+              "datePublished": "2026-05-19",
               "upvoteCount": 0,
               "author": { "@type": "Organization", "name": "NameVerse" }
             }
@@ -104,13 +103,13 @@ function generateStructuredData(names) {
           {
             "@type": "Question",
             "name": "How do I choose a Hindu name for my baby girl?",
-            "datePublished": "2025-01-01",
+            "datePublished": "2026-05-19",
             "author": { "@type": "Organization", "name": "NameVerse" },
             "answerCount": 1,
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "When choosing a Hindu name for your baby girl, consider the Sanskrit meaning, origin, and whether it has a connection to Hindu goddesses or Vedas. Names with positive meanings like 'Goddess Lakshmi', 'Dawn', 'Grace', or 'Worshipped' are highly recommended in Hindu tradition.",
-              "datePublished": "2025-01-01",
+              "datePublished": "2026-05-19",
               "upvoteCount": 0,
               "author": { "@type": "Organization", "name": "NameVerse" }
             }
@@ -118,13 +117,13 @@ function generateStructuredData(names) {
           {
             "@type": "Question",
             "name": "What Hindu girl names mean 'Goddess Lakshmi'?",
-            "datePublished": "2025-01-01",
+            "datePublished": "2026-05-19",
             "author": { "@type": "Organization", "name": "NameVerse" },
             "answerCount": 1,
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "Several Hindu girl names carry the meaning 'Goddess Lakshmi', including Aaditri, Lakshmi, Padma, Kamala, and Shri. These names express prosperity and divine blessings in Hindu tradition and are beloved choices among Indian families.",
-              "datePublished": "2025-01-01",
+              "datePublished": "2026-05-19",
               "upvoteCount": 0,
               "author": { "@type": "Organization", "name": "NameVerse" }
             }

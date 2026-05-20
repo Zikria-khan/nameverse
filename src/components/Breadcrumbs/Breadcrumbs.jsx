@@ -21,13 +21,13 @@ export default function Breadcrumbs({ items = [], className = '' }) {
         '@type': 'ListItem',
         position: 1,
         name: 'Home',
-        item: 'https://nameverse.vercel.app'
+        item: (typeof window !== 'undefined' ? window.location.origin : 'https://nameverse.vercel.app')
       },
       ...items.map((item, index) => ({
         '@type': 'ListItem',
         position: index + 2,
         name: item.label,
-        ...(item.href && { item: `https://nameverse.vercel.app${item.href}` })
+        ...(item.href && { item: (typeof window !== 'undefined' ? window.location.origin : 'https://nameverse.vercel.app') + item.href })
       }))
     ]
   };
@@ -139,9 +139,3 @@ export function generateSearchBreadcrumbs(searchTerm) {
     { label: searchTerm, href: null }
   ];
 }
-
-export {
-  generateNameBreadcrumbs,
-  generateArticleBreadcrumbs,
-  generateSearchBreadcrumbs,
-};

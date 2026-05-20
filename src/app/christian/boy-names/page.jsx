@@ -1,8 +1,7 @@
 import Link from 'next/link';
+import { getSiteUrl } from '@/lib/seo/site';
 import { Heart, Star, BookOpen, Sparkles, Cross } from 'lucide-react';
 import namesData from '../../../../public/data/christian-boy-names.json';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
 // ==========================================
 // METADATA - World Class SEO
@@ -10,19 +9,19 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.a
 export const metadata = {
   title: '100+ Christian Boy Names with Meanings | Biblical Baby Boy Names | NameVerse',
   description: 'Discover 100+ beautiful Christian boy names with meanings, origins & lucky numbers. Find the perfect Biblical baby boy name with Hebrew & Greek roots. Complete guide to authentic Christian names for your baby boy.',
-  keywords: 'Christian boy names, Biblical boy names, Christian baby boy names, Hebrew boy names, Greek boy names, Bible names for boys, Christian names with meanings, popular Christian boy names, unique Christian boy names, Biblical names from Bible, best Christian boy names 2025, Christian boy names with lucky numbers, Catholic boy names, Protestant boy names, Christian names for newborn boys',
+  keywords: 'Christian boy names, Biblical boy names, Christian baby boy names, Hebrew boy names, Greek boy names, Bible names for boys, Christian names with meanings, popular Christian boy names, unique Christian boy names, Biblical names from Bible, best Christian boy names 20252026, Christian boy names with lucky numbers, Catholic boy names, Protestant boy names, Christian names for newborn boys',
   alternates: {
-    canonical: `${SITE_URL}/christian/boy-names`,
+    canonical: getSiteUrl() + '/christian/boy-names',
   },
   openGraph: {
     title: '100+ Christian Boy Names with Meanings | Biblical Baby Boy Names',
     description: 'Discover 100+ beautiful Christian boy names with meanings, origins & lucky numbers. Find the perfect Biblical baby boy name.',
     type: 'website',
-    url: `${SITE_URL}/christian/boy-names`,
+    url: getSiteUrl() + '/christian/boy-names',
     siteName: 'NameVerse',
     images: [
       {
-        url: `${SITE_URL}/logo.png`,
+        url: getSiteUrl() + '/logo.png',
         width: 1200,
         height: 630,
         alt: 'Christian Boy Names with Meanings - NameVerse',
@@ -33,7 +32,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: '100+ Christian Boy Names with Meanings | Biblical Baby Boy Names',
     description: 'Discover 100+ beautiful Christian boy names with meanings, origins & lucky numbers.',
-    images: [`${SITE_URL}/logo.png`],
+    images: [getSiteUrl() + '/logo.png'],
   },
   robots: { 
     index: true, 
@@ -51,7 +50,7 @@ function generateStructuredData(names) {
     "@type": "ListItem",
     position: index + 1,
     name: n.name,
-    url: `${SITE_URL}/christian/boy-names#${n.name.toLowerCase()}`,
+    url: getSiteUrl() + '/christian/boy-names#${n.name.toLowerCase()}',
     description: `${n.name} means "${n.meaning}" - ${n.origin} origin`
   }));
 
@@ -60,21 +59,21 @@ function generateStructuredData(names) {
     "@graph": [
       {
         "@type": "CollectionPage",
-        "@id": `${SITE_URL}/christian/boy-names#webpage`,
+        "@id": getSiteUrl() + '/christian/boy-names#webpage',
         "name": "Christian Boy Names with Meanings",
         "description": "Complete collection of 100+ Christian boy names with meanings, origins and lucky numbers",
-        "url": `${SITE_URL}/christian/boy-names`,
+        "url": getSiteUrl() + '/christian/boy-names',
         "isPartOf": {
           "@type": "WebSite",
-          "@id": `${SITE_URL}/#website`,
+          "@id": getSiteUrl() + '/#website',
           "name": "NameVerse"
         },
         "breadcrumb": {
           "@type": "BreadcrumbList",
           "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE_URL },
-             { "@type": "ListItem", "position": 2, "name": "Christian Names", "item": `${SITE_URL}/names/religion/christian/1` },
-            { "@type": "ListItem", "position": 3, "name": "Christian Boy Names", "item": `${SITE_URL}/christian/boy-names` }
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": getSiteUrl() },
+             { "@type": "ListItem", "position": 2, "name": "Christian Names", "item": getSiteUrl() + '/names/religion/christian/1' },
+            { "@type": "ListItem", "position": 3, "name": "Christian Boy Names", "item": getSiteUrl() + '/christian/boy-names' }
           ]
         },
         "mainEntity": {
@@ -90,13 +89,13 @@ function generateStructuredData(names) {
           {
             "@type": "Question",
             "name": "What are the most popular Christian boy names?",
-            "datePublished": "2025-01-01",
+            "datePublished": "2026-05-19",
             "author": { "@type": "Organization", "name": "NameVerse" },
             "answerCount": 1,
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "The most popular Christian boy names include Noah, Elijah, James, Benjamin, Michael, Daniel, Jacob, Samuel, Joseph, David, Matthew, and Gabriel. These names have deep roots in the Bible and Christian tradition.",
-              "datePublished": "2025-01-01",
+              "datePublished": "2026-05-19",
               "upvoteCount": 0,
               "author": { "@type": "Organization", "name": "NameVerse" }
             }
@@ -104,13 +103,13 @@ function generateStructuredData(names) {
           {
             "@type": "Question",
             "name": "How do I choose a Christian name for my baby boy?",
-            "datePublished": "2025-01-01",
+            "datePublished": "2026-05-19",
             "author": { "@type": "Organization", "name": "NameVerse" },
             "answerCount": 1,
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "When choosing a Christian name for your baby boy, consider the Biblical meaning, origin, and whether it has a connection to scripture. Names with positive meanings like 'God is gracious', 'Gift of God', or 'God is my strength' are highly recommended in Christian tradition.",
-              "datePublished": "2025-01-01",
+              "datePublished": "2026-05-19",
               "upvoteCount": 0,
               "author": { "@type": "Organization", "name": "NameVerse" }
             }
@@ -118,13 +117,13 @@ function generateStructuredData(names) {
           {
             "@type": "Question",
             "name": "What Christian boy names mean 'Gift from God'?",
-            "datePublished": "2025-01-01",
+            "datePublished": "2026-05-19",
             "author": { "@type": "Organization", "name": "NameVerse" },
             "answerCount": 1,
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "Several Christian boy names carry the meaning 'Gift from God', including Matthew, Theodore, Nathan, and Mateo. These names express gratitude for the blessing of a child.",
-              "datePublished": "2025-01-01",
+              "datePublished": "2026-05-19",
               "upvoteCount": 0,
               "author": { "@type": "Organization", "name": "NameVerse" }
             }
@@ -361,7 +360,7 @@ export default function ChristianBoyNamesPage() {
               className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-2xl p-6 hover:shadow-xl transition-all hover:-translate-y-1"
             >
               <h3 className="font-bold text-lg mb-2">Islamic Boy Names</h3>
-              <p className="text-emerald-100 text-sm">Find 150+ Muslim boy names</p>
+              <p className="text-emerald-100 text-sm">Find 100+ Muslim boy names</p>
             </Link>
             <Link 
               href="/guides/christian-baby-names"

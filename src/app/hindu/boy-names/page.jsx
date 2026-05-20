@@ -1,8 +1,7 @@
 import Link from 'next/link';
+import { getSiteUrl } from '@/lib/seo/site';
 import { Heart, Star, BookOpen, Sparkles, Sun } from 'lucide-react';
 import namesData from '../../../../public/data/hindu-boy-names.json';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
 // ==========================================
 // METADATA - World Class SEO
@@ -10,19 +9,19 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.a
 export const metadata = {
   title: '150+ Hindu Boy Names with Meanings | Sanskrit Baby Boy Names | NameVerse',
   description: 'Discover 150+ beautiful Hindu boy names with meanings, origins & lucky numbers. Find the perfect Sanskrit baby boy name with Vedic roots. Complete guide to authentic Hindu names for your baby boy.',
-  keywords: 'Hindu boy names, Sanskrit boy names, Hindu baby boy names, Vedic boy names, Indian boy names, Hindu names with meanings, popular Hindu boy names, unique Hindu boy names, Sanskrit names from Vedas, best Hindu boy names 2025, Hindu boy names with lucky numbers, Brahmin boy names, Hindu names for newborn boys, traditional Indian boy names',
+  keywords: 'Hindu boy names, Sanskrit boy names, Hindu baby boy names, Vedic boy names, Indian boy names, Hindu names with meanings, popular Hindu boy names, unique Hindu boy names, Sanskrit names from Vedas, best Hindu boy names 20252026, Hindu boy names with lucky numbers, Brahmin boy names, Hindu names for newborn boys, traditional Indian boy names',
   alternates: {
-    canonical: `${SITE_URL}/hindu/boy-names`,
+    canonical: getSiteUrl() + '/hindu/boy-names',
   },
   openGraph: {
     title: '150+ Hindu Boy Names with Meanings | Sanskrit Baby Boy Names',
     description: 'Discover 150+ beautiful Hindu boy names with meanings, origins & lucky numbers. Find the perfect Sanskrit baby boy name.',
     type: 'website',
-    url: `${SITE_URL}/hindu/boy-names`,
+    url: getSiteUrl() + '/hindu/boy-names',
     siteName: 'NameVerse',
     images: [
       {
-        url: `${SITE_URL}/logo.png`,
+        url: getSiteUrl() + '/logo.png',
         width: 1200,
         height: 630,
         alt: 'Hindu Boy Names with Meanings - NameVerse',
@@ -33,7 +32,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: '150+ Hindu Boy Names with Meanings | Sanskrit Baby Boy Names',
     description: 'Discover 150+ beautiful Hindu boy names with meanings, origins & lucky numbers.',
-    images: [`${SITE_URL}/logo.png`],
+    images: [getSiteUrl() + '/logo.png'],
   },
   robots: { 
     index: true, 
@@ -51,7 +50,7 @@ function generateStructuredData(names) {
     "@type": "ListItem",
     position: index + 1,
     name: n.name,
-    url: `${SITE_URL}/hindu/boy-names#${n.name.toLowerCase()}`,
+    url: getSiteUrl() + '/hindu/boy-names#${n.name.toLowerCase()}',
     description: `${n.name} means "${n.meaning}" - ${n.origin} origin`
   }));
 
@@ -60,21 +59,21 @@ function generateStructuredData(names) {
     "@graph": [
       {
         "@type": "CollectionPage",
-        "@id": `${SITE_URL}/hindu/boy-names#webpage`,
+        "@id": getSiteUrl() + '/hindu/boy-names#webpage',
         "name": "Hindu Boy Names with Meanings",
         "description": "Complete collection of 150+ Hindu boy names with meanings, origins and lucky numbers",
-        "url": `${SITE_URL}/hindu/boy-names`,
+        "url": getSiteUrl() + '/hindu/boy-names',
         "isPartOf": {
           "@type": "WebSite",
-          "@id": `${SITE_URL}/#website`,
+          "@id": getSiteUrl() + '/#website',
           "name": "NameVerse"
         },
         "breadcrumb": {
           "@type": "BreadcrumbList",
           "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE_URL },
-            { "@type": "ListItem", "position": 2, "name": "Hindu Names", "item": `${SITE_URL}/names/religion/hindu/1` },
-            { "@type": "ListItem", "position": 3, "name": "Hindu Boy Names", "item": `${SITE_URL}/hindu/boy-names` }
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": getSiteUrl() },
+            { "@type": "ListItem", "position": 2, "name": "Hindu Names", "item": getSiteUrl() + '/names/religion/hindu/1' },
+            { "@type": "ListItem", "position": 3, "name": "Hindu Boy Names", "item": getSiteUrl() + '/hindu/boy-names' }
           ]
         },
         "mainEntity": {
@@ -90,13 +89,13 @@ function generateStructuredData(names) {
           {
             "@type": "Question",
             "name": "What are the most popular Hindu boy names?",
-            "datePublished": "2025-01-01",
+            "datePublished": "2026-05-19",
             "author": { "@type": "Organization", "name": "NameVerse" },
             "answerCount": 1,
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "The most popular Hindu boy names include Aarav, Aarush, Aayush, Abhay, Abhinav, Aditya, Akash, Aryan, Dhruv, Ishan, Kabir, Krish, Laksh, Mohan, Neel, Om, Pranav, Reyansh, Rudra, Shaurya, Shiv, Vihaan, and Yuvan. These names have deep roots in Sanskrit and Hindu tradition.",
-              "datePublished": "2025-01-01",
+              "datePublished": "2026-05-19",
               "upvoteCount": 0,
               "author": { "@type": "Organization", "name": "NameVerse" }
             }
@@ -104,13 +103,13 @@ function generateStructuredData(names) {
           {
             "@type": "Question",
             "name": "How do I choose a Hindu name for my baby boy?",
-            "datePublished": "2025-01-01",
+            "datePublished": "2026-05-19",
             "author": { "@type": "Organization", "name": "NameVerse" },
             "answerCount": 1,
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "When choosing a Hindu name for your baby boy, consider the Sanskrit meaning, origin, and whether it has a connection to Hindu mythology or Vedas. Names with positive meanings like 'Peaceful', 'Sun', 'Sky', or 'Fearless' are highly recommended in Hindu tradition.",
-              "datePublished": "2025-01-01",
+              "datePublished": "2026-05-19",
               "upvoteCount": 0,
               "author": { "@type": "Organization", "name": "NameVerse" }
             }
@@ -118,13 +117,13 @@ function generateStructuredData(names) {
           {
             "@type": "Question",
             "name": "What Hindu boy names mean 'Sun'?",
-            "datePublished": "2025-01-01",
+            "datePublished": "2026-05-19",
             "author": { "@type": "Organization", "name": "NameVerse" },
             "answerCount": 1,
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "Several Hindu boy names carry the meaning 'Sun', including Aadavan, Aadhav, Aadhavan, Aadith, Aarav, Aarush, and Aaru. These names express brightness and vitality in Hindu tradition.",
-              "datePublished": "2025-01-01",
+              "datePublished": "2026-05-19",
               "upvoteCount": 0,
               "author": { "@type": "Organization", "name": "NameVerse" }
             }

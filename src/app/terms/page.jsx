@@ -1,13 +1,12 @@
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
+import { getSiteUrl } from '@/lib/seo/site';
 
 export const metadata = {
   title: validateMetaTitle('Terms of Service | NameVerse — Use Our Names Database Responsibly'),
   description: validateMetaDescription('Understand the terms and conditions of using NameVerse. Learn about our data usage, licensing, and user responsibilities for our baby names service.'),
   alternates: {
-    canonical: `${SITE_URL}/terms`,
-    languages: { en: `${SITE_URL}/terms`, 'x-default': `${SITE_URL}/terms` },
+    canonical: `${getSiteUrl()}/terms`,
+    languages: { en: `${getSiteUrl()}/terms`, 'x-default': `${getSiteUrl()}/terms` },
   },
 };
 

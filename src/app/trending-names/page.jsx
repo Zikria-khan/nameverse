@@ -2,8 +2,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { TrendingUp, Sparkles, Zap, Star, Flame, Rocket, ChevronRight } from 'lucide-react';
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
+import { getSiteUrl } from '@/lib/seo/site';
 
 export const metadata = {
   title: validateMetaTitle('Trending Baby Names 2026 — What\'s Hot Now | NameVerse'),
@@ -25,12 +24,12 @@ export const metadata = {
     description: validateMetaDescription(
       'Explore the hottest trending baby names of 2026. See fast-rising names, viral social media names, and celebrity baby names influencing naming trends.'
     ),
-    url: `${SITE_URL}/trending-names`,
+    url: `${getSiteUrl()}/trending-names`,
     type: 'website',
     siteName: 'NameVerse',
     images: [
       {
-        url: `${SITE_URL}/og-trending-names.png`,
+        url: `${getSiteUrl()}/og-trending-names.png`,
         width: 1200,
         height: 630,
         alt: 'Trending Baby Names 2026 - NameVerse'
@@ -38,8 +37,8 @@ export const metadata = {
     ]
   },
   alternates: {
-    canonical: `${SITE_URL}/trending-names`,
-    languages: { en: `${SITE_URL}/trending-names`, 'x-default': `${SITE_URL}/trending-names` }
+    canonical: `${getSiteUrl()}/trending-names`,
+    languages: { en: `${getSiteUrl()}/trending-names`, 'x-default': `${getSiteUrl()}/trending-names` }
   },
   robots: { index: true, follow: true }
 };

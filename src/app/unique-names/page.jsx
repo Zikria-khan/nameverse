@@ -2,8 +2,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { Sparkles, Star, Moon, ChevronRight, Zap, Diamond, Gift, Globe } from 'lucide-react';
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
+import { getSiteUrl } from '@/lib/seo/site';
 
 export const metadata = {
   title: validateMetaTitle('Unique Baby Names — Rare & Uncommon Names | NameVerse'),
@@ -27,12 +26,12 @@ export const metadata = {
     description: validateMetaDescription(
       'Find distinctive and rare baby names that stand out. Explore 15,000+ unique names from different cultures with meanings and origin details.'
     ),
-    url: `${SITE_URL}/unique-names`,
+    url: `${getSiteUrl()}/unique-names`,
     type: 'website',
     siteName: 'NameVerse',
     images: [
       {
-        url: `${SITE_URL}/og-unique-names.png`,
+        url: `${getSiteUrl()}/og-unique-names.png`,
         width: 1200,
         height: 630,
         alt: 'Unique Baby Names - NameVerse'
@@ -40,8 +39,8 @@ export const metadata = {
     ]
   },
   alternates: {
-    canonical: `${SITE_URL}/unique-names`,
-    languages: { en: `${SITE_URL}/unique-names`, 'x-default': `${SITE_URL}/unique-names` }
+    canonical: `${getSiteUrl()}/unique-names`,
+    languages: { en: `${getSiteUrl()}/unique-names`, 'x-default': `${getSiteUrl()}/unique-names` }
   },
   robots: { index: true, follow: true }
 };

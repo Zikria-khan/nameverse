@@ -2,6 +2,7 @@
  * Structured Data (Schema.org) Helpers
  * Generate JSON-LD schemas for rich snippets
  */
+import { getSiteUrl, absoluteUrl } from '@/lib/seo/site';
 
 /**
  * Generate Product schema for name pages (for rich snippets)
@@ -21,14 +22,14 @@ export function generateNameProductSchema(name, religion, slug) {
       name: 'NameVerse'
     },
     category: `${name.religion || religion} Baby Names`,
-    url: `https://nameverse.vercel.app/names/${religion}/${slug}`,
-    image: `https://nameverse.vercel.app/logo.png`,
+    url: absoluteUrl(`/names/${religion}/${slug}`),
+    image: absoluteUrl('/logo.png'),
     offers: {
       '@type': 'Offer',
       price: '0',
       priceCurrency: 'USD',
       availability: 'https://schema.org/InStock',
-      url: `https://nameverse.vercel.app/names/${religion}/${slug}`
+        url: absoluteUrl(`/names/${religion}/${slug}`)
     },
     additionalProperty: [
       {
@@ -76,27 +77,27 @@ export function generateArticleSchema(article) {
     '@type': 'Article',
     headline: article.title,
     description: article.excerpt || article.subtitle || article.summary,
-    image: article.cover_image_url || 'https://nameverse.vercel.app/logo.png',
+    image: article.cover_image_url || absoluteUrl('/logo.png'),
     datePublished: article.createdAt || article.created_at,
     dateModified: article.updatedAt || article.updated_at || article.createdAt,
     author: {
       '@type': 'Person',
       name: article.author || 'NameVerse Editorial Team',
-      url: 'https://nameverse.vercel.app/about'
+      url: absoluteUrl('/about')
     },
     publisher: {
       '@type': 'Organization',
       name: 'NameVerse',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://nameverse.vercel.app/logo.png',
+        url: absoluteUrl('/logo.png'),
         width: 200,
         height: 200
       }
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://nameverse.vercel.app/blog/${article.slug}`
+        url: absoluteUrl('/blog/' + article.slug)
     },
     wordCount: article.content?.split(/\s+/).length || 500,
     articleBody: article.content?.substring(0, 500),
@@ -158,13 +159,13 @@ export function generateBreadcrumbSchema(items) {
         '@type': 'ListItem',
         position: 1,
         name: 'Home',
-        item: 'https://nameverse.vercel.app'
+        item: getSiteUrl()
       },
       ...items.map((item, index) => ({
         '@type': 'ListItem',
         position: index + 2,
         name: item.label,
-        ...(item.href && { item: `https://nameverse.vercel.app${item.href}` })
+        ...(item.href && { item: absoluteUrl(item.href) })
       }))
     ]
   };
@@ -181,11 +182,11 @@ export function generateCollectionSchema(data) {
     '@type': 'CollectionPage',
     name: data.title || `${data.religion} Baby Names Collection`,
     description: data.description || `Browse beautiful ${data.religion} baby names with meanings and origins`,
-    url: `https://nameverse.vercel.app${data.url || '/names'}`,
+    url: absoluteUrl(data.url || '/names'),
     isPartOf: {
       '@type': 'WebSite',
       name: 'NameVerse',
-      url: 'https://nameverse.vercel.app'
+      url: getSiteUrl()
     },
     mainEntity: {
       '@type': 'ItemList',
@@ -197,7 +198,7 @@ export function generateCollectionSchema(data) {
           '@type': 'Thing',
           name: name.name,
           description: name.short_meaning || name.meaning,
-          url: `https://nameverse.vercel.app/names/${religion || name.religion}/${name.slug}`
+          url: absoluteUrl('/names/' + (religion || name.religion) + '/' + name.slug)
         }
       }))
     }

@@ -1,6 +1,6 @@
-﻿'use client';
+'use client';
 
-import { Globe, Sparkles, BookOpen } from 'lucide-react';
+import { Globe, Sparkles, BookOpen, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 
 const ReligiousNamesSection = () => {
@@ -38,47 +38,65 @@ const ReligiousNamesSection = () => {
   ];
 
   return (
-    <section className="py-12 sm:py-16 bg-white">
+    <section className="py-12 sm:py-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-10">
-          <span className="inline-flex rounded-full bg-purple-500 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white mb-4">
-            Faith-Based Names
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-            Islamic, Hindu, and Christian baby names with trusted meaning.
-          </h2>
-          <p className="max-w-3xl mx-auto text-gray-600 text-base leading-relaxed">
-            Find authentic religious names from Quranic, Sanskrit, and Biblical traditions with meaningful origin and cultural accuracy.
-          </p>
-        </div>
+        <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+          <div className="text-left">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--nv-border)] bg-white/65 px-4 py-2 text-xs font-semibold tracking-wide text-[color:var(--nv-ink)] backdrop-blur">
+              <span className="h-2 w-2 rounded-full bg-[color:var(--nv-accent-2)]" />
+              Faith-aware browsing
+            </div>
+            <h2 className="nv-display mt-5 text-3xl font-semibold leading-tight text-[color:var(--nv-ink)] sm:text-4xl">
+              Browse by tradition, stay confident in meaning.
+            </h2>
+            <p className="mt-4 max-w-xl text-base leading-relaxed text-[color:var(--nv-muted)] sm:text-lg">
+              Carefully organized Islamic, Hindu, and Christian collections with consistent meanings, origin notes, and usable filters.
+            </p>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href="/names"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[color:var(--nv-ink)] px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_45px_-34px_var(--nv-shadow)] transition hover:translate-y-[-1px] hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[color:var(--nv-accent-2)]"
+              >
+                Browse all religions
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/names/religion/islamic/1"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[color:var(--nv-border)] bg-white/60 px-5 py-3 text-sm font-semibold text-[color:var(--nv-ink)] backdrop-blur transition hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-[color:var(--nv-accent-2)]"
+              >
+                Start with Islamic
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
 
-        <div className="grid gap-6 sm:grid-cols-3 mb-10">
-          {religions.map((religion) => {
-            const Icon = religion.icon;
-            return (
-              <div key={religion.id} className="rounded-3xl border border-gray-200 p-6 shadow-sm hover:shadow-xl transition-all duration-300">
-                <div className={`mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${religion.gradient} text-white`}>
-                  <Icon className="w-6 h-6" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{religion.name}</h3>
-                <p className="text-sm text-gray-600 leading-relaxed mb-4">{religion.description}</p>
-                <p className="text-xs text-gray-500 font-semibold mb-6">{religion.count}</p>
-                <Link href={religion.link} className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700 transition">
-                  Explore {religion.name}
-                  <span aria-hidden="true">→</span>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {religions.map((religion) => {
+              const Icon = religion.icon;
+              return (
+                <Link
+                  key={religion.id}
+                  href={religion.link}
+                  className="group nv-surface rounded-[26px] p-6 transition hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-[color:var(--nv-accent-2)]"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className={`grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br ${religion.gradient} text-white shadow-[0_18px_45px_-34px_var(--nv-shadow)]`}>
+                      <Icon className="h-6 w-6" />
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs font-semibold text-[color:var(--nv-muted)]">{religion.count}</div>
+                      <div className="mt-2 inline-flex items-center gap-2 text-xs font-semibold text-[color:var(--nv-ink)] opacity-70 group-hover:opacity-100">
+                        Open list
+                        <ArrowUpRight className="h-3.5 w-3.5" />
+                      </div>
+                    </div>
+                  </div>
+                  <h3 className="mt-4 text-base font-semibold text-[color:var(--nv-ink)]">{religion.name}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-[color:var(--nv-muted)]">{religion.description}</p>
                 </Link>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="text-center">
-          <p className="max-w-2xl mx-auto text-gray-600 text-base leading-relaxed mb-6">
-            Choose the right religious baby names with NameVerse's scholar-approved meanings and clear origin details.
-          </p>
-          <Link href="/names/religion/islamic/1" className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-800 transition">
-            Browse all faith-based names
-          </Link>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>

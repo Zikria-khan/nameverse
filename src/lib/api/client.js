@@ -34,6 +34,54 @@ class RateLimiter {
 
 
 const activeRequests = new Map();
+const staleResponseCache = new Map();
+
+const getRequestCacheKey = (config) => {
+  if (!config) return null;
+  const method = (config.method || 'get').toLowerCase();
+  const url = `${config.baseURL || ''}${config.url || ''}`;
+  const params = config.params ? JSON.stringify(config.params) : '';
+  const data = config.data ? JSON.stringify(config.data) : '';
+  return `${method}|${url}|${params}|${data}`;
+};
+
+const isCacheKeyError = (payload) => {
+  const errorText =
+    typeof payload === 'string'
+      ? payload
+      : payload?.message || payload?.error || '';
+  return typeof errorText === 'string' && errorText.includes('cacheKey');
+};
+
+const getCachedResponse = (config) => {
+  const cacheKey = getRequestCacheKey(config);
+  if (!cacheKey) return null;
+  const cached = staleResponseCache.get(cacheKey);
+  if (!cached) return null;
+
+  return {
+    data: cached.data,
+    status: 200,
+    statusText: 'OK',
+    headers: cached.headers,
+    config,
+    request: null,
+    __isStaleCache: true,
+  };
+};
+
+const storeSuccessfulResponse = (config, response) => {
+  if (!config || (config.method || 'get').toLowerCase() !== 'get') return;
+  const cacheKey = getRequestCacheKey(config);
+  if (!cacheKey) return;
+
+  staleResponseCache.set(cacheKey, {
+    data: response.data,
+    status: response.status,
+    headers: response.headers,
+    timestamp: Date.now(),
+  });
+};
 
 /**
  * Create axios instance with optimized configuration
@@ -87,8 +135,20 @@ apiClient.interceptors.request.use(
     const { requestId } = response.config;
     activeRequests.delete(requestId);
 
-    // For error status codes, mark as error but return response
+    if (response.status < 400) {
+      storeSuccessfulResponse(response.config, response);
+      return response;
+    }
+
     if (response.status >= 400) {
+      if (isCacheKeyError(response.data)) {
+        const cached = getCachedResponse(response.config);
+        if (cached) {
+          console.warn('[apiClient] Returning stale cache due to backend cacheKey error:', response.config.url);
+          return cached;
+        }
+      }
+
       response.__isError = true;
       response.__errorMessage = response.data?.error || response.data?.message || 'Request failed';
       return response;
@@ -104,21 +164,25 @@ apiClient.interceptors.request.use(
       activeRequests.delete(requestId);
     }
 
-    // Simple error handling without caching
-    if (!error.response) {
-      return Promise.reject({
-        status: 0,
-        message: 'Network error. Please check your internet connection.',
-        error,
-      });
+    const cached = getCachedResponse(config);
+
+    if (!error.response && cached) {
+      console.warn('[apiClient] Network error; returning stale cache for', config?.url);
+      return Promise.resolve(cached);
     }
 
     if (error.response) {
+      if (isCacheKeyError(error.response.data) && cached) {
+        console.warn('[apiClient] Backend cacheKey error; returning stale cache for', config?.url);
+        return Promise.resolve(cached);
+      }
+
       const { status, data } = error.response;
       return Promise.reject({
         status,
         message: data?.error || data?.message || 'Request failed',
         error,
+        response: error.response,
       });
     }
 

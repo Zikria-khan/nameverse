@@ -5,8 +5,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Filter, ChevronDown, ChevronUp, X, Search, Heart, Globe, Star, Zap } from 'lucide-react';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
-
 const filterCategories = {
   basic: {
     title: 'Basic Filters', icon: Filter,

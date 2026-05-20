@@ -91,7 +91,7 @@ const LatestArticles = ({ articles }) => {
   const generateArticleStructuredData = (article, position) => {
     const colors = categoryColors[article.category] || defaultColors;
     const date = article.publishDate || article.lastUpdated || new Date().toISOString();
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app'; // Inlined at build time
     
     return {
       '@context': 'https://schema.org',
@@ -140,19 +140,28 @@ const LatestArticles = ({ articles }) => {
         }}
       />
       
-      <section className="py-8 sm:py-10 md:py-12 bg-gradient-to-b from-slate-50 to-white">
+      <section
+        className="py-12"
+        style={{
+          backgroundImage: [
+            'radial-gradient(900px circle at 10% 10%, rgba(245, 158, 11, 0.14), transparent 60%)',
+            'radial-gradient(760px circle at 85% 15%, rgba(79, 70, 229, 0.14), transparent 62%)',
+            'linear-gradient(to bottom, rgba(247, 245, 240, 1), rgba(255, 255, 255, 1))'
+          ].join(', ')
+        }}
+      >
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           {/* Section Header */}
           <div className="text-center mb-8 md:mb-10">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full mb-4 shadow-md">
-              <BookOpen className="w-4 h-4 text-white" />
-              <span className="text-sm font-semibold text-white">Expert Guidance</span>
+            <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--nv-border)] bg-white/65 px-4 py-2 mb-4 backdrop-blur">
+              <BookOpen className="w-4 h-4 text-[color:var(--nv-accent-3)]" />
+              <span className="text-sm font-semibold text-[color:var(--nv-ink)]">Expert Guidance</span>
             </div>
 
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-              Latest from <span className="bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">NameVerse Blog</span>
+            <h2 className="nv-display text-2xl sm:text-3xl md:text-4xl font-semibold text-[color:var(--nv-ink)] mb-3">
+              Latest from <span className="text-[color:var(--nv-accent-3)]">NameVerse Blog</span>
             </h2>
-            <p className="text-base text-gray-600 max-w-3xl mx-auto">
+            <p className="text-base text-[color:var(--nv-muted)] max-w-3xl mx-auto">
               Expert guides, cultural insights, and naming advice from our team of scholars and nameologists. Discover the stories and traditions behind beautiful names.
             </p>
           </div>
@@ -162,7 +171,7 @@ const LatestArticles = ({ articles }) => {
             {articles.map((article) => {
               const colors = categoryColors[article.category] || defaultColors;
               const truncatedExcerpt = truncateExcerpt(article.excerpt, 120);
-              const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
+              const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app'; // Inlined at build time
               const imageUrl = article.featuredImage
                 ? (article.featuredImage.startsWith('http') ? article.featuredImage : `${siteUrl}${article.featuredImage}`)
                 : `${siteUrl}/api/og?title=${encodeURIComponent(article.title)}`;
@@ -174,7 +183,7 @@ const LatestArticles = ({ articles }) => {
                   className={`group block h-full transition-all duration-300 hover:-translate-y-1`}
                 >
                   <article
-                    className={`flex flex-col h-full bg-white rounded-xl border-2 ${colors.border} ${colors.hover} shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden`}
+                    className={`flex flex-col h-full bg-white/80 rounded-[26px] border-2 ${colors.border} ${colors.hover} shadow-[0_22px_60px_-44px_var(--nv-shadow)] hover:shadow-[0_30px_70px_-44px_var(--nv-shadow)] transition-all duration-300 overflow-hidden backdrop-blur`}
                   >
                     {/* Featured Image */}
                      <div className="relative h-48 overflow-hidden bg-gray-100">
@@ -195,17 +204,17 @@ const LatestArticles = ({ articles }) => {
                     {/* Content */}
                     <div className="p-5 sm:p-6 flex flex-col flex-1">
                       {/* Article Title */}
-                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
+                      <h3 className="nv-display text-lg sm:text-xl font-semibold text-[color:var(--nv-ink)] mb-2 leading-tight group-hover:text-[color:var(--nv-accent-2)] transition-colors line-clamp-2">
                         {article.title}
                       </h3>
 
                       {/* Excerpt */}
-                      <p className="text-sm text-gray-600 mb-4 flex-1 leading-relaxed line-clamp-3">
+                      <p className="text-sm text-[color:var(--nv-muted)] mb-4 flex-1 leading-relaxed line-clamp-3">
                         {truncatedExcerpt}
                       </p>
 
                       {/* Article Meta */}
-                      <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-gray-500 mb-4 border-t border-gray-100 pt-3">
+                      <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-[color:var(--nv-muted)] mb-4 border-t border-black/5 pt-3">
                         <div className="flex items-center gap-1.5">
                           <User className="w-3.5 h-3.5" />
                           <span className="font-medium truncate max-w-[100px] sm:max-w-none">
@@ -230,7 +239,7 @@ const LatestArticles = ({ articles }) => {
                         </div>
                       </div>
 
-                      <div className={`inline-flex items-center justify-center gap-2 w-full py-2.5 sm:py-3 bg-indigo-50 text-indigo-700 text-sm font-semibold rounded-lg group-hover:bg-indigo-100 transition-colors`}>
+                      <div className={`inline-flex items-center justify-center gap-2 w-full py-2.5 sm:py-3 bg-black/5 text-[color:var(--nv-ink)] text-sm font-semibold rounded-2xl group-hover:bg-black/10 transition-colors`}>
                         Read Article
                       </div>
                     </div>

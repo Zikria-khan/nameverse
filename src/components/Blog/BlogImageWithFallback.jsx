@@ -2,12 +2,11 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
+import { getSiteUrl } from '@/lib/seo/site';
 
 export default function BlogImageWithFallback({ src, alt, className, fill, sizes, priority, containerClassName, imageStyle, children }) {
   const [error, setError] = useState(false);
-  const fallbackSrc = `${SITE_URL}/api/og?title=${encodeURIComponent(alt || 'NameVerse Blog')}`;
+  const fallbackSrc = `${getSiteUrl()}/api/og?title=${encodeURIComponent(alt || 'NameVerse Blog')}`;
 
   if (error) {
     return (
@@ -25,7 +24,7 @@ export default function BlogImageWithFallback({ src, alt, className, fill, sizes
     );
   }
 
-  const imageSrc = src && src.startsWith('http') ? src : `${SITE_URL}${src || ''}`;
+  const imageSrc = src && src.startsWith('http') ? src : `${getSiteUrl()}${src || ''}`;
 
   return (
     <div className={`relative ${containerClassName || ''}`}>

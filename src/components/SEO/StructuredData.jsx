@@ -3,6 +3,8 @@
  * Generates JSON-LD structured data for SEO purposes
  */
 
+import { getSiteUrl } from '@/lib/seo/site';
+
 export default function StructuredData({
   organization = false,
   website = false,
@@ -10,7 +12,7 @@ export default function StructuredData({
   collectionPage = null,
   faq = null
 }) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
+  const siteUrl = getSiteUrl();
 
   const schemas = [];
 

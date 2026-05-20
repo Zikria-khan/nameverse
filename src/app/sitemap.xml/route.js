@@ -3,9 +3,13 @@ import { join } from 'path';
 
 const SITEMAP_FILE = join(process.cwd(), 'public', 'sitemap.xml');
 
+// ISR: 24 h — the sitemap doesn't change hourly and no-store on every request
+// was burning CPU by hitting Vercel's Lambda layer for every bots crawl.
+export const revalidate = 86400;
+
 const defaultHeaders = {
   'Content-Type': 'application/xml',
-  'Cache-Control': 'no-store, max-age=0, must-revalidate',
+  'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400',
 };
 
 export async function GET() {

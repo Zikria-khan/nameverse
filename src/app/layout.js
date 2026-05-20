@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer/Footer";
 import AppInstallPopup from "./install";
 import Script from 'next/script';
+import { Fraunces, Instrument_Sans } from 'next/font/google';
 import ErrorBoundary from "@/components/ErrorBoundary/ErrorBoundary";
 import ResourceHints from "@/components/Performance/ResourceHints";
 import PerformanceInit from "./performance";
@@ -13,20 +14,33 @@ import { AppProvider } from "@/contexts/AppContext";
 import LoadingWrapper from "@/components/LoadingAnimation/LoadingWrapper";
 import { Suspense } from 'react';
 
+import { getSiteUrl } from '@/lib/seo/site';
 // Use environment variable or default - will be overridden client-side if needed
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://nameverse.vercel.app";
+const siteUrl = getSiteUrl();
+
+const displayFont = Fraunces({
+  subsets: ['latin'],
+  variable: '--font-display',
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
+});
+
+const bodyFont = Instrument_Sans({
+  subsets: ['latin'],
+  variable: '--font-body',
+  weight: ['400', '500', '600', '700'],
+});
 
 // ✅ Global SEO Metadata
 export const metadata = {
   title: {
-    default: validateMetaTitle("Baby Names 2026 — Islamic, Hindu & Christian"),
+    default: validateMetaTitle("NameVerse — 65,000+ Verified Baby Names with Meanings"),
     template: "%s | NameVerse"
   },
   description: validateMetaDescription(
-    "Explore 60,000+ baby names with meanings, origins, and numerology. Discover Islamic, Hindu, and Christian names in Urdu, Arabic, Hindi & English."
+    "Discover 65,000+ baby names across Islamic, Hindu & Christian traditions. Verified meanings, lucky numbers, origins & 2026 trending data. Trusted by 500,000+ parents."
   ),
   keywords:
-    "baby names, baby names 2026, baby names a to z, baby names muslim, muslim baby names list, baby names girl, baby boy names 2026, baby names muslim boy, name meanings, name meanings in urdu, name meanings in islam, baby names with meanings, unique baby names, modern baby names, islamic boy names from quran, hindu girl names meaning love, christian baby names with meanings, nameverse meaning, nameverse website, baby name generator, name suggestions, muslim baby names list, hindu baby names list, christian baby names list, Arabic baby names, Urdu baby names, meaning of names list, religious baby names, Quranic names, Biblical names, Sanskrit names, trending baby names, popular baby names 2026, baby names cool, baby name ideas, name numerology, baby names inspiration, popular baby names list, top baby names 2026",
+    "baby names, baby names 2026, islamic baby names, hindu baby names, christian baby names, quranic names, biblical names, sanskrit names, muslim baby names, baby name meanings, lucky numbers, baby name generator, name suggestions, trending baby names 2026",
   robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
   authors: [{ name: "NameVerse", url: siteUrl }],
   creator: "NameVerse",
@@ -34,32 +48,31 @@ export const metadata = {
   metadataBase: new URL(siteUrl),
   alternates: { canonical: siteUrl, languages: { en: siteUrl, 'x-default': siteUrl } },
   openGraph: {
-    title: validateMetaTitle("NameVerse — Baby Names & Meanings for Islamic, Hindu & Christian Families"),
+    title: validateMetaTitle("NameVerse — 65,000+ Verified Baby Names | Islamic, Hindu, Christian"),
     description: validateMetaDescription(
-      "Discover baby names with meanings, origins, and numerology across Islamic, Hindu, and Christian traditions in English, Urdu, Arabic & Hindi."
+      "65,000+ baby names with verified meanings, lucky numbers & origins. Islamic Quranic, Hindu Vedic, Christian Biblical. 98% verified accuracy. Trusted by parents worldwide."
     ),
     url: siteUrl,
     siteName: "NameVerse",
     images: [
       { 
-        url: `${siteUrl}/logo.png`, 
+        url: `/logo.png`, 
         width: 512, 
         height: 512, 
         type: "image/png", 
-        alt: "NameVerse — Baby Names & Meanings from Around the World" 
+        alt: "NameVerse — 65,000+ Baby Names with Meanings" 
       },
     ],
     locale: "en_US",
     type: "website",
-    siteName: "NameVerse"
   },
   twitter: {
     card: "summary_large_image",
-    title: validateMetaTitle("Baby Names & Meanings — Islamic, Hindu, Christian | NameVerse"),
+    title: validateMetaTitle("Baby Names 2026 — 65,000+ Islamic, Hindu, Christian Names"),
     description: validateMetaDescription(
-      "Explore thousands of baby names by religion and origin — Islamic, Hindu, and Christian — with detailed meanings and numerology."
+      "65,000+ verified baby names with meanings, lucky numbers & numerology. Islamic, Hindu, Christian. 98% accuracy. Start exploring now!"
     ),
-    images: [`${siteUrl}/logo.png`],
+    images: [`/logo.png`],
     creator: "@NameVerseOfficial",
     site: "@NameVerseOfficial",
   },
@@ -101,6 +114,7 @@ export default function RootLayout({ children }) {
       <head>
         <meta name="color-scheme" content="light dark" />
         <meta name="application-name" content="NameVerse" />
+        <meta property="og:site_name" content="NameVerse" />
         <meta name="content-language" content="en" />
         <meta name="theme-color" content="#4F46E5" />
         <meta name="mobile-web-app-capable" content="yes" />
@@ -131,7 +145,7 @@ export default function RootLayout({ children }) {
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebSite",
-              "@id": `${siteUrl}/#website`,
+              "@id": `/#website`,
               "name": "NameVerse",
               "alternateName": ["NameVerse Baby Names", "NameVerse Names"],
               "url": siteUrl,
@@ -139,12 +153,12 @@ export default function RootLayout({ children }) {
               "inLanguage": "en-US",
               "publisher": {
                 "@type": "Organization",
-                "@id": `${siteUrl}/#organization`,
+                "@id": `/#organization`,
                 "name": "NameVerse",
                 "url": siteUrl,
                 "logo": {
                   "@type": "ImageObject",
-                  "url": `${siteUrl}/logo.png`,
+                  "url": `/logo.png`,
                   "width": 512,
                   "height": 512
                 }
@@ -153,7 +167,7 @@ export default function RootLayout({ children }) {
                 "@type": "SearchAction",
                 "target": {
                   "@type": "EntryPoint",
-                  "urlTemplate": `${siteUrl}/search?query={search_term_string}`
+                  "urlTemplate": `/search?query={search_term_string}`
                 },
                 "query-input": "required name=search_term_string"
               }
@@ -168,12 +182,12 @@ export default function RootLayout({ children }) {
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              "@id": `${siteUrl}/#organization`,
+              "@id": `/#organization`,
               "name": "NameVerse",
               "url": siteUrl,
               "logo": {
                 "@type": "ImageObject",
-                "url": `${siteUrl}/logo.png`,
+                "url": `/logo.png`,
                 "width": 512,
                 "height": 512
               },
@@ -191,12 +205,12 @@ export default function RootLayout({ children }) {
           website={true}
           breadcrumbs={[
             { name: "Home", url: siteUrl },
-            { name: "Baby Names", url: `${siteUrl}/names` },
+            { name: "Baby Names", url: `/names` },
           ]}
           collectionPage={{
             name: "Popular Baby Names by Religion",
             description: "Browse top baby names from different faiths — Muslim, Hindu, and Christian — with meanings and translations.",
-            url: `${siteUrl}/names`,
+            url: `/names`,
             items: [],
           }}
         />
@@ -215,7 +229,7 @@ export default function RootLayout({ children }) {
         />
       </head>
 
-      <body className="antialiased bg-white text-gray-900">
+      <body className={`${bodyFont.variable} ${displayFont.variable} antialiased bg-white text-gray-900`}>
         <div id="temp-wrapper">
           <AppProvider>
             <PerformanceInit />

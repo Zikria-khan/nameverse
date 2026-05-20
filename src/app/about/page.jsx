@@ -3,23 +3,23 @@ import StructuredData from '@/components/SEO/StructuredData';
 import { env } from '@/config/env';
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
 
-const SITE_URL = env.site.url;
+const siteUrl = env.site.url;
 
 export const metadata = {
   title: validateMetaTitle("About Zakriya Khan - Name Meanings Expert & Cultural Consultant"),
   description: validateMetaDescription("Meet Zakriya Khan - Expert in name meanings, cultural heritage, and spiritual significance. Discover the stories behind names with personalized insights and professional consultation."),
   alternates: {
-    canonical: `${SITE_URL}/about`,
-    languages: { en: `${SITE_URL}/about`, 'x-default': `${SITE_URL}/about` },
+    canonical: `${siteUrl}/about`,
+    languages: { en: `${siteUrl}/about`, 'x-default': `${siteUrl}/about` },
   },
   keywords: ["Zakriya Khan", "name meanings", "cultural heritage", "spiritual names", "Islamic names", "baby names expert", "name consultant", "baby name consultant", "religious baby names", "Muslim name specialist", "Hindu name expert", "Christian name advisor", "meaningful baby names", "name origin research"],
   openGraph: {
     title: "About Zakriya Khan - Name Meanings Expert & Cultural Consultant",
     description: "Meet Zakriya Khan - Expert in name meanings, cultural heritage, and spiritual significance.",
-    url: `${SITE_URL}/about`,
+    url: `${siteUrl}/about`,
     type: 'website',
     images: [{
-      url: `${SITE_URL}/logo.png`,
+      url: `${siteUrl}/logo.png`,
       width: 512,
       height: 512,
       alt: 'About Zakriya Khan'
@@ -30,16 +30,13 @@ export const metadata = {
     title: "About Zakriya Khan - Name Meanings Expert",
     description: "Expert in name meanings, cultural heritage, and spiritual significance.",
   },
-  alternates: {
-    canonical: `${SITE_URL}/about`,
-  },
 };
 
 const personData = {
   name: "Zakriya Khan",
   jobTitle: "Name Meanings Expert & Cultural Consultant",
   description: "Professional consultant specializing in name meanings, cultural heritage, and spiritual significance",
-  url: `${SITE_URL}/about`,
+  url: `${siteUrl}/about`,
   sameAs: ["https://www.linkedin.com/in/zakriya-khan-a6321a390/"],
   contactPoint: {
     telephone: "+92-349-7174815",
@@ -54,8 +51,8 @@ export default function AboutPage() {
       <StructuredData
         person={personData}
         breadcrumbs={[
-          { name: "Home", url: SITE_URL },
-          { name: "About", url: `${SITE_URL}/about` },
+          { name: "Home", url: siteUrl },
+          { name: "About", url: `${siteUrl}/about` },
         ]}
       />
       

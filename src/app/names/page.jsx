@@ -1,9 +1,9 @@
-'use client'
-
-import React, { useState } from 'react'
 import Link from 'next/link'
+import FAQAccordion from '@/components/names/FAQAccordion'
+import { getSiteUrl } from '@/lib/seo/site'
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app'
+// ISR: match listing page cadence to avoid excessive revalidations
+export const revalidate = 86400; // 1 day — homepage re-renders far too often at 60s default
 
 const categories = [
   {
@@ -86,7 +86,7 @@ const faqs = [
   },
 ]
 
-const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
 const religionLetters = [
   {
@@ -122,7 +122,14 @@ const religionLetters = [
     textColor: 'text-orange-700',
     borderColor: 'border-orange-200',
   },
-];
+]
+
+const popularStats = [
+  { label: 'Islamic Names', count: '18,000+', color: 'bg-emerald-500' },
+  { label: 'Christian Names', count: '11,000+', color: 'bg-blue-500' },
+  { label: 'Hindu Names', count: '15,000+', color: 'bg-orange-500' },
+  { label: 'Other Names', count: '21,000+', color: 'bg-purple-500' },
+]
 
 const latestBlogPosts = [
   {
@@ -167,11 +174,47 @@ const latestBlogPosts = [
     category: 'Christian Names',
     emoji: '✝️'
   },
-];
+]
 
-export default function CategoryButtons() {
-  const [openFaq, setOpenFaq] = useState(null)
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => {
+    const publishedDate = new Date().toISOString().split('T')[0];
+    return {
+      "@type": "Question",
+      "name": f.q,
+      "datePublished": publishedDate,
+      "author": { "@type": "Organization", "name": "NameVerse" },
+      "answerCount": 1,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": f.a,
+        "datePublished": publishedDate,
+        "upvoteCount": 0,
+        "author": { "@type": "Organization", "name": "NameVerse" }
+      }
+    };
+  })
+}
 
+export const metadata = {
+  title: "65,000+ Baby Names with Meanings — Islamic, Hindu & Christian Names A–Z",
+  description: "Discover 65,000+ verified baby names — 18,000+ Islamic, 11,000+ Christian, 15,000+ Hindu, and 21,000+ global names — with authentic meanings and 2026 trending data.",
+  keywords: ["baby names", "Islamic names", "Hindu names", "Christian names", "baby names with meanings", "Quranic names", "Sanskrit names", "Biblical names", "gender neutral names", "trending baby names 2026"],
+  canonical: `${getSiteUrl()}/names`,
+  alternates: {
+    canonical: `${getSiteUrl()}/names`,
+  },
+  openGraph: {
+    title: "65,000+ Baby Names | Islamic, Hindu & Christian — NameVerse",
+    description: "Explore 65,000+ verified baby names from Islamic, Hindu, and Christian traditions — with meanings, origins, and 2026 trending data.",
+    url: `${getSiteUrl()}/names`,
+    type: "website",
+  },
+}
+
+export default function Page() {
   return (
     <div className="w-full">
 
@@ -197,23 +240,18 @@ export default function CategoryButtons() {
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white mb-4 leading-tight tracking-tight">
             65,000+ Baby Names with Meanings —{' '}
             <span className="bg-gradient-to-r from-emerald-600 via-blue-600 to-orange-600 bg-clip-text text-transparent">
-              Islamic, Hindu & Christian Names A–Z
+              Islamic, Hindu &amp; Christian Names A–Z
             </span>
           </h1>
           <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mb-8 leading-relaxed">
-            Discover 65,000+ verified baby names across Islamic Quranic, Christian Biblical, and 
-            Hindu Sanskrit traditions — plus 21,000+ rare & unique global names. Each name includes 
+            Discover 65,000+ verified baby names across Islamic Quranic, Christian Biblical, and
+            Hindu Sanskrit traditions — plus 21,000+ rare &amp; unique global names. Each name includes
             its authentic meaning, linguistic origin, gender, and cultural significance.
           </p>
 
           {/* ── Quick Stats ── */}
           <div className="flex flex-wrap gap-4 mb-2">
-            {[
-              { label: 'Islamic Names', count: '18,000+', color: 'bg-emerald-500' },
-              { label: 'Christian Names', count: '11,000+', color: 'bg-blue-500' },
-              { label: 'Hindu Names', count: '15,000+', color: 'bg-orange-500' },
-              { label: 'Other Names', count: '21,000+', color: 'bg-purple-500' },
-            ].map((stat) => (
+            {popularStats.map((stat) => (
               <div key={stat.label} className="flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl px-4 py-2.5 shadow-sm border border-gray-100 dark:border-gray-700">
                 <div className={`w-2.5 h-2.5 rounded-full ${stat.color}`}></div>
                 <span className="text-sm font-bold text-gray-900 dark:text-white">{stat.count}</span>
@@ -280,32 +318,55 @@ export default function CategoryButtons() {
         </div>
       </div>
 
-      {/* ── SEO Content Section ── */}
-      <section className="max-w-5xl mx-auto px-4 mb-16">
-        <div className="bg-gradient-to-r from-emerald-50 via-white to-blue-50 dark:from-gray-800 dark:via-gray-800 dark:to-gray-800 rounded-3xl p-8 md:p-10 shadow-sm border border-gray-100 dark:border-gray-700">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-6 text-center">
-            Find the Perfect Baby Name in 2026 — 65,000+ Names to Explore
-          </h2>
-          <div className="space-y-4 text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-            <p>
-              Choosing a baby name is one of the most meaningful decisions a parent can make. Whether you are looking for an authentic <Link href="/islamic/boy-names" className="text-emerald-600 hover:underline font-medium">Islamic boy name</Link> with Quranic roots, a <Link href="/christian/girl-names" className="text-blue-600 hover:underline font-medium">Christian girl name</Link> from the New Testament, or a <Link href="/hindu/boy-names" className="text-orange-600 hover:underline font-medium">Hindu boy name</Link> rooted in Sanskrit tradition — our verified collection of 65,000+ names covers every faith, culture, and style preference for 2026.
-            </p>
-            <p>
-              Every name in our database includes its linguistic origin, scholarly meaning, religious significance, gender classification, lucky number, and real-time 2026 trending data so you can make a confident, informed choice. Our team of nameologists and religious scholars has verified each name against primary sources including the Quran, Biblical concordances, and Sanskrit etymological references, giving you a 98% verification accuracy rate.
-            </p>
-            <p>
-              Start by exploring <Link href="/names/religion/islamic/1" className="text-emerald-600 hover:underline font-medium">all Islamic names</Link>,{' '}
-              <Link href="/names/religion/christian/1" className="text-blue-600 hover:underline font-medium">all Christian names</Link>, or{' '}
-              <Link href="/names/religion/hindu/1" className="text-orange-600 hover:underline font-medium">all Hindu names</Link>. 
-              You can also browse by your favorite starting letter below — we have curated A–Z collections for each religion.
-            </p>
-          </div>
-        </div>
-      </section>
+{/* ── SEO Content Section ── */}
+       <section className="max-w-5xl mx-auto px-4 mb-16">
+         <div className="bg-gradient-to-r from-emerald-50 via-white to-blue-50 dark:from-gray-800 dark:via-gray-800 dark:to-gray-800 rounded-3xl p-8 md:p-10 shadow-sm border border-gray-100 dark:border-gray-700">
+           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+             Find the Perfect Baby Name in 2026 — 65,000+ Names to Explore
+           </h2>
+           <div className="space-y-4 text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+             <p>
+               Choosing a baby name is one of the most meaningful decisions a parent can make. Whether you are looking for an authentic <Link href="/islamic/boy-names" className="text-emerald-600 hover:underline font-medium">Islamic boy name</Link> with Quranic roots, a <Link href="/christian/girl-names" className="text-blue-600 hover:underline font-medium">Christian girl name</Link> from the New Testament, or a <Link href="/hindu/boy-names" className="text-orange-600 hover:underline font-medium">Hindu boy name</Link> rooted in Sanskrit tradition — our verified collection of 65,000+ names covers every faith, culture, and style preference for 2026.
+             </p>
+             <p>
+               Every name in our database includes its linguistic origin, scholarly meaning, religious significance, gender classification, lucky number, and real-time 2026 trending data so you can make a confident, informed choice. Our team of nameologists and religious scholars has verified each name against primary sources including the Quran, Biblical concordances, and Sanskrit etymological references, giving you a 98% verification accuracy rate.
+             </p>
+             <p>
+               Start by exploring <Link href="/names/religion/islamic/1" className="text-emerald-600 hover:underline font-medium">all Islamic names</Link>,{' '}
+               <Link href="/names/religion/christian/1" className="text-blue-600 hover:underline font-medium">all Christian names</Link>, or{' '}
+               <Link href="/names/religion/hindu/1" className="text-orange-600 hover:underline font-medium">all Hindu names</Link>.{' '}
+               You can also browse by your favorite starting letter below — we have curated A–Z collections for each religion.
+             </p>
+             <p>
+               Our platform stands apart through rigorous verification processes: Islamic names are cross-referenced with classical Arabic dictionaries and Quranic sources, Christian names are validated against Biblical concordances and historical usage, and Hindu names are verified through Vedic references and Sanskrit etymology. This scholarly approach ensures that every name meaning you discover is authentic, culturally appropriate, and rich with heritage value.
+             </p>
+           </div>
+         </div>
+       </section>
+
+       {/* ── How to Choose Guide ── */}
+       <section className="max-w-5xl mx-auto px-4 mb-16">
+         <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 md:p-10 shadow-sm border border-gray-100 dark:border-gray-700">
+           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-6">
+             How to Choose the Perfect Baby Name — Expert Guide for 2026
+           </h2>
+           <div className="space-y-4 text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+             <p>
+               When selecting a baby name, start by considering the meaning and origin. Names carry powerful energy and can influence identity throughout life. For <Link href="/islamic/boy-names" className="text-emerald-600 hover:underline font-medium">Islamic names</Link>, look for meanings that reflect desirable qualities like strength, wisdom, or compassion. <Link href="/christian/girl-names" className="text-blue-600 hover:underline font-medium">Christian names</Link> often draw from Biblical figures known for their faith and virtue, while <Link href="/hindu/boy-names" className="text-orange-600 hover:underline font-medium">Hindu names</Link> may incorporate elements from nature, deities, or sacred texts.
+             </p>
+             <p>
+               Consider pronunciation across different languages and cultures, especially in our increasingly connected world. Test how the name sounds with your surname, and ask family members to practice saying it aloud. Pay attention to initials and potential nicknames — both formal and informal versions should feel comfortable.
+             </p>
+             <p>
+               At NameVerse, we recommend exploring our curated collections by letter (A–Z), gender (boy or girl), or by specific traits like nature-inspired names, prophet names, or virtue names. Each name in our database includes verified meaning, cultural context, and trending data to help you make the most informed choice for your child's future.
+             </p>
+           </div>
+         </div>
+       </section>
 
       {/* ── Gender Quick Links ── */}
       <section className="max-w-5xl mx-auto px-4 mb-16">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">Browse by Religion & Gender</h2>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">Browse by Religion &amp; Gender</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {[
             { label: "🕌 Islamic Boys", href: "/islamic/boy-names", color: "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/40" },
@@ -326,7 +387,7 @@ export default function CategoryButtons() {
         </div>
       </section>
 
-      {/* ── Browse Names by Letter A-Z for Each Religion ── */}
+      {/* ── Alphabet Navigation ── */}
       <section className="max-w-6xl mx-auto px-4 mb-16">
         <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 dark:border-gray-700">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2 text-center">
@@ -433,57 +494,12 @@ export default function CategoryButtons() {
             Expert answers to the most common questions about choosing the perfect name for your baby
           </p>
 
-          <div className="space-y-3">
-            {faqs.map((faq, i) => (
-              <div
-                key={i}
-                className="bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden"
-              >
-                <button
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full flex items-center justify-between px-5 py-4 text-left text-gray-900 dark:text-white font-semibold text-sm hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors"
-                  aria-expanded={openFaq === i}
-                >
-                  <span className="pr-4">{faq.q}</span>
-                  <span className={`flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 transition-transform duration-200 ${openFaq === i ? 'rotate-180' : ''}`}>
-                    ▾
-                  </span>
-                </button>
-                {openFaq === i && (
-                  <div className="px-5 pb-4 text-sm text-gray-600 dark:text-gray-300 leading-relaxed border-t border-gray-100 dark:border-gray-700 pt-3">
-                    {faq.a}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+          <FAQAccordion faqs={faqs} />
 
           {/* FAQ Schema */}
           <script
             type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "FAQPage",
-                "mainEntity": faqs.map(f => {
-                  const publishedDate = new Date().toISOString().split('T')[0];
-                  return {
-                    "@type": "Question",
-                    "name": f.q,
-                    "datePublished": publishedDate,
-                    "author": { "@type": "Organization", "name": "NameVerse" },
-                    "answerCount": 1,
-                    "acceptedAnswer": {
-                      "@type": "Answer",
-                      "text": f.a,
-                      "datePublished": publishedDate,
-                      "upvoteCount": 0,
-                      "author": { "@type": "Organization", "name": "NameVerse" }
-                    }
-                  };
-                })
-              })
-            }}
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
           />
         </div>
       </section>

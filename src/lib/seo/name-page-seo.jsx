@@ -4,7 +4,7 @@
 import { getSiteUrl } from '@/lib/seo/site';
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
 
-const SITE_URL = getSiteUrl();
+const siteUrl = getSiteUrl();
 
 /**
  * Deterministic hash function for consistent rotation
@@ -106,10 +106,11 @@ export function generateOptimizedTitle(data, religion) {
                           religion === 'christian' ? 'Christian' : 
                           religion === 'hindu' ? 'Hindu' : religion;
   const genderPhrase = genderLabel ? `${genderLabel} ` : '';
+  const luckyNumber = data.lucky_number ? ` | Lucky #${data.lucky_number}` : '';
 
-  // Shorter title to fit 60-char Bing/SEO limit
-  // "Muhammad Islamic Boy Name Meaning" = 34 chars
-  const title = `${name} ${religionDisplay} ${genderPhrase}Name Meaning`;
+  // Include lucky number in title for CTR improvement
+  // "Muhammad Islamic Boy Name Meaning | Lucky #9" = 48 chars
+  const title = `${name} ${religionDisplay} ${genderPhrase}Name Meaning${luckyNumber}`;
 
   return validateMetaTitle(title);
 }
@@ -126,25 +127,22 @@ export function generateOptimizedDescription(data, religion) {
                           religion === 'hindu' ? 'Hindu' : '';
   const gender = typeof data.gender === 'string' ? data.gender.toLowerCase() : '';
   const genderText = gender === 'male' ? 'boy name' : gender === 'female' ? 'girl name' : 'name';
-  const origin = data.origin || '';
-  const luckyNumber = data.lucky_number || '';
-  const luckyDay = data.lucky_day || '';
-  const luckyColors = Array.isArray(data.lucky_colors) ? data.lucky_colors.slice(0, 3).join(', ') : '';
-  const personality = getPersonalitySummary(data);
-  const languageSnippet = formatLanguages(data);
   const coreEmotion = extractCoreEmotion(shortMeaning);
+  const sourceType = religion === 'islamic' ? 'Quranic' : religion === 'hindu' ? 'Vedic' : 'Biblical';
 
-  const intro = `${name} is ${religionDisplay === 'Islamic' ? 'an' : 'a'} ${religionDisplay.toLowerCase()} ${genderText} meaning "${coreEmotion}"`;
+  // Build description with verified source emphasis
+  const intro = `${name}: "${coreEmotion}" ${religionDisplay} ${genderText}`;
   const attributes = [];
-  if (origin) attributes.push(`${origin} origin`);
-  if (luckyNumber) attributes.push(`lucky number ${luckyNumber}`);
-  if (luckyDay) attributes.push(`lucky day ${luckyDay}`);
-  if (luckyColors) attributes.push(`lucky colors ${luckyColors}`);
-  if (personality) attributes.push(`${personality} personality traits`);
-  if (languageSnippet) attributes.push(`used in ${languageSnippet}`);
-
-  let description = attributes.length > 0 ? `${intro} with ${attributes.join(', ')}.` : `${intro}.`;
-  description += ` Learn pronunciation, variations, origin and spiritual significance.`;
+  
+  if (data.lucky_number) attributes.push(`lucky number ${data.lucky_number}`);
+  if (data.origin) attributes.push(`${data.origin} origin`);
+  
+  let description;
+  if (attributes.length > 0) {
+    description = `${intro}. Meaning, ${attributes.join(' & ')}, origin & pronunciation. Verified from ${sourceType} sources — NameVerse.`;
+  } else {
+    description = `${intro}. Meaning, origin & pronunciation. Verified from ${sourceType} sources — NameVerse.`;
+  }
 
   description = description
     .replace(/\s+/g, ' ')
@@ -152,7 +150,7 @@ export function generateOptimizedDescription(data, religion) {
     .trim();
 
   if (description.length > 158) {
-    description = `${intro}. Learn pronunciation, variations, origin and spiritual significance.`;
+    description = `${intro}. Meaning, origin & pronunciation. Verified from ${sourceType} sources — NameVerse.`;
   }
   if (description.length > 158) {
     description = description.substring(0, 155) + '...';
@@ -285,7 +283,7 @@ function generateDynamicFaqItems(data, religion) {
  * Generate structured data - stable, clean
  */
 export function generateOptimizedSchemas(data, religion, slug) {
-  const pageUrl = `${SITE_URL}/names/${religion}/${slug}`;
+  const pageUrl = `${siteUrl}/names/${religion}/${slug}`;
   const name = data.name;
   const shortMeaning = data.short_meaning || data.meaning || '';
   const coreEmotion = extractCoreEmotion(shortMeaning);
@@ -347,8 +345,8 @@ export function generateOptimizedSchemas(data, religion, slug) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE_URL },
-      { "@type": "ListItem", "position": 2, "name": `${religion.charAt(0).toUpperCase() + religion.slice(1)} Names`, "item": `${SITE_URL}/names/${religion}` },
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": siteUrl },
+      { "@type": "ListItem", "position": 2, "name": `${religion.charAt(0).toUpperCase() + religion.slice(1)} Names`, "item": `${siteUrl}/names/${religion}` },
       { "@type": "ListItem", "position": 3, "name": name, "item": pageUrl },
     ],
   };
@@ -365,7 +363,7 @@ export function generateOptimizedSchemas(data, religion, slug) {
  * Main metadata generator - Stable, deterministic, SEO-safe
  */
 export async function generateNamePageMetadata(data, religion, slug) {
-  const pageUrl = `${SITE_URL}/names/${religion}/${slug}`;
+  const pageUrl = `${siteUrl}/names/${religion}/${slug}`;
   const name = data.name;
   const shortMeaning = data.short_meaning || data.meaning || '';
   
@@ -392,7 +390,7 @@ export async function generateNamePageMetadata(data, religion, slug) {
       siteName: 'NameVerse',
       type: 'website',
       images: [{ 
-        url: `${SITE_URL}/api/og?name=${encodeURIComponent(name)}&meaning=${encodeURIComponent(safeMeaning.substring(0, 40))}&religion=${religion}`, 
+        url: `${siteUrl}/api/og?name=${encodeURIComponent(name)}&meaning=${encodeURIComponent(safeMeaning.substring(0, 40))}&religion=${religion}`, 
         width: 1200, 
         height: 630 
       }],
@@ -402,7 +400,7 @@ export async function generateNamePageMetadata(data, religion, slug) {
       card: 'summary_large_image',
       title: ogTitle,
       description: description.substring(0, 180),
-      images: [`${SITE_URL}/api/og?name=${encodeURIComponent(name)}&religion=${religion}`],
+      images: [`${siteUrl}/api/og?name=${encodeURIComponent(name)}&religion=${religion}`],
     },
     
     robots: {

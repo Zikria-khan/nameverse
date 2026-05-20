@@ -281,7 +281,10 @@ export default function NameDetailClient({ data, initialLanguage }) {
     try {
       const favorites = JSON.parse(localStorage.getItem('favoriteNames') || '[]')
       setIsFavorite(favorites.includes(data.slug || data.name.toLowerCase()))
-    } catch (error) {
+    } catch (localErr) {
+      // Corrupted localStorage — silently reset favorites list
+      localStorage.removeItem('favoriteNames');
+      setIsFavorite(false);
     }
   }, [data, mounted])
 

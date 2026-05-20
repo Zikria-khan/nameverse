@@ -116,6 +116,18 @@ const Navbar = () => {
     { name: 'Saved Names', href: '/my-names' },
   ];
 
+  const exploreLinks = [
+    { name: '📈 Trending Names 2026', href: '/trending-names' },
+    { name: '✨ Unique Names', href: '/unique-names' },
+    { name: '⭐ Popular Names', href: '/popularity' },
+    { name: '📖 Name Meanings', href: '/name-meanings' },
+    { name: '🔍 Browse by Meaning', href: '/names-by-meaning' },
+    { name: '🌍 Names by Language', href: '/languages' },
+    { name: '🔤 Names by Letter A–Z', href: '/names/islamic/letter/A' },
+    { name: '🔎 Advanced Search', href: '/advanced-search' },
+    { name: '🔎 Search Names', href: '/search' },
+  ];
+
   const directLinks = [
     { name: 'About Us', href: '/about' },
     { name: 'Privacy', href: '/privacy' },

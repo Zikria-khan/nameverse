@@ -2,8 +2,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { TrendingUp, BarChart2, ArrowUp, ArrowDown, Users, Sparkles, ChevronRight, Star } from 'lucide-react';
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
+import { getSiteUrl } from '@/lib/seo/site';
 
 export const metadata = {
   title: validateMetaTitle('Baby Name Popularity — Rankings & Trends 2026 | NameVerse'),
@@ -25,12 +24,12 @@ export const metadata = {
     description: validateMetaDescription(
       'Explore the most popular baby names of 2026 with detailed rankings, regional trends, and historical popularity data for Islamic, Hindu, and Christian names.'
     ),
-    url: `${SITE_URL}/popularity`,
+    url: `${getSiteUrl()}/popularity`,
     type: 'website',
     siteName: 'NameVerse',
     images: [
       {
-        url: `${SITE_URL}/og-popularity.png`,
+        url: `${getSiteUrl()}/og-popularity.png`,
         width: 1200,
         height: 630,
         alt: 'Baby Name Popularity Rankings 2026 - NameVerse'
@@ -38,8 +37,8 @@ export const metadata = {
     ]
   },
   alternates: {
-    canonical: `${SITE_URL}/popularity`,
-    languages: { en: `${SITE_URL}/popularity`, 'x-default': `${SITE_URL}/popularity` }
+    canonical: `${getSiteUrl()}/popularity`,
+    languages: { en: `${getSiteUrl()}/popularity`, 'x-default': `${getSiteUrl()}/popularity` }
   },
   robots: { index: true, follow: true }
 };

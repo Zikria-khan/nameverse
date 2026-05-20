@@ -1,20 +1,19 @@
 import Link from 'next/link';
+import { getSiteUrl } from '@/lib/seo/site';
 import { BookOpen, Heart, Star, ArrowRight, Sparkles, Award, CheckCircle, Users, Globe } from 'lucide-react';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
 export const metadata = {
   title: 'Expert Baby Naming Guide | How to Choose the Perfect Name | NameVerse',
   description: 'Complete expert guide to choosing the perfect baby name. Learn naming traditions across Islamic, Christian, and Hindu cultures with tips from naming specialists.',
   keywords: 'baby naming guide, how to choose baby name, expert naming tips, Islamic naming traditions, Christian naming traditions, Hindu naming traditions, baby name selection',
   alternates: {
-    canonical: `${SITE_URL}/guides/expert-naming-guide`,
+    canonical: `${getSiteUrl()}/guides/expert-naming-guide`,
   },
   openGraph: {
     title: 'Expert Baby Naming Guide | NameVerse',
     description: 'Complete expert guide to choosing the perfect baby name across all religions and cultures.',
     type: 'article',
-    url: `${SITE_URL}/guides/expert-naming-guide`,
+    url: `${getSiteUrl()}/guides/expert-naming-guide`,
   },
   robots: { index: true, follow: true },
 };

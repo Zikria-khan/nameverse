@@ -5,7 +5,7 @@ import { serverFetchNameDetail } from '@/lib/api/server-fetch';
 import NameDetail from '@/components/name/NameDetail';
 import Script from 'next/script';
 
-// ISR with 30-day cache — name data rarely changes
+// ISR: 30-day cache — individual name pages are pre-cached at build via generateStaticParams
 export const revalidate = 2592000; // 30 days
 export const dynamicParams = true;
 

@@ -1,4 +1,4 @@
-﻿import dynamic from 'next/dynamic';
+import dynamic from 'next/dynamic';
 import HeroSection from './HeroSection';
 import ContentSection from './ContentSection';
 import AuthorityStats from './AuthorityStats';
@@ -15,7 +15,7 @@ const LatestArticles = dynamic(() => import('./LatestArticles'), {
 
 export default function HomePageClient({ latestArticles = [] }) {
   return (
-    <main role="main" className="min-h-screen flex flex-col bg-slate-50">
+    <main role="main" className="min-h-screen flex flex-col bg-[color:var(--nv-canvas)] nv-body">
       <HeroSection />
       <ContentSection />
       <AuthorityStats />

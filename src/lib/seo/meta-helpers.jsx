@@ -1,6 +1,7 @@
 /**
  * Meta description validation and generation utilities
  */
+import { getSiteUrl } from '@/lib/seo/site';
 
 /**
  * Validate meta title length (up to 60 characters)
@@ -45,12 +46,12 @@ export function validateMetaDescription(description) {
 /**
  * Generate canonical URL ensuring no trailing slashes
  * @param {string} path - The page path
- * @param {string} baseUrl - Base URL (default: from env)
+ * @param {string} baseUrl - Base URL (optional)
  * @returns {string} Canonical URL
  */
-export function generateCanonicalUrl(path, baseUrl = process.env.NEXT_PUBLIC_SITE_URL) {
+export function generateCanonicalUrl(path, baseUrl) {
   const cleanPath = path.replace(/\/+$|^\s+|\s+$/g, '');
-  const cleanBase = baseUrl?.replace(/\/+$|^\s+|\s+$/g, '') || 'https://nameverse.vercel.app';
+  const cleanBase = (baseUrl || getSiteUrl()).replace(/\/+$|^\s+|\s+$/g, '');
   return `${cleanBase}${cleanPath}`;
 }
 

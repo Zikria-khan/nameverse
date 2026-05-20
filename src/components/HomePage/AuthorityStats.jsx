@@ -75,73 +75,69 @@ const AuthorityStats = () => {
   };
 
   return (
-    <section className="py-12 sm:py-16 bg-white border-b border-gray-200">
+    <section className="py-12 sm:py-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        {/* Section Header */}
-        <div className="text-center mb-10">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
-            Why Parents Trust NameVerse — America's #1 Baby Names Website 2026
-          </h2>
-          <p className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto">
-            The world's most comprehensive and accurate baby names database with scholar-verified meanings across Islamic, Hindu, Christian, and global traditions.
-          </p>
-        </div>
+        <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+          <div className="text-left">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--nv-border)] bg-white/65 px-4 py-2 text-xs font-semibold tracking-wide text-[color:var(--nv-ink)] backdrop-blur">
+              <span className="h-2 w-2 rounded-full bg-[color:var(--nv-accent)]" />
+              Accuracy-first database
+            </div>
+            <h2 className="nv-display mt-5 text-3xl font-semibold leading-tight text-[color:var(--nv-ink)] sm:text-4xl">
+              Built on verified meanings, not guesses.
+            </h2>
+            <p className="mt-4 max-w-xl text-base leading-relaxed text-[color:var(--nv-muted)] sm:text-lg">
+              Clear origin notes, readable translations, and faith-aware context — designed to be trusted when it matters.
+            </p>
 
-        {/* Main Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            const colors = getStatColors(stat.color);
-            return (
-              <div 
-                key={index} 
-                className={`text-center p-5 sm:p-6 rounded-2xl ${stat.bgColor} border-2 ${stat.borderColor} hover:shadow-lg transition-all hover:-translate-y-1`}
-              >
-                <div 
-                  className="w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center"
-                  style={{ 
-                    background: `linear-gradient(135deg, ${colors.light} 0%, ${colors.main} 100%)`,
-                    color: colors.main
-                  }}
-                >
-                  <Icon className="w-6 h-6 sm:w-7 sm:h-7" />
-                </div>
-                <div className={`text-2xl sm:text-3xl font-bold ${stat.color} mb-1`}>{stat.number}</div>
-                <div className="text-sm font-bold text-gray-900 mb-1">{stat.label}</div>
-                <div className="text-xs text-gray-600 leading-tight">{stat.description}</div>
-              </div>
-            );
-          })}
-        </div>
+            <div className="mt-7 inline-flex items-center gap-2 rounded-2xl border border-[color:var(--nv-border)] bg-white/60 px-4 py-3 text-sm font-semibold text-[color:var(--nv-ink)] backdrop-blur">
+              <Shield className="h-5 w-5 text-[color:var(--nv-accent-2)]" />
+              99% accuracy target, continuously reviewed
+            </div>
+          </div>
 
-        {/* Trust Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          {trustFeatures.map((feature, index) => {
-            const Icon = feature.icon;
-            return (
-              <div 
-                key={index} 
-                className="flex items-start gap-3 p-4 rounded-xl bg-gradient-to-br from-gray-50 to-white border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all"
-              >
-                <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
-                  <Icon className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-gray-900 mb-1">{feature.title}</h3>
-                  <p className="text-xs text-gray-600 leading-tight">{feature.description}</p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+              {stats.map((stat, index) => {
+                const Icon = stat.icon;
+                const colors = getStatColors(stat.color);
+                return (
+                  <div key={index} className="nv-surface rounded-[26px] p-5 text-left">
+                    <div
+                      className="grid h-11 w-11 place-items-center rounded-2xl"
+                      style={{
+                        background: `linear-gradient(135deg, ${colors.light} 0%, ${colors.main} 100%)`,
+                        color: colors.main
+                      }}
+                    >
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <div className={`nv-display mt-4 text-2xl font-semibold ${stat.color}`}>{stat.number}</div>
+                    <div className="mt-1 text-xs font-semibold text-[color:var(--nv-ink)]">{stat.label}</div>
+                    <div className="mt-2 text-xs leading-relaxed text-[color:var(--nv-muted)]">{stat.description}</div>
+                  </div>
+                );
+              })}
+            </div>
 
-        {/* Authority Statement */}
-        <div className="mt-10 text-center">
-          <div className="inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-lg">
-            <Shield className="w-5 h-5 text-white" />
-            <span className="text-sm font-bold text-white">
-              ✓ America's #1 Baby Names Database — 99% Accurate, 100% Free
-            </span>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+              {trustFeatures.map((feature, index) => {
+                const Icon = feature.icon;
+                return (
+                  <div key={index} className="nv-surface rounded-[26px] p-5">
+                    <div className="flex items-start gap-3">
+                      <div className="grid h-10 w-10 place-items-center rounded-2xl bg-[color:var(--nv-ink)] text-white shadow-[0_18px_45px_-34px_var(--nv-shadow)]">
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-semibold text-[color:var(--nv-ink)]">{feature.title}</h3>
+                        <p className="mt-1 text-xs leading-relaxed text-[color:var(--nv-muted)]">{feature.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

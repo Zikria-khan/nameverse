@@ -3,6 +3,8 @@
  * Validates and exports environment variables with defaults
  */
 
+import { getSiteUrl } from '@/lib/seo/site';
+
 /**
  * Validates required environment variables
  * @throws {Error} If required env vars are missing
@@ -32,7 +34,7 @@ if (typeof window === 'undefined') {
 export const env = {
   // Site Configuration
   site: {
-    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app',
+    url: getSiteUrl(),
     name: process.env.NEXT_PUBLIC_SITE_NAME || 'NameVerse',
   },
 

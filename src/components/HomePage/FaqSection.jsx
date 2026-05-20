@@ -23,22 +23,32 @@ const faqs = [
 
 const FaqSection = () => {
   return (
-    <section className="py-12 sm:py-16 bg-white" id="homepage-faq">
+    <section className="py-12 sm:py-16" id="homepage-faq">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">FAQ — Baby name search, meaning, and religious names</h2>
-          <p className="mx-auto max-w-3xl text-base text-gray-600 leading-relaxed">
-            Answers to the questions parents ask most when searching for Islamic, Hindu, and Christian baby names.
-          </p>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-2">
-          {faqs.map((faq, index) => (
-            <div key={index} className="rounded-3xl border border-gray-200 bg-slate-50 p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">{faq.question}</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">{faq.answer}</p>
+        <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+          <div className="text-left">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--nv-border)] bg-white/65 px-4 py-2 text-xs font-semibold tracking-wide text-[color:var(--nv-ink)] backdrop-blur">
+              <span className="h-2 w-2 rounded-full bg-[color:var(--nv-accent)]" />
+              Quick answers
             </div>
-          ))}
+            <h2 className="nv-display mt-5 text-3xl font-semibold leading-tight text-[color:var(--nv-ink)] sm:text-4xl">
+              FAQ for parents choosing a name.
+            </h2>
+            <p className="mt-4 max-w-xl text-base leading-relaxed text-[color:var(--nv-muted)] sm:text-lg">
+              The most common questions about meanings, origins, and faith-based name selection — answered clearly.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {faqs.map((faq, index) => (
+              <details key={index} className="nv-surface rounded-[26px] p-5">
+                <summary className="cursor-pointer list-none text-sm font-semibold text-[color:var(--nv-ink)]">
+                  {faq.question}
+                </summary>
+                <p className="mt-3 text-sm leading-relaxed text-[color:var(--nv-muted)]">{faq.answer}</p>
+              </details>
+            ))}
+          </div>
         </div>
       </div>
     </section>

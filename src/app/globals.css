@@ -1,6 +1,43 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+:root {
+  --nv-canvas: #f7f5f0;
+  --nv-ink: #0b1020;
+  --nv-muted: #4b5563;
+  --nv-card: rgba(255, 255, 255, 0.72);
+  --nv-border: rgba(15, 23, 42, 0.14);
+  --nv-shadow: rgba(2, 6, 23, 0.18);
+  --nv-accent: #0ea5a4;
+  --nv-accent-2: #4f46e5;
+  --nv-accent-3: #f59e0b;
+}
+
+.nv-display {
+  font-family: var(--font-display), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+}
+
+.nv-body {
+  font-family: var(--font-body), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.nv-surface {
+  background: var(--nv-card);
+  border: 1px solid var(--nv-border);
+  box-shadow: 0 24px 60px -40px var(--nv-shadow);
+  backdrop-filter: blur(16px);
+}
+
+@keyframes nv-float {
+  0% { transform: translate3d(0, 0, 0) }
+  50% { transform: translate3d(0, -10px, 0) }
+  100% { transform: translate3d(0, 0, 0) }
+}
+
+.nv-float {
+  animation: nv-float 8s ease-in-out infinite;
+}
+
 /* Remove default browser margins */
 html, body {
   margin: 0;
@@ -9,7 +46,8 @@ html, body {
 }
 
 body {
-  @apply bg-white; /* Clean white background */
+  font-family: var(--font-body), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  @apply bg-white;
 }
 @keyframes slide-up {
   from {

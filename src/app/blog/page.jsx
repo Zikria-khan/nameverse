@@ -4,15 +4,14 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import StructuredData from '@/components/SEO/StructuredData';
 import BlogImageWithFallback from '@/components/Blog/BlogImageWithFallback';
+import { getSiteUrl } from '@/lib/seo/site';
 
-// ISR with 30-day cache for blog index
-export const revalidate = 2592000; // 30 days
+// ISR with 7-day cache for blog index — fresh content weekly
+export const revalidate = 604800; // 7 days
 
 const blogPostsData = JSON.parse(
   readFileSync(join(process.cwd(), 'public', 'data', 'blog-posts.json'), 'utf8')
 );
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
 const blogFaq = [
   { question: 'How do I choose the perfect baby name?', answer: 'Choose a baby name by balancing meaning, cultural relevance, pronunciation, and family tradition. Our guides help you compare Islamic, Christian, Hindu, and global name choices with trusted origin notes.' },
@@ -24,7 +23,7 @@ const blogFaq = [
 const blogCollection = {
   name: 'NameVerse Blog: Baby Names & Guides',
   description: 'Explore expert baby naming advice, trends, and naming traditions for Islamic, Christian, Hindu, and global names.',
-  url: `${SITE_URL}/blog`,
+  url: `${getSiteUrl()}/blog`,
   items: [
     { name: 'Islamic Boy Names', path: 'islamic/boy-names' },
     { name: 'Islamic Girl Names', path: 'islamic/girl-names' },
@@ -40,21 +39,21 @@ export const metadata = {
   description: 'Expert guides and articles on choosing the perfect baby name. Learn about Islamic, Christian, and Hindu naming traditions, 2026 baby name trends, and expert naming tips.',
   keywords: 'baby names blog, naming guides, baby name trends 2026, Islamic naming guide, Christian naming guide, Hindu naming guide, how to choose baby name, baby naming tips',
   alternates: {
-    canonical: `${SITE_URL}/blog`,
+    canonical: `${getSiteUrl()}/blog`,
   },
   robots: { index: true, follow: true },
   openGraph: {
     title: 'Baby Names Blog & Expert Guides | Naming Tips, Trends & Advice | NameVerse',
     description: 'Expert guides and articles on choosing the perfect baby name. Learn about Islamic, Christian, and Hindu naming traditions, 2026 baby name trends, and expert naming tips.',
     type: 'website',
-    url: `${SITE_URL}/blog`,
-    images: [`${SITE_URL}/api/og?section=blog&page=1`],
+    url: `${getSiteUrl()}/blog`,
+    images: [`${getSiteUrl()}/api/og?section=blog&page=1`],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Baby Names Blog & Expert Guides | Naming Tips, Trends & Advice | NameVerse',
     description: 'Expert guides and articles on choosing the perfect baby name. Learn about Islamic, Christian, and Hindu naming traditions, 2026 baby name trends, and expert naming tips.',
-    images: [`${SITE_URL}/api/og?section=blog&page=1`],
+    images: [`${getSiteUrl()}/api/og?section=blog&page=1`],
   },
 };
 
@@ -68,8 +67,8 @@ export default function BlogPage() {
         organization={true}
         website={true}
         breadcrumbs={[
-          { name: 'Home', url: SITE_URL },
-          { name: 'Blog', url: `${SITE_URL}/blog` }
+          { name: 'Home', url: getSiteUrl() },
+          { name: 'Blog', url: `${getSiteUrl()}/blog` }
         ]}
         collectionPage={blogCollection}
         faq={blogFaq}
@@ -146,14 +145,14 @@ export default function BlogPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-8">Featured Guides</h2>
           
            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-             {featuredPosts.map((post) => {
-               const imageUrl = post.featuredImage ? (post.featuredImage.startsWith('http') ? post.featuredImage : `${SITE_URL}${post.featuredImage}`) : `${SITE_URL}/api/og?title=${encodeURIComponent(post.title)}`;
-               return (
+            {featuredPosts.map((post) => {
+              const imageUrl = post.featuredImage ? (post.featuredImage.startsWith('http') ? post.featuredImage : `${getSiteUrl()}${post.featuredImage}`) : `${getSiteUrl()}/api/og?title=${encodeURIComponent(post.title)}`;
+              return (
                 <article
                   key={post.id}
                   className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-200 overflow-hidden"
                 >
-                   <div className="relative h-48 overflow-hidden">
+                  <div className="relative h-48 overflow-hidden">
                     <BlogImageWithFallback
                       src={imageUrl}
                       alt={post.title}
@@ -245,9 +244,9 @@ export default function BlogPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-8">More Articles</h2>
           
            <div className="space-y-4">
-             {recentPosts.map((post) => {
-               const imageUrl = post.featuredImage ? (post.featuredImage.startsWith('http') ? post.featuredImage : `${SITE_URL}${post.featuredImage}`) : `${SITE_URL}/api/og?title=${encodeURIComponent(post.title)}`;
-               return (
+            {recentPosts.map((post) => {
+              const imageUrl = post.featuredImage ? (post.featuredImage.startsWith('http') ? post.featuredImage : `${getSiteUrl()}${post.featuredImage}`) : `${getSiteUrl()}/api/og?title=${encodeURIComponent(post.title)}`;
+              return (
                 <article
                   key={post.id}
                   className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"

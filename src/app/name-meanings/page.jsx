@@ -2,8 +2,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { BookOpen, Search, Sparkles, Moon, ChevronRight, Star, Quote, Heart } from 'lucide-react';
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
+import { getSiteUrl } from '@/lib/seo/site';
 
 export const metadata = {
   title: validateMetaTitle('Baby Name Meanings — Complete Guide | NameVerse'),
@@ -27,12 +26,12 @@ export const metadata = {
     description: validateMetaDescription(
       'Explore thousands of baby names with detailed meanings, origins, and spiritual significance. Find the perfect meaningful name from Islamic, Hindu, and Christian traditions.'
     ),
-    url: `${SITE_URL}/name-meanings`,
+    url: `${getSiteUrl()}/name-meanings`,
     type: 'website',
     siteName: 'NameVerse',
     images: [
       {
-        url: `${SITE_URL}/og-name-meanings.png`,
+        url: `${getSiteUrl()}/og-name-meanings.png`,
         width: 1200,
         height: 630,
         alt: 'Baby Name Meanings Guide - NameVerse'
@@ -40,8 +39,8 @@ export const metadata = {
     ]
   },
   alternates: {
-    canonical: `${SITE_URL}/name-meanings`,
-    languages: { en: `${SITE_URL}/name-meanings`, 'x-default': `${SITE_URL}/name-meanings` }
+    canonical: `${getSiteUrl()}/name-meanings`,
+    languages: { en: `${getSiteUrl()}/name-meanings`, 'x-default': `${getSiteUrl()}/name-meanings` }
   },
   robots: { index: true, follow: true }
 };

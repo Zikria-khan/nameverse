@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import FavoriteButton from '@/components/FavoriteButton';
 import SearchWithSuggestions from '@/components/SearchWithSuggestions';
+import { getSiteUrl } from '@/lib/seo/site';
 
 export default function SearchResultsClient({
   initialNames,
@@ -17,7 +18,7 @@ export default function SearchResultsClient({
   const router = useRouter();
 
   const initialTotalResults = totalNames;
-  const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
+  const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || getSiteUrl();
   const dynamicTitle = `${searchTerm} - Names | NameVerse`;
   const dynamicDescription = `Discover ${initialTotalResults} name results for ${searchTerm}. Expert meanings, origins, and inspiration for your search.`;
   const canonicalURL = `${DOMAIN}/search/${encodeURIComponent(searchTerm)}`;
@@ -98,48 +99,6 @@ export default function SearchResultsClient({
     `Each entry includes origin, short meaning, usage notes, and related names so you can compare options and choose with confidence.`,
   ], [searchTerm]);
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const source = controller.signal;
-    const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'https://name-meaning-site-backend.vercel.app';
-
-    async function loadResults() {
-      if (!searchTerm || searchTerm.trim().length < 2) {
-        setNames([]);
-        setSearchResultsCount(0);
-        setError(null);
-        setIsLoading(false);
-        return;
-      }
-
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const params = new URLSearchParams({ q: searchTerm.trim(), limit: '20' });
-        // Use default caching to allow browser/CDN caching of search results
-        const response = await fetch(`${apiBase}/api/v1/names/search?${params.toString()}`, {
-          signal: source,
-        });
-        const payload = await response.json();
-        const results = payload.data || payload.results || [];
-        const count = payload.count || payload.total || results.length;
-        setNames(results);
-        setSearchResultsCount(count);
-      } catch (err) {
-        if (err.name !== 'AbortError') {
-          setError('Unable to load search results.');
-          setNames([]);
-          setSearchResultsCount(0);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    loadResults();
-    return () => controller.abort();
-  }, [searchTerm]);
 
   return (
     <>
@@ -223,6 +182,7 @@ export default function SearchResultsClient({
               )}
 
               
+
             </div>
           )}
         </section>

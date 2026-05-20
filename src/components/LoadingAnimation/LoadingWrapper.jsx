@@ -8,10 +8,12 @@ export default function LoadingWrapper({ children }) {
   const [shouldShowAnimation, setShouldShowAnimation] = useState(false);
 
   useEffect(() => {
-    // Check if it's the first visit or PWA launch
+    // Guard: window/sessionStorage only exist in the browser
+    if (typeof window === 'undefined') { setIsLoading(false); return; }
+
     const hasSeenAnimation = sessionStorage.getItem('hasSeenAnimation');
     const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
-                  window.navigator.standalone === true;
+              window.navigator.standalone === true;
 
     // Show animation if: first visit in session OR launching as PWA
     if (!hasSeenAnimation || isPWA) {

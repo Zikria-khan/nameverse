@@ -1,8 +1,7 @@
 import Link from 'next/link';
+import { getSiteUrl } from '@/lib/seo/site';
 import { Heart, Star, BookOpen, Sparkles, Flower2 } from 'lucide-react';
 import namesData from '../../../../public/data/christian-girl-names.json';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
 // ==========================================
 // METADATA - World Class SEO
@@ -10,19 +9,19 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.a
 export const metadata = {
   title: '100+ Christian Girl Names with Meanings | Biblical Baby Girl Names | NameVerse',
   description: 'Discover 100+ beautiful Christian girl names with meanings, origins & lucky numbers. Find the perfect Biblical baby girl name with Hebrew & Greek roots. Complete guide to authentic Christian names for your baby girl.',
-  keywords: 'Christian girl names, Biblical girl names, Christian baby girl names, Hebrew girl names, Greek girl names, Bible names for girls, Christian names with meanings, popular Christian girl names, unique Christian girl names, Biblical names from Bible, best Christian girl names 2025, Christian girl names with lucky numbers, Catholic girl names, Protestant girl names, Christian names for newborn girls',
+  keywords: 'Christian girl names, Biblical girl names, Christian baby girl names, Hebrew girl names, Greek girl names, Bible names for girls, Christian names with meanings, popular Christian girl names, unique Christian girl names, Biblical names from Bible, best Christian girl names 20252026, Christian girl names with lucky numbers, Catholic girl names, Protestant girl names, Christian names for newborn girls',
   alternates: {
-    canonical: `${SITE_URL}/christian/girl-names`,
+    canonical: getSiteUrl() + '/christian/girl-names',
   },
   openGraph: {
     title: '100+ Christian Girl Names with Meanings | Biblical Baby Girl Names',
     description: 'Discover 100+ beautiful Christian girl names with meanings, origins & lucky numbers. Find the perfect Biblical baby girl name.',
     type: 'website',
-    url: `${SITE_URL}/christian/girl-names`,
+    url: getSiteUrl() + '/christian/girl-names',
     siteName: 'NameVerse',
     images: [
       {
-        url: `${SITE_URL}/logo.png`,
+        url: getSiteUrl() + '/logo.png',
         width: 1200,
         height: 630,
         alt: 'Christian Girl Names with Meanings - NameVerse',
@@ -33,7 +32,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: '100+ Christian Girl Names with Meanings | Biblical Baby Girl Names',
     description: 'Discover 100+ beautiful Christian girl names with meanings, origins & lucky numbers.',
-    images: [`${SITE_URL}/logo.png`],
+    images: [getSiteUrl() + '/logo.png'],
   },
   robots: { 
     index: true, 
@@ -51,7 +50,7 @@ function generateStructuredData(names) {
     "@type": "ListItem",
     position: index + 1,
     name: n.name,
-    url: `${SITE_URL}/christian/girl-names#${n.name.toLowerCase()}`,
+    url: getSiteUrl() + '/christian/girl-names#${n.name.toLowerCase()}',
     description: `${n.name} means "${n.meaning}" - ${n.origin} origin`
   }));
 
@@ -60,21 +59,21 @@ function generateStructuredData(names) {
     "@graph": [
       {
         "@type": "CollectionPage",
-        "@id": `${SITE_URL}/christian/girl-names#webpage`,
+        "@id": getSiteUrl() + '/christian/girl-names#webpage',
         "name": "Christian Girl Names with Meanings",
         "description": "Complete collection of 100+ Christian girl names with meanings, origins and lucky numbers",
-        "url": `${SITE_URL}/christian/girl-names`,
+        "url": getSiteUrl() + '/christian/girl-names',
         "isPartOf": {
           "@type": "WebSite",
-          "@id": `${SITE_URL}/#website`,
+          "@id": getSiteUrl() + '/#website',
           "name": "NameVerse"
         },
         "breadcrumb": {
           "@type": "BreadcrumbList",
           "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE_URL },
-             { "@type": "ListItem", "position": 2, "name": "Christian Names", "item": `${SITE_URL}/names/religion/christian/1` },
-            { "@type": "ListItem", "position": 3, "name": "Christian Girl Names", "item": `${SITE_URL}/christian/girl-names` }
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": getSiteUrl() },
+             { "@type": "ListItem", "position": 2, "name": "Christian Names", "item": getSiteUrl() + '/names/religion/christian/1' },
+            { "@type": "ListItem", "position": 3, "name": "Christian Girl Names", "item": getSiteUrl() + '/christian/girl-names' }
           ]
         },
         "mainEntity": {
@@ -90,13 +89,13 @@ function generateStructuredData(names) {
           {
             "@type": "Question",
             "name": "What are the most popular Christian girl names?",
-            "datePublished": "2025-01-01",
+            "datePublished": "2026-05-19",
             "author": { "@type": "Organization", "name": "NameVerse" },
             "answerCount": 1,
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "The most popular Christian girl names include Isabella, Abigail, Elizabeth, Hannah, Grace, Chloe, Leah, Naomi, Sarah, Eva, Genesis, Eliana, Anna, Gabriella, Lydia, Julia, Delilah, Josephine, and Madeline. These names have deep roots in the Bible and Christian tradition.",
-              "datePublished": "2025-01-01",
+              "datePublished": "2026-05-19",
               "upvoteCount": 0,
               "author": { "@type": "Organization", "name": "NameVerse" }
             }
@@ -104,13 +103,13 @@ function generateStructuredData(names) {
           {
             "@type": "Question",
             "name": "How do I choose a Christian name for my baby girl?",
-            "datePublished": "2025-01-01",
+            "datePublished": "2026-05-19",
             "author": { "@type": "Organization", "name": "NameVerse" },
             "answerCount": 1,
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "When choosing a Christian name for your baby girl, consider the Biblical meaning, origin, and whether it has a connection to scripture. Names with positive meanings like 'Grace of God', 'God is my oath', or 'Father's joy' are highly recommended in Christian tradition.",
-              "datePublished": "2025-01-01",
+              "datePublished": "2026-05-19",
               "upvoteCount": 0,
               "author": { "@type": "Organization", "name": "NameVerse" }
             }
@@ -118,13 +117,13 @@ function generateStructuredData(names) {
           {
             "@type": "Question",
             "name": "What Christian girl names mean 'Grace of God'?",
-            "datePublished": "2025-01-01",
+            "datePublished": "2026-05-19",
             "author": { "@type": "Organization", "name": "NameVerse" },
             "answerCount": 1,
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "Several Christian girl names carry the meaning related to grace, including Grace, Hannah, and Anna. These names express gratitude for God's grace and blessings.",
-              "datePublished": "2025-01-01",
+              "datePublished": "2026-05-19",
               "upvoteCount": 0,
               "author": { "@type": "Organization", "name": "NameVerse" }
             }
@@ -361,7 +360,7 @@ export default function ChristianGirlNamesPage() {
               className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-2xl p-6 hover:shadow-xl transition-all hover:-translate-y-1"
             >
               <h3 className="font-bold text-lg mb-2">Islamic Boy Names</h3>
-              <p className="text-emerald-100 text-sm">Find 150+ Muslim boy names</p>
+              <p className="text-emerald-100 text-sm">Find 100+ Muslim boy names</p>
             </Link>
             <Link 
               href="/guides/christian-baby-names"

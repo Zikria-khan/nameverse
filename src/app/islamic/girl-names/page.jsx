@@ -1,28 +1,27 @@
 import Link from 'next/link';
+import { getSiteUrl } from '@/lib/seo/site';
 import { Heart, Star, BookOpen, Sparkles, Flower2 } from 'lucide-react';
 import namesData from '../../../../public/data/islamic-girl-names.json';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
 // ==========================================
 // METADATA - World Class SEO
 // ==========================================
 export const metadata = {
-  title: '200+ Islamic Girl Names with Meanings | Muslim Baby Girl Names from Quran | NameVerse',
-  description: 'Discover 200+ beautiful Islamic girl names with meanings, origins & lucky numbers. Find the perfect Muslim baby girl name with Arabic roots. Complete guide to authentic Islamic names for your baby girl.',
-  keywords: 'Islamic girl names, Muslim girl names, Islamic baby girl names, Quranic girl names, Arabic girl names, Muslim baby names for girls, Islamic names with meanings, popular Islamic girl names, unique Muslim girl names, Islamic girl names from Quran, best Islamic girl names 2025, Muslim girl names with lucky numbers, Arabic baby girl names, Islamic names for newborn girls, traditional Islamic girl names',
+  title: '216+ Islamic Girl Names with Meanings | Muslim Baby Girl Names from Quran | NameVerse',
+  description: 'Discover 216+ beautiful Islamic girl names with meanings, origins & lucky numbers. Find the perfect Muslim baby girl name with Arabic roots. Complete guide to authentic Islamic names for your baby girl.',
+  keywords: 'Islamic girl names, Muslim girl names, Islamic baby girl names, Quranic girl names, Arabic girl names, Muslim baby names for girls, Islamic names with meanings, popular Islamic girl names, unique Muslim girl names, Islamic girl names from Quran, best Islamic girl names 20252026, Muslim girl names with lucky numbers, Arabic baby girl names, Islamic names for newborn girls, traditional Islamic girl names',
   alternates: {
-    canonical: `${SITE_URL}/islamic/girl-names`,
+    canonical: getSiteUrl() + '/islamic/girl-names',
   },
   openGraph: {
-    title: '200+ Islamic Girl Names with Meanings | Muslim Baby Girl Names',
-    description: 'Discover 200+ beautiful Islamic girl names with meanings, origins & lucky numbers. Find the perfect Muslim baby girl name.',
+    title: '216+ Islamic Girl Names with Meanings | Muslim Baby Girl Names',
+    description: 'Discover 216+ beautiful Islamic girl names with meanings, origins & lucky numbers. Find the perfect Muslim baby girl name.',
     type: 'website',
-    url: `${SITE_URL}/islamic/girl-names`,
+    url: getSiteUrl() + '/islamic/girl-names',
     siteName: 'NameVerse',
     images: [
       {
-        url: `${SITE_URL}/logo.png`,
+        url: getSiteUrl() + '/logo.png',
         width: 1200,
         height: 630,
         alt: 'Islamic Girl Names with Meanings - NameVerse',
@@ -31,9 +30,9 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: '200+ Islamic Girl Names with Meanings | Muslim Baby Girl Names',
-    description: 'Discover 200+ beautiful Islamic girl names with meanings, origins & lucky numbers.',
-    images: [`${SITE_URL}/logo.png`],
+    title: '216+ Islamic Girl Names with Meanings | Muslim Baby Girl Names',
+    description: 'Discover 216+ beautiful Islamic girl names with meanings, origins & lucky numbers.',
+    images: [getSiteUrl() + '/logo.png'],
   },
   robots: { 
     index: true, 
@@ -51,7 +50,7 @@ function generateStructuredData(names) {
     "@type": "ListItem",
     position: index + 1,
     name: n.name,
-    url: `${SITE_URL}/islamic/girl-names#${n.name.toLowerCase()}`,
+    url: getSiteUrl() + '/islamic/girl-names#${n.name.toLowerCase()}',
     description: `${n.name} means "${n.meaning}" - ${n.origin} origin`
   }));
 
@@ -61,21 +60,21 @@ function generateStructuredData(names) {
     "@graph": [
       {
         "@type": "CollectionPage",
-        "@id": `${SITE_URL}/islamic/girl-names#webpage`,
+        "@id": getSiteUrl() + '/islamic/girl-names#webpage',
         "name": "Islamic Girl Names with Meanings",
-        "description": "Complete collection of 200+ Islamic girl names with meanings, origins and lucky numbers",
-        "url": `${SITE_URL}/islamic/girl-names`,
+        "description": "Complete collection of 216+ Islamic girl names with meanings, origins and lucky numbers",
+        "url": getSiteUrl() + '/islamic/girl-names',
         "isPartOf": {
           "@type": "WebSite",
-          "@id": `${SITE_URL}/#website`,
+          "@id": getSiteUrl() + '/#website',
           "name": "NameVerse"
         },
         "breadcrumb": {
           "@type": "BreadcrumbList",
           "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE_URL },
-            { "@type": "ListItem", "position": 2, "name": "Islamic Names", "item": `${SITE_URL}/names/religion/islamic/1` },
-            { "@type": "ListItem", "position": 3, "name": "Islamic Girl Names", "item": `${SITE_URL}/islamic/girl-names` }
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": getSiteUrl() },
+            { "@type": "ListItem", "position": 2, "name": "Islamic Names", "item": getSiteUrl() + '/names/religion/islamic/1' },
+            { "@type": "ListItem", "position": 3, "name": "Islamic Girl Names", "item": getSiteUrl() + '/islamic/girl-names' }
           ]
         },
         "mainEntity": {
@@ -160,7 +159,7 @@ export default function IslamicGirlNamesPage() {
           <div className="max-w-7xl mx-auto text-center relative z-10">
             <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-5 py-2.5 rounded-full text-sm font-medium mb-8 border border-white/30">
               <Sparkles className="w-4 h-4" />
-              <span>200+ Islamic Names</span>
+              <span>216+ Islamic Names</span>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 leading-tight">
               Islamic Girl Names
@@ -207,7 +206,7 @@ export default function IslamicGirlNamesPage() {
         <section className="max-w-7xl mx-auto px-4 py-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-pink-100 text-center">
-              <div className="text-3xl md:text-4xl font-bold text-pink-600 mb-2">200+</div>
+              <div className="text-3xl md:text-4xl font-bold text-pink-600 mb-2">216+</div>
               <div className="text-sm text-gray-600">Total Names</div>
             </div>
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-pink-100 text-center">
@@ -235,7 +234,7 @@ export default function IslamicGirlNamesPage() {
               <p className="leading-relaxed">
                 Choosing a name for your baby girl is one of the most beautiful decisions parents make. 
                 In Islamic tradition, names carry deep significance and connect children to the rich 
-                heritage of Arabic language and Quranic wisdom. Our collection features <strong className="text-pink-700">200+ authentic Islamic girl names</strong> with verified meanings, 
+                heritage of Arabic language and Quranic wisdom. Our collection features <strong className="text-pink-700">216+ authentic Islamic girl names</strong> with verified meanings, 
                 Arabic origins, and lucky numbers.
               </p>
               <p className="leading-relaxed">
@@ -351,7 +350,7 @@ export default function IslamicGirlNamesPage() {
               className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-2xl p-6 hover:shadow-xl transition-all hover:-translate-y-1"
             >
               <h3 className="font-bold text-lg mb-2">Islamic Boy Names</h3>
-              <p className="text-emerald-100 text-sm">Browse 150+ Muslim boy names</p>
+              <p className="text-emerald-100 text-sm">Browse 216+ Muslim boy names</p>
             </Link>
             <Link
                href="/names/religion/islamic/1"

@@ -2,12 +2,19 @@ import HomePageClient from "../components/HomePage/Homepage";
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
 import fs from 'fs';
 import path from 'path';
+import HeroSection from '@/components/HomePage/HeroSection';
+import ContentSection from '@/components/HomePage/ContentSection';
+import AuthorityStats from '@/components/HomePage/AuthorityStats';
+import SearchTools from '@/components/HomePage/SearchTools';
+import ReligiousNamesSection from '@/components/HomePage/ReligiousNamesSection';
+import dynamic from 'next/dynamic';
+import { getSiteUrl } from '@/lib/seo/site';
 
-// ISR with 30-day cache for the homepage
-export const revalidate = 2592000; // 30 days
+// ISR with 7-day cache for the homepage — keep trending data fresh
+export const revalidate = 604800; // 7 days
 
 // ✅ Read domain from .env
-const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || "https://nameverse.vercel.app";
+const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || getSiteUrl();
 
 // Read blog posts data server-side
 const blogPostsPath = path.join(process.cwd(), 'public', 'data', 'blog-posts.json');
@@ -147,102 +154,6 @@ const homepageStructuredData = {
   ]
 };
 
-// ============================================================
-// GSC #1 RANKING: "NameVerse" brand keyword dominance strategy
-// ------------------------------------------------------------
-// Targets: "NameVerse", "NameVerse baby names", "NameVerse names",
-// "NameVerse meaning", "NameVerse website", "what is NameVerse"
-// ============================================================
-export const metadata = {
-  title: "NameVerse — 65,000+ Baby Names with Meanings & Origins 2026",
-  description: validateMetaDescription(
-    "NameVerse is the world's #1 baby names platform with 65,000+ verified Islamic Quranic, Christian Biblical & Hindu Sanskrit names A–Z. Search NameVerse for authentic meanings, origins, lucky numbers & trending data. Trusted by 5M+ parents worldwide."
-  ),
-  keywords: [
-    "NameVerse",
-    "NameVerse baby names",
-    "NameVerse names",
-    "NameVerse meaning",
-    "NameVerse website",
-    "what is NameVerse",
-    "NameVerse baby names with meanings",
-    "NameVerse Islamic names",
-    "NameVerse Hindu names",
-    "NameVerse Christian names",
-    "NameVerse name meanings",
-    "baby names",
-    "baby names with meanings",
-    "popular baby names",
-    "unique baby names",
-    "Islamic baby names",
-    "Hindu baby names",
-    "Christian baby names",
-    "name meanings",
-    "religious baby names",
-    "name origins",
-    "trending baby names"
-  ].join(', '),
-  openGraph: {
-    title: "NameVerse — 65,000+ Baby Names with Meanings & Origins 2026",
-    description: validateMetaDescription(
-      "NameVerse is the world's #1 platform for baby names with meanings. Search NameVerse for 65,000+ verified Islamic, Hindu & Christian names with authentic meanings, origins, and 2026 trending data."
-    ),
-    url: DOMAIN + "/",
-    type: "website",
-    siteName: "NameVerse",
-    images: [{ 
-      url: `${DOMAIN}/logo.png`, 
-      width: 1200, 
-      height: 630, 
-      type: "image/png", 
-      alt: "NameVerse — 65K+ baby names with meanings" 
-    }],
-    locale: "en_US",
-  },
-  twitter: {
-    card: "summary_large_image",
-    site: "@NameVerseOfficial",
-    title: "NameVerse — 65,000+ Baby Names with Meanings & Origins 2026",
-    description: validateMetaDescription(
-      "NameVerse is the world's #1 baby names platform. Search NameVerse for 65,000+ verified Islamic, Hindu & Christian names with authentic meanings, origins, lucky numbers & trending data. Trusted by 5M+ parents."
-    ),
-    images: [`${DOMAIN}/og-image.jpg`],
-  },
-  alternates: {
-    canonical: DOMAIN + "/",
-    languages: {
-      "x-default": DOMAIN + "/",
-      en: DOMAIN + "/",
-    },
-  },
-  robots: { index: true, follow: true },
-  authors: [{ name: "Zakriya Khan", url: DOMAIN + "/" }],
-};
-
-// ✅ Next.js 14+ themeColor export
-export function generateThemeColor() {
-  return "#0f766e";
-}
-
-// ✅ Next.js 14+ viewport export
-export function generateViewport() {
-  return {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-    userScalable: true,
-  };
-}
-
-export default function Page() {
-  return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageStructuredData) }}
-      />
-
-      <HomePageClient latestArticles={latestArticles} />
-    </>
-  );
+export default async function HomePage() {
+  return <HomePageClient />;
 }

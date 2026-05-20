@@ -2,8 +2,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { Globe, Sparkles, Star, BookOpen, ChevronRight, Moon, Quote } from 'lucide-react';
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
+import { getSiteUrl } from '@/lib/seo/site';
 
 export const metadata = {
   title: validateMetaTitle('Baby Names by Language — Multilingual Name Guide | NameVerse'),
@@ -27,12 +26,12 @@ export const metadata = {
     description: validateMetaDescription(
       'Discover beautiful baby names from different languages including Urdu, Arabic, Hindi, Sanskrit, Hebrew, and Greek with detailed meanings and cultural significance.'
     ),
-    url: `${SITE_URL}/languages`,
+    url: `${getSiteUrl()}/languages`,
     type: 'website',
     siteName: 'NameVerse',
     images: [
       {
-        url: `${SITE_URL}/og-languages.png`,
+        url: `${getSiteUrl()}/og-languages.png`,
         width: 1200,
         height: 630,
         alt: 'Baby Names by Language - NameVerse'
@@ -40,8 +39,8 @@ export const metadata = {
     ]
   },
   alternates: {
-    canonical: `${SITE_URL}/languages`,
-    languages: { en: `${SITE_URL}/languages`, 'x-default': `${SITE_URL}/languages` }
+    canonical: `${getSiteUrl()}/languages`,
+    languages: { en: `${getSiteUrl()}/languages`, 'x-default': `${getSiteUrl()}/languages` }
   },
   robots: { index: true, follow: true }
 };

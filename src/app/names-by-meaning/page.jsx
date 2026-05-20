@@ -2,8 +2,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { Heart, Shield, Brain, Leaf, Sparkles, Star, Moon, ChevronRight } from 'lucide-react';
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
+import { getSiteUrl } from '@/lib/seo/site';
 
 export const metadata = {
   title: validateMetaTitle('Powerful Baby Names by Meaning: Love, Strength, Wisdom, Peace & More | NameVerse'),
@@ -36,12 +35,12 @@ export const metadata = {
     description: validateMetaDescription(
       'Explore authentic baby names by meaning and virtue: love, strength, wisdom, peace, joy, hope, and light. Find famous Islamic, Hindu, and Christian names with deep cultural meanings for your child.'
     ),
-    url: `${SITE_URL}/names-by-meaning`,
+    url: `${getSiteUrl()}/names-by-meaning`,
     type: 'website',
     siteName: 'NameVerse',
     images: [
       {
-        url: `${SITE_URL}/og-names-by-meaning.png`,
+        url: `${getSiteUrl()}/og-names-by-meaning.png`,
         width: 1200,
         height: 630,
         alt: 'Baby Names by Meaning - NameVerse'
@@ -49,8 +48,8 @@ export const metadata = {
     ]
   },
   alternates: {
-    canonical: `${SITE_URL}/names-by-meaning`,
-    languages: { en: `${SITE_URL}/names-by-meaning`, 'x-default': `${SITE_URL}/names-by-meaning` }
+    canonical: `${getSiteUrl()}/names-by-meaning`,
+    languages: { en: `${getSiteUrl()}/names-by-meaning`, 'x-default': `${getSiteUrl()}/names-by-meaning` }
   },
   robots: { index: true, follow: true }
 };

@@ -1,10 +1,11 @@
 import React from 'react';
 import { generateCanonicalUrl } from '@/lib/seo/meta-helpers';
 
+import { getSiteUrl } from '@/lib/seo/site';
 export default function Head({ params }) {
   const religion = params?.religion || 'islamic';
   const page = parseInt(params?.page || '1', 10) || 1;
-  const base = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
+  const base = getSiteUrl();
 
   // Canonical: prefer base collection URL for page 1
   const canonicalPath = page === 1 ? `/names/religion/${religion}` : `/names/religion/${religion}/${page}`;

@@ -1,16 +1,15 @@
 import Link from 'next/link';
 import { Sparkles, Moon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { getSiteUrl } from '@/lib/seo/site';
 import { validateMetaTitle, validateMetaDescription, generateCanonicalUrl } from '@/lib/seo/meta-helpers';
 import { serverFetchNamesWithAdvancedFilters } from '@/lib/api/server-fetch';
 
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
-
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
 const STATIC_ORIGINS = ['arabic', 'persian', 'turkish', 'indian', 'english', 'other'];
 
-// ISR with 30-day cache - name origins rarely change
-export const revalidate = 2592000; // 30 days
+// ISR with 7-day cache — origin-filter lists refreshed regularly
+export const revalidate = 604800; // 7 days
 export const dynamicParams = true;
 
 // Pre-generate origin pages at build time
@@ -71,7 +70,7 @@ export async function generateMetadata({ params }) {
   const religionLabel = religion.charAt(0).toUpperCase() + religion.slice(1);
   const originLabel = origin.charAt(0).toUpperCase() + origin.slice(1);
   const canonical = generateCanonicalUrl(`/names/${religion}/origin/${origin}/${page}`);
-  const ogImage = `${SITE_URL}/api/og?section=origin&religion=${religion}&origin=${encodeURIComponent(originLabel)}`;
+  const ogImage = `${getSiteUrl()}/api/og?section=origin&religion=${religion}&origin=${encodeURIComponent(originLabel)}`;
   const seoTitle = validateMetaTitle(`Explore ${originLabel} Origin ${religionLabel} Baby Names | NameVerse`);
   const seoDescription = validateMetaDescription(
     `Discover authentic ${religionLabel} baby names from ${originLabel} origin with meaning, pronunciation, and cultural background. Browse page ${page} of origin-based names on NameVerse — your trusted source for meaningful baby names.`

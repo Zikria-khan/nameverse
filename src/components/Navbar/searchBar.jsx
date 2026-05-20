@@ -79,6 +79,8 @@ const UniversalSearch = () => {
       try {
         setRecentSearches(JSON.parse(saved).slice(0, 5));
       } catch (e) {
+        // Corrupted localStorage — silently reset
+        localStorage.removeItem('recentSearches');
       }
     }
   }, []);
@@ -91,8 +93,11 @@ const UniversalSearch = () => {
           setLocalNames(data);
         }
       })
-      .catch(() => {
-        // Ignore local name load failure
+      .catch((err) => {
+        // Silently ignore local name file load failure — remote API is the primary source
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('[UniversalSearch] local names load failed:', err.message);
+        }
       });
   }, []);
 

@@ -1,9 +1,8 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { BookOpen, Heart, Clock, ArrowLeft, Share2, Calendar, User, Tag, CheckCircle, Star, Sparkles, ArrowRight } from 'lucide-react';
+import { getSiteUrl } from '@/lib/seo/site';
 import blogPostsData from '../../../../public/data/blog-posts.json';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
 
 // Generate metadata for SEO
 export async function generateMetadata({ params }) {
@@ -21,13 +20,13 @@ export async function generateMetadata({ params }) {
     description: post.excerpt,
     keywords: post.tags.join(', '),
     alternates: {
-      canonical: `${SITE_URL}/guides/${post.id}`,
+      canonical: `${getSiteUrl()}/guides/${post.id}`,
     },
     openGraph: {
       title: post.title,
       description: post.excerpt,
       type: 'article',
-      url: `${SITE_URL}/guides/${post.id}`,
+      url: `${getSiteUrl()}/guides/${post.id}`,
       publishedTime: post.publishDate,
       authors: [post.author],
       tags: post.tags,
@@ -64,13 +63,13 @@ export default async function GuidePage({ params }) {
     "publisher": {
       "@type": "Organization",
       "name": "NameVerse",
-      "url": SITE_URL
+      "url": getSiteUrl()
     },
     "datePublished": post.publishDate,
     "dateModified": post.publishDate,
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `${SITE_URL}/guides/${post.id}`
+      "@id": `${getSiteUrl()}/guides/${post.id}`
     },
     "keywords": post.tags.join(', '),
     "articleSection": post.category

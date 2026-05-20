@@ -5,13 +5,11 @@ import { validateMetaTitle, validateMetaDescription, generateCanonicalUrl } from
 import { Sparkles, Moon, ChevronLeft, ChevronRight } from 'lucide-react';
 import FavoriteButton from '@/components/FavoriteButton';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
-
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
 const STATIC_CATEGORIES = ['modern', 'traditional', 'nature', 'religious', 'classical', 'unique'];
 
-// ISR with 30-day cache - name categories rarely change
-export const revalidate = 2592000; // 30 days
+// ISR with 7-day cache — category-filter lists refreshed regularly
+export const revalidate = 604800; // 7 days
 export const dynamicParams = true;
 
 // Pre-generate category pages at build time

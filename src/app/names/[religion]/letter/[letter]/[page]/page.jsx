@@ -1,6 +1,7 @@
-import { validateMetaTitle, validateMetaDescription, generateCanonicalUrl } from '@/lib/seo/meta-helpers';
+import { generateCanonicalUrl, validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
 import { generateOptimizedTitle, generateOptimizedDescription, generateOptimizedKeywords, generateNamePageSchemas } from '@/lib/seo/name-page-seo';
 import { serverFetchNamesByLetter } from '@/lib/api/server-fetch';
+import { getSiteUrl, absoluteUrl } from '@/lib/seo/site';
 import { Sparkles, Moon, ChevronLeft, ChevronRight, Search, Star, BookOpen, Heart } from 'lucide-react';
 import Link from 'next/link';
 import Script from 'next/script';
@@ -10,8 +11,8 @@ const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ#'.split('');
 const NAMES_PER_PAGE = 50;
 
-// ISR with 30-day cache - name data by letter rarely changes
-export const revalidate = 2592000; // 30 days
+// ISR with 7-day cache — name listings by letter refreshed regularly
+export const revalidate = 604800; // 7 days
 export const dynamicParams = true;
 
 // Pre-generate common letter/religion combinations at build time
@@ -279,9 +280,9 @@ export default async function LetterNamesPage({ params }) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nameverse.vercel.app/' },
-      { '@type': 'ListItem', position: 2, name: `${religionLabel} Names`, item: `https://nameverse.vercel.app/names/${religion}` },
-      { '@type': 'ListItem', position: 3, name: `Letter ${letter}`, item: `https://nameverse.vercel.app/names/${religion}/letter/${letter}/1` },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: getSiteUrl() },
+      { '@type': 'ListItem', position: 2, name: `${religionLabel} Names`, item: absoluteUrl(`/names/${religion}`) },
+      { '@type': 'ListItem', position: 3, name: `Letter ${letter}`, item: absoluteUrl(`/names/${religion}/letter/${letter}/1`) },
       { '@type': 'ListItem', position: 4, name: `Page ${page}`, item: generateCanonicalUrl(`/names/${religion}/letter/${letter}/${page}`) },
     ],
   };
@@ -297,7 +298,7 @@ export default async function LetterNamesPage({ params }) {
           '@type': 'ListItem',
           position: i + 1,
           name: n.name,
-          url: `https://nameverse.vercel.app/names/${religion}/${generateSlug(n.name)}`,
+          url: absoluteUrl(`/names/${religion}/${generateSlug(n.name)}`),
         })),
       }
     : null;

@@ -2,46 +2,44 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { Save, Heart, Share2, Star, Trash2, Copy, Check, ChevronRight } from 'lucide-react';
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
+import { getSiteUrl } from '@/lib/seo/site';
 
 export const metadata = {
-  title: validateMetaTitle('My Saved Baby Names — Create Your Perfect List | NameVerse'),
+  title: validateMetaTitle('Save & Compare Baby Names — Free Personal Shortlist Tool | NameVerse'),
   description: validateMetaDescription(
-    'Save, compare, and share your favorite baby names with NameVerse\'s My Saved Names feature. Create your perfect shortlist and make the final decision with ease.'
+    'Save unlimited baby names to your list. Compare meanings, gender, lucky numbers. Share with partner. Free online baby name organizer — NameVerse.'
   ),
   keywords: [
     'save baby names',
+    'compare baby names',
+    'baby name shortlist',
     'favorite names list',
-    'baby name comparison',
-    'name shortlist',
     'my baby names',
     'saved baby names',
-    'compare baby names',
-    'baby name favorites',
-    'store baby names',
-    'baby name collection'
+    'baby name comparison',
+    'name organizer',
+    'baby name tool'
   ].join(', '),
   openGraph: {
-    title: validateMetaTitle('My Saved Baby Names — Create Your Perfect List | NameVerse'),
+    title: validateMetaTitle('Save & Compare Baby Names — Free Personal Shortlist Tool | NameVerse'),
     description: validateMetaDescription(
-      'Save your favorite baby names to your personal list. Compare, organize, and share names with your partner and family to find the perfect choice.'
+      'Save unlimited baby names to your list. Compare meanings, gender & lucky numbers. Share with partner. Free online baby name organizer — NameVerse.'
     ),
-    url: `${SITE_URL}/my-names`,
+    url: `${getSiteUrl()}/my-names`,
     type: 'website',
     siteName: 'NameVerse',
     images: [
       {
-        url: `${SITE_URL}/og-saved-names.png`,
+        url: `${getSiteUrl()}/og-saved-names.png`,
         width: 1200,
         height: 630,
-        alt: 'My Saved Baby Names - NameVerse'
+        alt: 'Save Baby Names Online - NameVerse'
       }
     ]
   },
   alternates: {
-    canonical: `${SITE_URL}/my-names`,
-    languages: { en: `${SITE_URL}/my-names`, 'x-default': `${SITE_URL}/my-names` }
+    canonical: `${getSiteUrl()}/my-names`,
+    languages: { en: `${getSiteUrl()}/my-names`, 'x-default': `${getSiteUrl()}/my-names` }
   },
   robots: { index: true, follow: true }
 };
@@ -99,7 +97,7 @@ const sampleSavedNames = [
 ];
 
 export default async function MyNamesPage() {
-  return (
+   return (
     <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
       <main className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-pink-50/30">
         {/* Hero Section */}
@@ -113,13 +111,37 @@ export default async function MyNamesPage() {
                 </div>
               </div>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-                My Saved Baby Names — Create Your Perfect List
+                Save & Compare Baby Names — Your Personal Shortlist Tool
               </h1>
               <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                Save, compare, and share your favorite baby names with NameVerse's My Saved Names feature. 
-                Create your perfect shortlist and make the final decision with ease. Your personal baby name 
-                organizer is here to help you find the perfect choice.
+                Save unlimited baby names, compare meanings and lucky numbers side-by-side, and share with your partner. 
+                500,000+ parents trust NameVerse for finding their perfect baby name.
               </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Explore Popular Names CTA */}
+        <section className="py-8 px-4 sm:px-6 lg:px-8 bg-white/70">
+          <div className="max-w-7xl mx-auto">
+            <div className="bg-gradient-to-r from-emerald-50 to-blue-50 rounded-2xl p-6 sm:p-8 text-center">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+                Want to add more names to your list?
+              </h2>
+              <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                Browse 18,000+ Islamic, 15,000+ Hindu, and 11,000+ Christian names with verified meanings and lucky numbers.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Link href="/names/religion/islamic/1" className="px-6 py-3 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-colors">
+                  Browse Islamic Names
+                </Link>
+                <Link href="/names/religion/hindu/1" className="px-6 py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors">
+                  Browse Hindu Names
+                </Link>
+                <Link href="/names/religion/christian/1" className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                  Browse Christian Names
+                </Link>
+              </div>
             </div>
           </div>
         </section>

@@ -2,6 +2,7 @@
  * SEO Meta Helpers
  * Utilities for optimizing meta tags and descriptions
  */
+import { getSiteUrl } from '@/lib/seo/site';
 
 /**
  * Validate and truncate meta description to optimal length
@@ -81,13 +82,12 @@ export function generateKeywords(data) {
 /**
  * Generate canonical URL ensuring no trailing slashes
  * @param {string} path - The page path
- * @param {string} baseUrl - Base URL (default: from env)
+ * @param {string} baseUrl - Base URL (optional)
  * @returns {string} Canonical URL
  */
-export function generateCanonicalUrl(path, baseUrl = process.env.NEXT_PUBLIC_SITE_URL) {
-  const cleanPath = path.replace(/\/+$/, ''); // Remove trailing slashes
-  const cleanBase = baseUrl?.replace(/\/+$/, '') || 'https://nameverse.vercel.app';
-
+export function generateCanonicalUrl(path, baseUrl) {
+  const cleanPath = path.replace(/\/+$/, '');
+  const cleanBase = (baseUrl || getSiteUrl()).replace(/\/+$/, '');
   return `${cleanBase}${cleanPath}`;
 }
 
