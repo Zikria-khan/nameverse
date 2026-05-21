@@ -171,23 +171,27 @@ export function generateOptimizedKeywords(data, religion) {
   const luckyColors = Array.isArray(data.lucky_colors) ? data.lucky_colors : [];
   const languageList = Array.isArray(data.languages) ? data.languages : [];
   const personality = getPersonalitySummary(data);
+  const religionDisplay = religion === 'islamic' ? 'Islamic' : religion === 'christian' ? 'Christian' : religion === 'hindu' ? 'Hindu' : religion;
 
   keywords.add(`${name} name meaning`);
-  keywords.add(`${name} Islamic baby name meaning`);
-  keywords.add(`meaning of ${name}`);
-  if (origin) keywords.add(`${name} name origin`);
+  // Religion-aware keyword variants — uses the correct religion label throughout
+  const religionLabel = religionDisplay.toLowerCase(); // "islamic" | "christian" | "hindu"
+  keywords.add(`${name} ${religionLabel} baby name meaning`);
   if (religion === 'islamic') {
     keywords.add(`${name} Islamic name`);
+    keywords.add(`${name} Quranic name meaning`);
   } else if (religion === 'christian') {
     keywords.add(`${name} Christian name`);
+    keywords.add(`${name} Biblical name meaning`);
   } else if (religion === 'hindu') {
     keywords.add(`${name} Hindu name`);
+    keywords.add(`${name} Sanskrit name meaning`);
   }
 
   if (gender === 'male') {
-    keywords.add(`Islamic boy name ${name}`);
+    keywords.add(`${religionDisplay} boy name ${name}`);
   } else if (gender === 'female') {
-    keywords.add(`Islamic girl name ${name}`);
+    keywords.add(`${religionDisplay} girl name ${name}`);
   }
 
   if (luckyNumber) {
@@ -196,9 +200,14 @@ export function generateOptimizedKeywords(data, religion) {
   }
   if (luckyColors.length) keywords.add(`${name} lucky colors`);
   if (languageList.length) {
-    keywords.add(`${name} language`);
-    if (languageList.includes('Arabic') || languageList.includes('arabic')) {
-      keywords.add(`${name} Arabic meaning`);
+    keywords.add(`${name} name language`);
+    // Build language-specific keyword variants from each entry's .code and .name
+    // languageList items have shape { code, name, value, flag, key }
+    for (const lang of languageList) {
+      const langName = typeof lang === 'string' ? lang : (lang.code || lang.name || '');
+      if (langName) {
+        keywords.add(`${name} ${langName} meaning`);
+      }
     }
   }
   if (personality) keywords.add(`${name} personality`);
@@ -302,17 +311,32 @@ export function generateOptimizedSchemas(data, religion, slug) {
   if (languageSnippet) descriptionParts.push(`used in ${languageSnippet}`);
   if (luckyPieces.length) descriptionParts.push(luckyPieces.slice(0, 2).join(', '));
 
+  const religionDisplay = religion === 'islamic' ? 'Islamic' :
+                          religion === 'christian' ? 'Christian' :
+                          religion === 'hindu' ? 'Hindu' : religion;
+
+  // Build the article/OG description once and reuse it everywhere
+  const outputDescription = generateOptimizedDescription(data, religion);
+  const schemaDescription = `${name} — ${religionDisplay} baby name meaning: "${extractCoreEmotion(shortMeaning)}". Origin: ${data.origin || 'various'}.${data.lucky_number ? ` Lucky number ${data.lucky_number}.` : ''} Discover meaning, pronunciation, and cultural significance on NameVerse.`;
+
   const publishedDate = data.published_date || data.created_at || data.updated_at || new Date().toISOString().split('T')[0];
+  const modifiedDate = data.updated_at || data.published_date || data.created_at || new Date().toISOString().split('T')[0];
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
     "headline": generateOptimizedTitle(data, religion),
-    "description": descriptionParts.join(', ') + '.',
+    "description": schemaDescription,
     "url": pageUrl,
+    "image": `${siteUrl}/api/og?name=${encodeURIComponent(name)}&meaning=${encodeURIComponent(coreEmotion.substring(0, 40))}&religion=${religion}`,
     "datePublished": publishedDate,
-    "dateModified": new Date().toISOString().split('T')[0],
+    "dateModified": modifiedDate,
+    "inLanguage": "en",
     "author": { "@type": "Organization", "name": "NameVerse" },
-    "publisher": { "@type": "Organization", "name": "NameVerse" },
+    "publisher": {
+      "@type": "Organization",
+      "name": "NameVerse",
+      "logo": { "@type": "ImageObject", "url": `${siteUrl}/logo.png`, "width": 512, "height": 512 }
+    },
     "mainEntityOfPage": { "@type": "WebPage", "@id": pageUrl },
   };
 
@@ -366,53 +390,59 @@ export async function generateNamePageMetadata(data, religion, slug) {
   const pageUrl = `${siteUrl}/names/${religion}/${slug}`;
   const name = data.name;
   const shortMeaning = data.short_meaning || data.meaning || '';
-  
+  const religionDisplay = religion === 'islamic' ? 'Islamic' : religion === 'christian' ? 'Christian' : religion === 'hindu' ? 'Hindu' : religion;
+  const publishedDate = data.published_date || data.created_at || data.updated_at || new Date().toISOString().split('T')[0];
+  const modifiedDate = data.updated_at || data.published_date || data.created_at || new Date().toISOString().split('T')[0];
+
   // Safe meaning extraction for OG image
   const safeMeaning = extractCoreEmotion(shortMeaning);
-  
+
   const title = generateOptimizedTitle(data, religion);
   const description = generateOptimizedDescription(data, religion);
   const keywords = generateOptimizedKeywords(data, religion);
-  
+
   // Stable OG title (deterministic, not random)
   const ogTitle = `${name} Name Meaning in ${religion.charAt(0).toUpperCase() + religion.slice(1)}`;
-  
+
   return {
     title,
-    description,
+    description: description,
     keywords,
     alternates: { canonical: pageUrl },
-    
+
     openGraph: {
       title: ogTitle,
-      description: description.substring(0, 180),
+      description: description,
       url: pageUrl,
       siteName: 'NameVerse',
       type: 'website',
-      images: [{ 
-        url: `${siteUrl}/api/og?name=${encodeURIComponent(name)}&meaning=${encodeURIComponent(safeMeaning.substring(0, 40))}&religion=${religion}`, 
-        width: 1200, 
-        height: 630 
+      images: [{
+        url: `${siteUrl}/api/og?name=${encodeURIComponent(name)}&meaning=${encodeURIComponent(safeMeaning.substring(0, 40))}&religion=${religion}`,
+        width: 1200,
+        height: 630,
+        alt: `${name} — ${religionDisplay} baby name meaning on NameVerse`,
       }],
     },
-    
+
     twitter: {
       card: 'summary_large_image',
       title: ogTitle,
-      description: description.substring(0, 180),
-      images: [`${siteUrl}/api/og?name=${encodeURIComponent(name)}&religion=${religion}`],
+      description: description,
+      images: [`${siteUrl}/api/og?name=${encodeURIComponent(name)}&meaning=${encodeURIComponent(safeMeaning.substring(0, 40))}&religion=${religion}`],
     },
-    
+
     robots: {
       index: true,
       follow: true,
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
-    
+
     other: {
       'theme-color': '#D97706',
       'article:section': 'Baby Names',
+      'article:published_time': publishedDate,
+      'article:modified_time': modifiedDate,
     },
   };
 }

@@ -10,16 +10,30 @@ const statItems = (data) => [
 
 export default function NameHero({ data, pageUrl }) {
   const subtitle = data.short_meaning || data.meaning || 'Beautiful name';
+  const genderDisplay = data.gender === 'male' ? 'Boy' : data.gender === 'female' ? 'Girl' : '';
+  const religionDisplay = data.religion === 'islamic' ? 'Islamic' :
+                          data.religion === 'christian' ? 'Christian' :
+                          data.religion === 'hindu' ? 'Hindu' :
+                          (data.religion || '');
+  const h1Label = [religionDisplay, genderDisplay].filter(Boolean).join(' ');
+  const luckyNote = data.lucky_number ? ` · Lucky #${data.lucky_number}` : '';
 
   return (
-    <section className="nv-card relative overflow-hidden p-6 sm:p-8">
+    <section className="nv-card relative overflow-hidden p-6 sm:p-8" aria-label={`${data.name} name meaning page`}>
       <div className="pointer-events-none absolute inset-0 opacity-60 [background:radial-gradient(circle_at_10%_20%,rgba(14,165,164,0.20),transparent_42%),radial-gradient(circle_at_80%_30%,rgba(79,70,229,0.18),transparent_44%),radial-gradient(circle_at_30%_90%,rgba(245,158,11,0.20),transparent_46%)]" />
       <div className="relative flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0">
           <div className="inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-amber-700">
             <Crown className="h-4 w-4" /> NameVerse
           </div>
-          <h1 className="nv-h1 mt-4">{data.name}</h1>
+          <h1 className="nv-h1 mt-4">
+            {data.name}
+            {h1Label && (
+              <span className="block text-base sm:text-lg font-normal text-slate-500 mt-1">
+                {h1Label} Baby Name Meaning &amp; Origin{luckyNote}
+              </span>
+            )}
+          </h1>
           <p className="nv-lead mt-3 max-w-2xl">{subtitle}</p>
           {data.pronunciation?.english && (
             <p className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-slate-600">

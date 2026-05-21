@@ -4,12 +4,92 @@ import { generateNamePageMetadata, generateNamePageSchemas } from '@/lib/seo/nam
 import { serverFetchNameDetail } from '@/lib/api/server-fetch';
 import NameDetail from '@/components/name/NameDetail';
 import Script from 'next/script';
+import fs from 'fs';
+import path from 'path';
 
-// ISR: 30-day cache — individual name pages are pre-cached at build via generateStaticParams
+// ISR: 30-day cache
 export const revalidate = 2592000; // 30 days
 export const dynamicParams = true;
 
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
+
+/**
+ * Pre-build the most popular names at deploy time so Google
+ * can index them immediately without waiting for first SSR visit.
+ * All remaining ~42K names are served via ISR on first request.
+ */
+export async function generateStaticParams() {
+  const namesDataDir = path.join(process.cwd(), 'public', 'data');
+  const staticNames = [];
+
+  try {
+    // islamic-boy-names.json — all entries are islamic/boy
+    const islamicBoysRaw = fs.readFileSync(path.join(namesDataDir, 'islamic-boy-names.json'), 'utf8');
+    JSON.parse(islamicBoysRaw).forEach((n) => {
+      if (n.name) staticNames.push({ religion: 'islamic', slug: n.name.toLowerCase().trim() });
+    });
+
+    // islamic-girl-names.json — all entries are islamic/girl
+    const islamicGirlsRaw = fs.readFileSync(path.join(namesDataDir, 'islamic-girl-names.json'), 'utf8');
+    JSON.parse(islamicGirlsRaw).forEach((n) => {
+      if (n.name) staticNames.push({ religion: 'islamic', slug: n.name.toLowerCase().trim() });
+    });
+
+    // islamic_names.json — may contain mixed genders
+    try {
+      const islamicMixedRaw = fs.readFileSync(path.join(namesDataDir, 'islamic_names.json'), 'utf8');
+      JSON.parse(islamicMixedRaw).forEach((n) => {
+        if (n.name) staticNames.push({ religion: 'islamic', slug: n.name.toLowerCase().trim() });
+      });
+    } catch { /* file absent or malformed — skip */ }
+
+    // christian-boy-names.json
+    try {
+      const christianBoysRaw = fs.readFileSync(path.join(namesDataDir, 'christian-boy-names.json'), 'utf8');
+      JSON.parse(christianBoysRaw).forEach((n) => {
+        if (n.name) staticNames.push({ religion: 'christian', slug: n.name.toLowerCase().trim() });
+      });
+    } catch { /* skip */ }
+
+    // christian-girl-names.json
+    try {
+      const christianGirlsRaw = fs.readFileSync(path.join(namesDataDir, 'christian-girl-names.json'), 'utf8');
+      JSON.parse(christianGirlsRaw).forEach((n) => {
+        if (n.name) staticNames.push({ religion: 'christian', slug: n.name.toLowerCase().trim() });
+      });
+    } catch { /* skip */ }
+
+    // hindu-boy-names.json
+    try {
+      const hinduBoysRaw = fs.readFileSync(path.join(namesDataDir, 'hindu-boy-names.json'), 'utf8');
+      JSON.parse(hinduBoysRaw).forEach((n) => {
+        if (n.name) staticNames.push({ religion: 'hindu', slug: n.name.toLowerCase().trim() });
+      });
+    } catch { /* skip */ }
+
+    // hindu-girl-names.json
+    try {
+      const hinduGirlsRaw = fs.readFileSync(path.join(namesDataDir, 'hindu-girl-names.json'), 'utf8');
+      JSON.parse(hinduGirlsRaw).forEach((n) => {
+        if (n.name) staticNames.push({ religion: 'hindu', slug: n.name.toLowerCase().trim() });
+      });
+    } catch { /* skip */ }
+
+  } catch { /* namesDataDir not found — return empty so ISR handles everything */ }
+
+  // Deduplicate (a name may appear in multiple source files)
+  const seen = new Set();
+  const deduped = [];
+  for (const entry of staticNames) {
+    const key = `${entry.religion}|${entry.slug}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      deduped.push(entry);
+    }
+  }
+
+  return deduped;
+}
 
 function normalizeSlug(slug) {
   if (!slug || typeof slug !== 'string') return null;
