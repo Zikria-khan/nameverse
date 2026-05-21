@@ -5,6 +5,7 @@ import { join } from 'path';
 import StructuredData from '@/components/SEO/StructuredData';
 import BlogImageWithFallback from '@/components/Blog/BlogImageWithFallback';
 import { getSiteUrl } from '@/lib/seo/site';
+import SitePage from '@/components/Layout/SitePage';
 
 // ISR with 7-day cache for blog index — fresh content weekly
 export const revalidate = 604800; // 7 days
@@ -62,7 +63,7 @@ export default function BlogPage() {
   const recentPosts = blogPostsData.filter(p => !p.featured);
 
   return (
-    <main className="min-h-screen bg-white">
+    <SitePage className="bg-white" containerClassName="max-w-none px-0 py-0">
       <StructuredData
         organization={true}
         website={true}
@@ -327,6 +328,6 @@ export default function BlogPage() {
           </Link>
         </div>
       </section>
-    </main>
+    </SitePage>
   );
 }

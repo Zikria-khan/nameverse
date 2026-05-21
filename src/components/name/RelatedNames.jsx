@@ -1,4 +1,5 @@
-import { Link } from 'lucide-react';
+import Link from 'next/link';
+import { Link as LinkIcon } from 'lucide-react';
 
 const normalizeLink = (name, religion) => {
   const segment = name.toLowerCase().replace(/\s+/g, '-');
@@ -15,10 +16,10 @@ export default function RelatedNames({ data }) {
   }
 
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+    <section className="nv-card-solid">
       <div className="mb-5 flex items-center gap-3 text-slate-900">
         <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
-          <Link className="h-5 w-5" />
+          <LinkIcon className="h-5 w-5" />
         </div>
         <div>
           <h2 className="text-xl font-semibold">Similar & Related Names</h2>
@@ -32,13 +33,13 @@ export default function RelatedNames({ data }) {
             <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Similar sounding</h3>
             <div className="flex flex-wrap gap-2">
               {data.similar_sounding_names.slice(0, 10).map((name) => (
-                <a
+                <Link
                   key={name}
                   href={normalizeLink(name, religionKey)}
                   className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm text-slate-700 transition hover:bg-slate-100"
                 >
                   {name}
-                </a>
+                </Link>
               ))}
             </div>
           </div>

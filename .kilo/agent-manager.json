@@ -1,9 +1,25 @@
 {
-  "worktrees": {},
-  "sessions": {},
+  "worktrees": {
+    "wt-1779312347175-1": {
+      "branch": "artistic-share",
+      "path": "c:\\code\\nameverse\\.kilo\\worktrees\\artistic-share",
+      "parentBranch": "main",
+      "createdAt": "2026-05-20T21:25:47.175Z",
+      "remote": "origin"
+    }
+  },
+  "sessions": {
+    "ses_1b8b79088ffewXDQk37653Xp2R": {
+      "worktreeId": "wt-1779312347175-1",
+      "createdAt": "2026-05-20T21:26:30.061Z"
+    }
+  },
   "tabOrder": {
     "local": [
       "pending:1"
     ]
-  }
+  },
+  "worktreeOrder": [
+    "wt-1779312347175-1"
+  ]
 }

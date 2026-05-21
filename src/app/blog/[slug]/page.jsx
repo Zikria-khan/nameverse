@@ -7,6 +7,7 @@ import BlogImageWithFallback from '@/components/Blog/BlogImageWithFallback';
 import islamicNames from '../../../../public/islamic_names.json';
 import hinduNames from '../../../../public/hindu_names.json';
 import christianNames from '../../../../public/christians_names.json';
+import SitePage from '@/components/Layout/SitePage';
 
 // ISR with 7-day cache for blog posts — keep content fresher
 export const revalidate = 604800; // 7 days
@@ -247,7 +248,7 @@ export default async function BlogPostPage({ params }) {
         <FAQSchema faqs={post.content.faqs} />
       )}
       
-      <main className="min-h-screen bg-white">
+      <SitePage className="bg-transparent" containerClassName="max-w-none px-0 py-0">
         {/* Header */}
         <section className="py-8 px-4 border-b border-gray-200">
           <div className="max-w-4xl mx-auto">
@@ -505,7 +506,7 @@ export default async function BlogPostPage({ params }) {
             </Link>
           </div>
         </section>
-      </main>
+      </SitePage>
     </>
   );
 }

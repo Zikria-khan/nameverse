@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { Sparkles, Star, Moon, ChevronRight, Zap, Diamond, Gift, Globe } from 'lucide-react';
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
 import { getSiteUrl } from '@/lib/seo/site';
+import SitePage from '@/components/Layout/SitePage';
 
 export const metadata = {
   title: validateMetaTitle('Unique Baby Names — Rare & Uncommon Names | NameVerse'),
@@ -149,7 +150,7 @@ const uniquenessBenefits = [
 export default async function UniqueNamesPage() {
   return (
     <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
-      <main className="min-h-screen bg-gradient-to-br from-fuchsia-50 via-white to-purple-50/30">
+      <SitePage className="bg-transparent" containerClassName="max-w-none px-0 py-0">
         {/* Hero Section */}
         <section className="relative py-16 sm:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
           <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.03] pointer-events-none"></div>
@@ -506,7 +507,7 @@ export default async function UniqueNamesPage() {
             </div>
           </div>
         </section>
-      </main>
+      </SitePage>
     </Suspense>
   );
 }

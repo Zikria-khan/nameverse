@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
@@ -13,7 +13,7 @@ export default function FAQ({ faqData = [], name }) {
   ];
 
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+    <section className="nv-card-solid">
       <div className="mb-4 flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-50 text-amber-700">
           <ChevronDown className="h-5 w-5" />
@@ -23,7 +23,7 @@ export default function FAQ({ faqData = [], name }) {
 
       <div className="space-y-4">
         {faqs.map((item, idx) => (
-          <div key={idx} className="rounded-3xl border border-slate-100 bg-slate-50 p-4">
+          <div key={idx} className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
             <button
               type="button"
               onClick={() => setActiveIndex(activeIndex === idx ? null : idx)}

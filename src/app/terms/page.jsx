@@ -1,5 +1,6 @@
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
 import { getSiteUrl } from '@/lib/seo/site';
+import SitePage from '@/components/Layout/SitePage';
 
 export const metadata = {
   title: validateMetaTitle('Terms of Service | NameVerse — Use Our Names Database Responsibly'),
@@ -12,12 +13,17 @@ export const metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-white py-12">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6">
-        <h1 className="text-4xl font-bold text-gray-900 mb-8">Terms of Service</h1>
-        
-        <div className="prose prose-lg max-w-none text-gray-700">
-          <p className="text-sm text-gray-500 mb-8">Last updated: January 2026</p>
+    <SitePage
+      title="Terms of Service"
+      subtitle="Using NameVerse responsibly"
+      breadcrumbs={[
+        { label: 'Home', href: '/' },
+        { label: 'Terms of Service' },
+      ]}
+      containerClassName="max-w-4xl"
+    >
+      <div className="prose prose-lg max-w-none text-slate-700">
+        <p className="text-sm text-slate-500 mb-8">Last updated: January 2026</p>
 
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Acceptance of Terms</h2>
@@ -103,8 +109,7 @@ export default function TermsPage() {
               <br />
               Email: coding4443@gmail.com            </p>
           </section>
-        </div>
       </div>
-    </div>
+    </SitePage>
   );
 }

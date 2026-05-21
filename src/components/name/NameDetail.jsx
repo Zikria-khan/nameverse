@@ -2,19 +2,26 @@ import NameHero from './NameHero';
 import Meaning from './Meaning';
 import FAQ from './FAQ';
 import RelatedNames from './RelatedNames';
+import SitePage from '@/components/Layout/SitePage';
 
 export default function NameDetail({ data, faqData = [], pageUrl }) {
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+    <SitePage
+      breadcrumbs={[
+        { label: 'Home', href: '/' },
+        { label: 'Baby Names', href: '/names' },
+        { label: `${data.religion || 'Names'}`, href: `/names/religion/${(data.religion || 'islamic').toLowerCase()}/1` },
+        { label: data.name },
+      ]}
+    >
+      <div className="nv-stack">
         <NameHero data={data} pageUrl={pageUrl} />
-
-        <main className="space-y-6 pt-8">
+        <div className="nv-stack">
           <Meaning data={data} />
           <RelatedNames data={data} />
           <FAQ faqData={faqData} name={data.name} />
-        </main>
+        </div>
       </div>
-    </div>
+    </SitePage>
   );
 }

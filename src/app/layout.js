@@ -13,6 +13,7 @@ import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpe
 import { AppProvider } from "@/contexts/AppContext";
 import LoadingWrapper from "@/components/LoadingAnimation/LoadingWrapper";
 import { Suspense } from 'react';
+import RouteChrome from "@/components/Layout/RouteChrome";
 
 import { getSiteUrl } from '@/lib/seo/site';
 // Use environment variable or default - will be overridden client-side if needed
@@ -229,14 +230,14 @@ export default function RootLayout({ children }) {
         />
       </head>
 
-      <body className={`${bodyFont.variable} ${displayFont.variable} antialiased bg-white text-gray-900`}>
+      <body className={`${bodyFont.variable} ${displayFont.variable} antialiased nv-body nv-page`}>
         <div id="temp-wrapper">
           <AppProvider>
             <PerformanceInit />
             <Suspense fallback={<div>Loading Navbar...</div>}>
               <Navbar />
             </Suspense>
-            {children}
+            <RouteChrome>{children}</RouteChrome>
             <Footer />
             <AppInstallPopup />
           </AppProvider>

@@ -20,37 +20,37 @@ export const metadata = {
 
 export default function ExpertNamingGuidePage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50">
-      {/* Hero Section */}
-      <section className="relative py-16 px-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium mb-6">
-            <Award className="w-4 h-4" />
-            <span>Expert Guide</span>
+    <main className="nv-page min-h-screen">
+      <section className="nv-container nv-section">
+        <div className="nv-card relative overflow-hidden p-6 text-center sm:p-10">
+          <div className="pointer-events-none absolute inset-0 opacity-60 [background:radial-gradient(circle_at_10%_20%,rgba(79,70,229,0.16),transparent_44%),radial-gradient(circle_at_90%_10%,rgba(14,165,164,0.14),transparent_44%),radial-gradient(circle_at_30%_90%,rgba(245,158,11,0.16),transparent_46%)]" />
+          <div className="relative">
+            <div className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-white">
+              <Award className="h-4 w-4" />
+              <span>Expert Guide</span>
+            </div>
+            <h1 className="nv-display mt-5 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl md:text-5xl">
+              The Ultimate Guide to Choosing a Baby Name
+            </h1>
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-lg">
+              Everything you need to know about selecting a meaningful name for your baby.
+            </p>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            The Ultimate Guide to Choosing a Baby Name
-          </h1>
-          <p className="text-lg text-purple-100 max-w-2xl mx-auto">
-            Everything you need to know about selecting a meaningful name for your baby
-          </p>
         </div>
       </section>
 
-      {/* Breadcrumb */}
-      <nav className="max-w-4xl mx-auto px-4 py-4" aria-label="Breadcrumb">
-        <ol className="flex items-center gap-2 text-sm">
-          <li><Link href="/" className="text-purple-600 hover:text-purple-800">Home</Link></li>
-          <li className="text-gray-400">/</li>
-          <li><Link href="/blog" className="text-purple-600 hover:text-purple-800">Blog</Link></li>
-          <li className="text-gray-400">/</li>
-          <li className="text-purple-700 font-semibold">Expert Naming Guide</li>
+      <nav className="nv-container -mt-2 pb-2" aria-label="Breadcrumb">
+        <ol className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+          <li><Link href="/" className="font-medium text-slate-600 transition hover:text-slate-900">Home</Link></li>
+          <li className="text-slate-300">/</li>
+          <li><Link href="/blog" className="font-medium text-slate-600 transition hover:text-slate-900">Blog</Link></li>
+          <li className="text-slate-300">/</li>
+          <li className="font-medium text-slate-900">Expert Naming Guide</li>
         </ol>
       </nav>
 
-      {/* Content */}
-      <article className="max-w-4xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 border border-purple-100">
+      <article className="nv-container nv-section pt-2">
+        <div className="nv-card-solid p-6 sm:p-10">
           
           {/* Introduction */}
           <section className="mb-10">
@@ -82,11 +82,13 @@ export default function ExpertNamingGuidePage() {
                 { tip: 'Get feedback from family', desc: 'Share your choices with trusted family members.' },
                 { tip: 'Trust your instincts', desc: 'Ultimately, choose a name that feels right to you.' },
               ].map((item, index) => (
-                <div key={index} className="flex gap-4 p-4 bg-gray-50 rounded-xl">
-                  <CheckCircle className="w-6 h-6 text-emerald-500 flex-shrink-0 mt-0.5" />
+                <div key={index} className="flex gap-4 rounded-3xl border border-[rgba(15,23,42,0.10)] bg-white/60 p-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
+                    <CheckCircle className="h-5 w-5" />
+                  </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">{item.tip}</h3>
-                    <p className="text-sm text-gray-600">{item.desc}</p>
+                    <h3 className="font-semibold text-slate-900">{item.tip}</h3>
+                    <p className="mt-1 text-sm text-slate-600">{item.desc}</p>
                   </div>
                 </div>
               ))}
@@ -98,57 +100,57 @@ export default function ExpertNamingGuidePage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Naming Traditions by Religion</h2>
             
             {/* Islamic */}
-            <div className="mb-6 p-6 bg-emerald-50 rounded-2xl border border-emerald-100">
-              <h3 className="text-xl font-bold text-emerald-800 mb-3 flex items-center gap-2">
-                <Star className="w-5 h-5" /> Islamic Naming Traditions
+            <div className="mb-4 rounded-3xl border border-[rgba(15,23,42,0.10)] bg-white/60 p-6">
+              <h3 className="mb-3 flex items-center gap-2 text-xl font-semibold text-slate-900">
+                <Star className="h-5 w-5 text-slate-700" /> Islamic Naming Traditions
               </h3>
-              <p className="text-emerald-700 mb-3">
+              <p className="mb-3 text-sm leading-6 text-slate-600">
                 In Islam, names carry deep spiritual significance. Parents often choose names with positive meanings 
                 that reflect Islamic values and connect children to their faith heritage.
               </p>
-              <Link href="/islamic/boy-names" className="text-emerald-600 font-medium flex items-center gap-1 hover:text-emerald-800">
+              <Link href="/islamic/boy-names" className="inline-flex items-center gap-1 font-semibold text-slate-900 transition hover:text-[color:var(--nv-accent-2)]">
                 Browse Islamic Names <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
 
             {/* Christian */}
-            <div className="mb-6 p-6 bg-blue-50 rounded-2xl border border-blue-100">
-              <h3 className="text-xl font-bold text-blue-800 mb-3 flex items-center gap-2">
-                <Star className="w-5 h-5" /> Christian Naming Traditions
+            <div className="mb-4 rounded-3xl border border-[rgba(15,23,42,0.10)] bg-white/60 p-6">
+              <h3 className="mb-3 flex items-center gap-2 text-xl font-semibold text-slate-900">
+                <Star className="h-5 w-5 text-slate-700" /> Christian Naming Traditions
               </h3>
-              <p className="text-blue-700 mb-3">
+              <p className="mb-3 text-sm leading-6 text-slate-600">
                 Christian names often draw from Biblical sources, honoring prophets, saints, and virtuous qualities. 
                 These names connect children to their spiritual heritage and faith community.
               </p>
-              <Link href="/christian/boy-names" className="text-blue-600 font-medium flex items-center gap-1 hover:text-blue-800">
+              <Link href="/christian/boy-names" className="inline-flex items-center gap-1 font-semibold text-slate-900 transition hover:text-[color:var(--nv-accent-2)]">
                 Browse Christian Names <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
 
             {/* Hindu */}
-            <div className="mb-6 p-6 bg-orange-50 rounded-2xl border border-orange-100">
-              <h3 className="text-xl font-bold text-orange-800 mb-3 flex items-center gap-2">
-                <Star className="w-5 h-5" /> Hindu Naming Traditions
+            <div className="mb-4 rounded-3xl border border-[rgba(15,23,42,0.10)] bg-white/60 p-6">
+              <h3 className="mb-3 flex items-center gap-2 text-xl font-semibold text-slate-900">
+                <Star className="h-5 w-5 text-slate-700" /> Hindu Naming Traditions
               </h3>
-              <p className="text-orange-700 mb-3">
+              <p className="mb-3 text-sm leading-6 text-slate-600">
                 Hindu names are often derived from Sanskrit and connected to deities, virtues, and natural elements. 
                 The Namakaran ceremony is a sacred ritual for naming a child.
               </p>
-              <Link href="/hindu/boy-names" className="text-orange-600 font-medium flex items-center gap-1 hover:text-orange-800">
+              <Link href="/hindu/boy-names" className="inline-flex items-center gap-1 font-semibold text-slate-900 transition hover:text-[color:var(--nv-accent-2)]">
                 Browse Hindu Names <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </section>
 
           {/* CTA */}
-          <section className="text-center bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Ready to Find the Perfect Name?</h2>
-            <p className="text-gray-600 mb-6">
+          <section className="nv-card text-center">
+            <h2 className="nv-display text-2xl font-semibold text-slate-900">Ready to Find the Perfect Name?</h2>
+            <p className="mt-3 text-sm text-slate-600 sm:text-base">
               Explore our database of 60,000+ baby names with meanings, origins, and numerology.
             </p>
             <Link
               href="/names/religion/islamic/1"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-purple-700 font-semibold rounded-xl hover:bg-purple-50 transition-colors"
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
             >
               <Heart className="w-5 h-5" />
               Browse All Names

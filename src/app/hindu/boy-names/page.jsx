@@ -147,7 +147,7 @@ export default function HinduBoyNamesPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       
-      <main className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-orange-50">
+      <main className="min-h-screen">
         {/* Hero Section */}
         <section className="relative py-20 px-4 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 text-white overflow-hidden">
           <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-10"></div>

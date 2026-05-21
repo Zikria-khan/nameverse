@@ -152,7 +152,7 @@ export default function IslamicGirlNamesPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       
-      <main className="min-h-screen bg-gradient-to-b from-pink-50 via-white to-pink-50">
+      <main className="min-h-screen">
         {/* Hero Section */}
         <section className="relative py-20 px-4 bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 text-white overflow-hidden">
           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.3)_1px,transparent_0)] bg-[size:20px_20px]"></div>

@@ -47,7 +47,7 @@ export default function ShareButtons({ name, pageUrl, description }) {
   };
 
   return (
-    <div className="space-y-3 rounded-3xl border border-slate-200 bg-white/95 p-4 shadow-sm">
+    <div className="space-y-3">
       <div className="mb-2 text-sm font-semibold text-slate-900">Share this page</div>
       <div className="grid grid-cols-2 gap-2">
         <button

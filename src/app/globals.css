@@ -3,14 +3,32 @@
 
 :root {
   --nv-canvas: #f7f5f0;
+  --nv-canvas-2: #f1efe8;
   --nv-ink: #0b1020;
   --nv-muted: #4b5563;
   --nv-card: rgba(255, 255, 255, 0.72);
+  --nv-card-strong: rgba(255, 255, 255, 0.92);
   --nv-border: rgba(15, 23, 42, 0.14);
   --nv-shadow: rgba(2, 6, 23, 0.18);
   --nv-accent: #0ea5a4;
   --nv-accent-2: #4f46e5;
   --nv-accent-3: #f59e0b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --nv-canvas: #070914;
+    --nv-canvas-2: #0a0f23;
+    --nv-ink: #eef2ff;
+    --nv-muted: rgba(226, 232, 240, 0.72);
+    --nv-card: rgba(12, 18, 39, 0.72);
+    --nv-card-strong: rgba(12, 18, 39, 0.92);
+    --nv-border: rgba(226, 232, 240, 0.12);
+    --nv-shadow: rgba(2, 6, 23, 0.52);
+    --nv-accent: #2dd4bf;
+    --nv-accent-2: #818cf8;
+    --nv-accent-3: #fbbf24;
+  }
 }
 
 .nv-display {
@@ -26,6 +44,47 @@
   border: 1px solid var(--nv-border);
   box-shadow: 0 24px 60px -40px var(--nv-shadow);
   backdrop-filter: blur(16px);
+}
+
+.nv-page {
+  background: transparent;
+  color: var(--nv-ink);
+}
+
+.nv-container {
+  @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+}
+
+.nv-stack {
+  @apply space-y-6 sm:space-y-8;
+}
+
+.nv-card {
+  background: var(--nv-card);
+  border: 1px solid var(--nv-border);
+  box-shadow: 0 24px 60px -40px var(--nv-shadow);
+  backdrop-filter: blur(16px);
+  @apply rounded-3xl p-5 sm:p-6;
+}
+
+.nv-card-solid {
+  background: var(--nv-card-strong);
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  box-shadow: 0 10px 30px -22px rgba(2, 6, 23, 0.24);
+  @apply rounded-3xl p-5 sm:p-6;
+}
+
+.nv-section {
+  @apply py-6 sm:py-10;
+}
+
+.nv-h1 {
+  font-family: var(--font-display), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  @apply text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl md:text-5xl;
+}
+
+.nv-lead {
+  @apply text-base leading-7 text-slate-600 sm:text-lg;
 }
 
 @keyframes nv-float {
@@ -47,7 +106,47 @@ html, body {
 
 body {
   font-family: var(--font-body), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  @apply bg-white;
+  background: var(--nv-canvas);
+  color: var(--nv-ink);
+}
+
+::selection {
+  background: color-mix(in oklab, var(--nv-accent-2) 32%, transparent);
+  color: var(--nv-ink);
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--nv-accent-2) 22%, transparent);
+}
+
+.nv-route-chrome {
+  position: relative;
+}
+
+.nv-route-ornament {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(900px 500px at 10% 0%, color-mix(in oklab, var(--nv-accent-2) 18%, transparent) 0%, transparent 62%),
+    radial-gradient(800px 480px at 92% 10%, color-mix(in oklab, var(--nv-accent) 16%, transparent) 0%, transparent 58%),
+    radial-gradient(760px 460px at 50% 100%, color-mix(in oklab, var(--nv-accent-3) 14%, transparent) 0%, transparent 55%),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.035) 0px,
+      rgba(255, 255, 255, 0.035) 1px,
+      transparent 1px,
+      transparent 12px
+    );
+  mix-blend-mode: normal;
+  opacity: 0.9;
+}
+
+.nv-route-content {
+  position: relative;
+  z-index: 1;
 }
 @keyframes slide-up {
   from {

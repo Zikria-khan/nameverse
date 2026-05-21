@@ -1,4 +1,4 @@
-import { Globe, Languages, Volume2, Zap, Target, Sparkles, Shield, Clock, Award } from 'lucide-react';
+import { Globe, Languages, Volume2, Shield, Clock, Award } from 'lucide-react';
 
 const getLanguageFlag = (langKey) => {
   const flags = {
@@ -31,9 +31,9 @@ export default function Meaning({ data }) {
   const languages = collectLanguages(data);
 
   return (
-    <div className="space-y-6">
-      <section className="rounded-3xl border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-slate-100 p-6 shadow-sm">
-        <div className="flex items-center gap-3 mb-4 text-slate-900">
+    <div className="nv-stack">
+      <section className="nv-card">
+        <div className="mb-4 flex items-center gap-3 text-slate-900">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-100 text-amber-700 shadow-sm">
             <Globe className="h-5 w-5" />
           </div>
@@ -52,8 +52,8 @@ export default function Meaning({ data }) {
         )}
       </section>
 
-      <section className="rounded-3xl border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-slate-100 p-6 shadow-sm">
-        <div className="flex items-center gap-3 mb-4 text-slate-900">
+      <section className="nv-card">
+        <div className="mb-4 flex items-center gap-3 text-slate-900">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 shadow-sm">
             <Languages className="h-5 w-5" />
           </div>
@@ -63,7 +63,7 @@ export default function Meaning({ data }) {
         {languages.length > 0 ? (
           <div className="grid gap-4 sm:grid-cols-2">
             {languages.map((language) => (
-              <div key={language.code} className="rounded-3xl border border-slate-100 bg-slate-50 p-4 shadow-sm">
+              <div key={language.code} className="nv-card-solid p-4">
                 <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-900">
                   <span>{language.flag}</span>
                   <span>{language.name}</span>
@@ -81,7 +81,7 @@ export default function Meaning({ data }) {
       </section>
 
       {(data.pronunciation || data.lucky_number || data.lucky_day || data.lucky_colors?.length || data.lucky_stone || data.life_path_number) && (
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <section className="nv-card-solid">
           <div className="mb-4 flex items-center gap-3 text-slate-900">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
               <Volume2 className="h-5 w-5" />
@@ -136,7 +136,7 @@ export default function Meaning({ data }) {
       )}
 
       {(data.cultural_impact || data.islamic_reference || data.vedic_reference || data.organic_story) && (
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <section className="nv-card-solid">
           <div className="mb-4 flex items-center gap-3 text-slate-900">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
               <Shield className="h-5 w-5" />
@@ -162,7 +162,7 @@ export default function Meaning({ data }) {
       )}
 
       {data.historical_references?.length > 0 && (
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <section className="nv-card-solid">
           <div className="mb-4 flex items-center gap-3 text-slate-900">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
               <Clock className="h-5 w-5" />
@@ -187,7 +187,7 @@ export default function Meaning({ data }) {
       )}
 
       {data.celebrity_usage?.length > 0 && (
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <section className="nv-card-solid">
           <div className="mb-4 flex items-center gap-3 text-slate-900">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-50 text-amber-700">
               <Award className="h-5 w-5" />

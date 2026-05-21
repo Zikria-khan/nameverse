@@ -1,5 +1,6 @@
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
 import { getSiteUrl } from '@/lib/seo/site';
+import SitePage from '@/components/Layout/SitePage';
 
 export const metadata = {
   title: validateMetaTitle('Privacy Policy | NameVerse — Protecting Your Personal Information'),
@@ -12,21 +13,26 @@ export const metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-white py-12">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6">
-        <h1 className="text-4xl font-bold text-gray-900 mb-8">Privacy Policy</h1>
-        
-        <div className="prose prose-lg max-w-none text-gray-700">
-          <p className="text-sm text-gray-500 mb-8">Last updated: January 2026</p>
+    <SitePage
+      title="Privacy Policy"
+      subtitle="How we protect and handle your information"
+      breadcrumbs={[
+        { label: 'Home', href: '/' },
+        { label: 'Privacy Policy' },
+      ]}
+      containerClassName="max-w-4xl"
+    >
+      <div className="prose prose-lg max-w-none text-slate-700">
+        <p className="text-sm text-slate-500 mb-8">Last updated: January 2026</p>
 
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Introduction</h2>
-            <p className="leading-relaxed">
-              NameVerse ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy 
-              explains how we collect, use, disclose, and safeguard your information when you visit our website 
-              or use our baby names database service.
-            </p>
-          </section>
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Introduction</h2>
+          <p className="leading-relaxed">
+            NameVerse ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy
+            explains how we collect, use, disclose, and safeguard your information when you visit our website
+            or use our baby names database service.
+          </p>
+        </section>
 
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">2. Information We Collect</h2>
@@ -153,8 +159,7 @@ export default function PrivacyPage() {
               Email: privacy@nameverse.com
             </p>
           </section>
-        </div>
       </div>
-    </div>
+    </SitePage>
   );
 }
