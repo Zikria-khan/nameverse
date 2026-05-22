@@ -170,11 +170,23 @@ export default function Meaning({ data }) {
             <h2 className="text-xl font-semibold">Historical references</h2>
           </div>
 
-          <div className="space-y-4">
-            {data.historical_references.map((item, idx) => {
-              // Handle different API shapes: {reference, time_period} or {name, profession, country, notes} or plain strings
-              const refText = item.reference || item.notes || (typeof item === 'string' ? item : '');
-              const refPeriod = item.time_period || '';
+            <div className="space-y-4">
+            {Array.isArray(data.historical_references) &&
+              data.historical_references.map((item, idx) => {
+              // Handle different API shapes:
+              // {reference, time_period} | {name, profession, country, notes} | plain strings
+              let refText = '';
+              if (typeof item === 'string') {
+                refText = item;
+              } else if (typeof item === 'object' && item !== null) {
+                refText =
+                  item.reference ||
+                  item.notes ||
+                  (item.name
+                    ? `${item.name}${item.profession ? ` — ${item.profession}` : ''}${item.country ? ` (${item.country})` : ''}`
+                    : '');
+              }
+              const refPeriod = typeof item === 'object' ? item.time_period || '' : '';
               return (
                 <div key={idx} className="rounded-3xl border border-slate-100 bg-slate-50 p-4">
                   <p className="text-sm leading-6 text-slate-700">{refText}</p>

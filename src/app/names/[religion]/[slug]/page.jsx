@@ -93,6 +93,8 @@ export async function generateStaticParams() {
 
 function normalizeSlug(slug) {
   if (!slug || typeof slug !== 'string') return null;
+  // Reject any slug containing non-ASCII characters (IPA, macrons, Arabic script, etc.)
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug.trim().toLowerCase())) return null;
   return slug.trim().toLowerCase();
 }
 
