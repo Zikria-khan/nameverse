@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
+import { getSiteUrl } from '@/lib/seo/site';
 import { BookOpen, Heart, Clock, ArrowLeft, Share2, Calendar, User, Tag, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
 import blogPostsData from '../../../../public/data/blog-posts.json';
 import BlogImageWithFallback from '@/components/Blog/BlogImageWithFallback';
