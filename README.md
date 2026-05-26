@@ -1,2 +1,1 @@
 # nameverse
-# nameverse-frontend
