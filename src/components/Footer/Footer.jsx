@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import AdSenseUnit from '@/components/Ads/AdSenseUnit';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -111,7 +112,9 @@ export default function Footer() {
           */}
         </div>
       </div>
-      </div>
+
+      {/* Bottom Ad Unit */}
+      <AdSenseUnit slotId="9605048966" />
     </footer>
   );
 }
