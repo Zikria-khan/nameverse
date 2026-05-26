@@ -155,18 +155,13 @@ export default function RootLayout({ children }) {
             items: [],
           }}
         />
-        {/* Google AdSense - using next/script for proper hydration handling */}
+        {/* New Ad Script */}
         <Script
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1510675468129183"
-          strategy="lazyOnload"
-          crossOrigin="anonymous"
-        />
-
-        {/* AMP Auto Ads — loads relevant amp-auto-ads libraries */}
-        <Script
-          src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js"
-          strategy="lazyOnload"
-          data-custom-element="amp-auto-ads"
+          id="nap5k-ads"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `(function(s){s.dataset.zone='11058633',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`
+          }}
         />
 
         {/* Ahrefs analytics script */}
