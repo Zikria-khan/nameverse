@@ -14,8 +14,8 @@ Sitemap: https://nameverse.vercel.app/sitemap.xml
 # Allow all static assets
 Allow: /_next/static/
 
-# Block access to API endpoints (optional)
-# Disallow: /api/
+# Block access to API endpoints
+Disallow: /api/
 
 # Allow search pages to be indexed for SEO - they provide valuable content
 # Disallow: /search/

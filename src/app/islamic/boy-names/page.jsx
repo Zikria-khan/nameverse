@@ -8,8 +8,8 @@ import { createSafeSlug } from '@/lib/utils/createSafeSlug';
 // METADATA - World Class SEO
 // ==========================================
 export const metadata = {
-  title: '139+ Islamic Boy Names with Meanings | Muslim Baby Boy Names from Quran | NameVerse',
-  description: 'Discover 139+ beautiful Islamic boy names with meanings, origins & lucky numbers. Find the perfect Muslim baby boy name with Arabic roots. Complete guide to authentic Islamic names for your baby boy.',
+   title: '139+ Islamic Boy Names | NameVerse',
+   description: 'Discover 139+ Islamic boy names with meanings, origins & lucky numbers. Find the perfect Muslim baby boy name.',
   keywords: 'Islamic boy names, Muslim boy names, Islamic baby boy names, Quranic boy names, Arabic boy names, Muslim baby names for boys, Islamic names with meanings, popular Islamic boy names, unique Muslim boy names, Islamic boy names from Quran, best Islamic boy names 20252026, Muslim boy names with lucky numbers, Arabic baby boy names, Islamic names for newborn boys, traditional Islamic boy names',
   alternates: {
     canonical: getSiteUrl() + '/islamic/boy-names',

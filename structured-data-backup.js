@@ -177,8 +177,6 @@ export function generateBreadcrumbSchema(items) {
  * @returns {Object} CollectionPage schema
  */
 export function generateCollectionSchema(data) {
-  const religion = data.religion || ''
-  // Fixed: Added missing religion variable declaration
   return {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',

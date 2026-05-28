@@ -32,6 +32,48 @@ try {
 
 const publishedDate = new Date().toISOString().split('T')[0];
 
+export const metadata = {
+  title: validateMetaTitle('NameVerse — 65,000+ Verified Baby Names Search Engine'),
+  description: validateMetaDescription(
+    'NameVerse is the leading baby name search platform for Islamic, Hindu, and Christian names. Discover meanings, origins, popularity, and lucky numbers across 65,000+ verified baby names.'
+  ),
+  keywords: [
+    'NameVerse',
+    'NameVerse baby names',
+    'baby names search engine',
+    'search baby names',
+    'baby name meanings',
+    'Islamic baby names',
+    'Hindu baby names',
+    'Christian baby names',
+    'name origin',
+    'baby names 2026',
+    'trending baby names',
+    'name finder'
+  ].join(', '),
+  openGraph: {
+    title: validateMetaTitle('NameVerse — 65,000+ Verified Baby Names Search Engine'),
+    description: validateMetaDescription(
+      'Search 65,000+ Islamic, Hindu & Christian baby names by meaning, origin, gender, and popularity with NameVerse.'
+    ),
+    url: `${DOMAIN}/`,
+    type: 'website',
+    siteName: 'NameVerse',
+    images: [
+      { url: `${DOMAIN}/logo.png`, width: 512, height: 512, alt: 'NameVerse — Baby Names Search Engine' }
+    ]
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: validateMetaTitle('NameVerse — Baby Names Search Engine'),
+    description: 'Find 65,000+ verified baby names with meanings, origin, and trend data on NameVerse.'
+  },
+  alternates: {
+    canonical: `${DOMAIN}/`,
+    languages: { en: `${DOMAIN}/`, 'x-default': `${DOMAIN}/` }
+  }
+};
+
 const homepageStructuredData = {
   "@context": "https://schema.org",
   "@graph": [

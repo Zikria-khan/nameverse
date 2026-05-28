@@ -3,8 +3,18 @@ import { getSiteUrl } from '@/lib/seo/site';
 import SitePage from '@/components/Layout/SitePage';
 
 export const metadata = {
-  title: validateMetaTitle('Terms of Service | NameVerse — Use Our Names Database Responsibly'),
-  description: validateMetaDescription('Understand the terms and conditions of using NameVerse. Learn about our data usage, licensing, and user responsibilities for our baby names service.'),
+  title: validateMetaTitle('Terms of Service | NameVerse — Use Our Baby Name Search Platform Responsibly'),
+  description: validateMetaDescription('Read the NameVerse Terms of Service for our baby names search platform. Learn how to use NameVerse responsibly when accessing Islamic, Hindu, and Christian name data.'),
+  keywords: [
+    'NameVerse',
+    'NameVerse terms',
+    'Terms of Service',
+    'baby names platform terms',
+    'name search terms',
+    'baby name website terms',
+    'NameVerse service policy',
+    'terms for baby name search'
+  ].join(', '),
   alternates: {
     canonical: `${getSiteUrl()}/terms`,
     languages: { en: `${getSiteUrl()}/terms`, 'x-default': `${getSiteUrl()}/terms` },
@@ -24,6 +34,12 @@ export default function TermsPage() {
     >
       <div className="prose prose-lg max-w-none text-slate-700">
         <p className="text-sm text-slate-500 mb-8">Last updated: January 2026</p>
+
+          <section className="mb-8">
+            <p className="leading-relaxed">
+              These Terms of Service govern your use of NameVerse, the baby names search platform for Islamic, Hindu, and Christian names. By using NameVerse to search names, meanings, and origins, you agree to use our database and tools responsibly.
+            </p>
+          </section>
 
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Acceptance of Terms</h2>

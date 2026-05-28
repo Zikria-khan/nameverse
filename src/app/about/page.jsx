@@ -6,13 +6,13 @@ import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpe
 const siteUrl = getSiteUrl();
 
 export const metadata = {
-  title: validateMetaTitle("About Zakriya Khan - Name Meanings Expert & Cultural Consultant"),
-  description: validateMetaDescription("Meet Zakriya Khan - Expert in name meanings, cultural heritage, and spiritual significance. Discover the stories behind names with personalized insights and professional consultation."),
+  title: validateMetaTitle("About NameVerse & Zakriya Khan — Baby Name Research Expert"),
+  description: validateMetaDescription("Learn about NameVerse and baby names expert Zakriya Khan. Discover how NameVerse researches Islamic, Hindu, and Christian baby names with verified meanings and authentic origin details."),
   alternates: {
     canonical: `${getSiteUrl()}/about`,
     languages: { en: `${getSiteUrl()}/about`, 'x-default': `${getSiteUrl()}/about` },
   },
-  keywords: ["Zakriya Khan", "name meanings", "cultural heritage", "spiritual names", "Islamic names", "baby names expert", "name consultant", "baby name consultant", "religious baby names", "Muslim name specialist", "Hindu name expert", "Christian name advisor", "meaningful baby names", "name origin research"],
+  keywords: ["NameVerse", "About NameVerse", "baby names expert", "baby name research", "Islamic names", "Hindu names", "Christian names", "baby name meanings", "religious names", "name origin research", "meaningful baby names", "name consultant", "name search platform"].join(', '),
   openGraph: {
     title: "About Zakriya Khan - Name Meanings Expert & Cultural Consultant",
     description: "Meet Zakriya Khan - Expert in name meanings, cultural heritage, and spiritual significance.",
@@ -71,17 +71,16 @@ export default function AboutPage() {
             
             <div className="relative z-10 text-center">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full mb-6 text-sm font-semibold border border-white/30">
-                <span>Professional Name Consultant</span>
+                <span>NameVerse Founder & Baby Name Expert</span>
               </div>
               
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-                Helping families discover meaningful names
+                Helping families discover meaningful baby names with NameVerse
               </h2>
               
               <p className="text-lg sm:text-xl text-white/95 max-w-3xl mx-auto mb-8">
-                With deep cultural and spiritual significance
+                As founder of NameVerse, I make it easier to choose Islamic, Hindu, and Christian baby names with verified meanings, origin stories, and spiritual insight.
               </p>
-              
               <div className="flex flex-wrap justify-center gap-4">
                 <a 
                   href="https://wa.me/923497174815" 
@@ -157,10 +156,10 @@ export default function AboutPage() {
             </h2>
             <div className="prose prose-lg max-w-none text-gray-700 space-y-4">
               <p>
-                As-salamu alaykum! I'm Zakriya Khan, and my passion for names began with a simple question: "What does my name really mean?" This curiosity led me on a journey through Islamic history, Arabic linguistics, and cultural anthropology.
+                As-salamu alaykum! I'm Zakriya Khan, founder of NameVerse, and my passion for names began with a simple question: "What does my name really mean?" This curiosity led me on a journey through Islamic history, Arabic linguistics, and cultural anthropology.
               </p>
               <p>
-                Over the years, I've dedicated myself to understanding the profound significance behind names across multiple cultures and religions. Each name carries a story, a blessing, and a hope for the future.
+                Over the years, I have built NameVerse into a trusted baby name research platform for families seeking authentic meanings, cultural context, and spiritual insight. Each name carries a story, a blessing, and a hope for the future.
               </p>
               <p className="font-semibold text-indigo-600">
                 "A name is the first gift you give your child - make it meaningful."
