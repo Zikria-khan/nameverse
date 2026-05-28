@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { serverFetchNamesWithAdvancedFilters } from '@/lib/api/server-fetch';
 import { validateMetaTitle, validateMetaDescription, generateCanonicalUrl } from '@/lib/seo/meta-helpers';
+import { getSiteUrl } from '@/lib/seo/site';
 import { Sparkles, Moon, ChevronLeft, ChevronRight } from 'lucide-react';
 import FavoriteButton from '@/components/FavoriteButton';
 import { createSafeSlug } from '@/lib/utils/createSafeSlug';
@@ -84,32 +85,57 @@ export async function generateMetadata({ params }) {
   const categoryLabel = category.charAt(0).toUpperCase() + category.slice(1);
   const page = parseInt(rawParams.page, 10) > 0 ? parseInt(rawParams.page, 10) : 1;
   const canonical = generateCanonicalUrl(`/names/${religion}/categories/${category}/${page}`);
+  const pageSuffix = page > 1 ? ` - Page ${page}` : '';
+  const ogImage = `${getSiteUrl()}/api/og?section=categories&religion=${religion}&category=${encodeURIComponent(categoryLabel)}`;
+  const categoryName = categoryLabel === 'Name' ? '' : ` ${categoryLabel}`;
+
+  const titleRaw = page === 1
+    ? `${religionLabel}${categoryName} Baby Names with Meanings & Origins | NameVerse`
+    : `${religionLabel}${categoryName} Baby Names - Page ${page} | NameVerse`;
+
+  const descRaw = page === 1
+    ? `Discover beautiful ${religionLabel}${categoryName.toLowerCase()} baby names with authentic meanings, cultural origins, gender details, and lucky numbers. Browse our curated collection of ${religionLabel}${categoryName.toLowerCase()} names on NameVerse — trusted by parents worldwide.`
+    : `Browse page ${page} of ${religionLabel}${categoryName.toLowerCase()} baby names. Find detailed meanings, cultural origins, and lucky numbers for the perfect ${religionLabel} name.`;
 
   return {
-    title: validateMetaTitle(`Search ${religionLabel} ${categoryLabel} Names | NameVerse`),
-    description: validateMetaDescription(
-      `Search page ${page} of ${religionLabel} ${categoryLabel} baby names on NameVerse. Find names with meaning, origin, gender, and lucky number in the ${categoryLabel} category.`
-    ),
+    title: validateMetaTitle(titleRaw),
+    description: validateMetaDescription(descRaw),
     keywords: [
-      `search ${religionLabel} ${categoryLabel} names`,
-      `${categoryLabel} baby names`,
+      `${religionLabel}${categoryName.toLowerCase()} baby names`,
+      `${categoryLabel.toLowerCase()} ${religionLabel} names with meanings`,
       `${religionLabel} names by category`,
-      `find ${categoryLabel} baby names`,
-      `${categoryLabel} name meanings`,
-      `best ${categoryLabel} names`,
-      `unique ${religionLabel} names`,
-      `top ${categoryLabel} baby names`,
+      `find ${categoryLabel.toLowerCase()} baby names`,
+      `${categoryLabel.toLowerCase()} name meanings and origins`,
+      `best ${categoryLabel.toLowerCase()} ${religionLabel} names`,
+      `unique ${religionLabel}${categoryName.toLowerCase()} names`,
+      `top ${categoryLabel.toLowerCase()} baby names 2026`,
       `NameVerse`,
-      `baby name search by category`
+      `baby names with lucky numbers`
     ].join(', '),
     openGraph: {
-      title: validateMetaTitle(`${religionLabel} ${categoryLabel} Names | NameVerse`),
+      title: validateMetaTitle(`${religionLabel}${categoryName} Baby Names with Meanings | NameVerse`),
       description: validateMetaDescription(
-        `Explore ${religionLabel} ${categoryLabel} baby names with meanings, origin details, and naming inspiration.`
+        `Explore ${religionLabel}${categoryName.toLowerCase()} baby names with authentic meanings, origin details, and naming inspiration on NameVerse.`
       ),
       url: canonical,
       type: 'website',
       siteName: 'NameVerse',
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${religionLabel}${categoryName.toLowerCase()} baby names | NameVerse`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: validateMetaTitle(`${religionLabel}${categoryName} Baby Names | NameVerse`),
+      description: validateMetaDescription(
+        `Discover ${religionLabel}${categoryName.toLowerCase()} baby names with authentic meanings and origins on NameVerse.`
+      ),
+      images: [ogImage],
     },
     alternates: {
       canonical,
@@ -118,7 +144,17 @@ export async function generateMetadata({ params }) {
         'x-default': canonical,
       },
     },
-    robots: { index: true, follow: true },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-snippet': -1,
+        'max-image-preview': 'large',
+        'max-video-preview': -1,
+      },
+    },
   };
 }
 

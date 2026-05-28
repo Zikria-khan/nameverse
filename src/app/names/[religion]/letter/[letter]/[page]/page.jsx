@@ -89,6 +89,8 @@ export async function generateMetadata({ params }) {
   // Generate dynamic count for more compelling title
   const countPhrase = page === 1 ? '50+' : 'Names';
   
+  const ogImage = `${getSiteUrl()}/api/og?section=letter&religion=${religion}&letter=${letter}`;
+
   const titleRaw =
     page === 1
       ? `${religionLabel} Baby Names Starting with ${letter} - Meanings, Origins & Lucky Numbers | NameVerse`
@@ -109,8 +111,8 @@ export async function generateMetadata({ params }) {
       `baby name meanings ${letter}`,
       `${religionLabel} name origin ${letter}`,
       `best ${religionLabel} baby names ${letter}`,
-      `${letter} baby name list`,
-      `${religionLabel} names directory`,
+      `${letter} baby name list with meanings`,
+      `${religionLabel} names directory ${letter}`,
     ].filter(Boolean).join(', '),
     openGraph: {
       title: validateMetaTitle(titleRaw),
@@ -118,11 +120,20 @@ export async function generateMetadata({ params }) {
       url: canonical,
       type: 'website',
       siteName: 'NameVerse',
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${religionLabel} baby names starting with ${letter} | NameVerse`,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title: validateMetaTitle(titleRaw),
       description: validateMetaDescription(descRaw),
+      images: [ogImage],
       site: '@NameVerse',
     },
     alternates: {

@@ -72,21 +72,30 @@ export async function generateMetadata({ params }) {
   const originLabel = origin.charAt(0).toUpperCase() + origin.slice(1);
   const canonical = generateCanonicalUrl(`/names/${religion}/origin/${origin}/${page}`);
   const ogImage = `${getSiteUrl()}/api/og?section=origin&religion=${religion}&origin=${encodeURIComponent(originLabel)}`;
-  const seoTitle = validateMetaTitle(`Explore ${originLabel} Origin ${religionLabel} Baby Names | NameVerse`);
-  const seoDescription = validateMetaDescription(
-    `Discover authentic ${religionLabel} baby names from ${originLabel} origin with meaning, pronunciation, and cultural background. Browse page ${page} of origin-based names on NameVerse — your trusted source for meaningful baby names.`
-  );
+  const pageSuffix = page > 1 ? ` - Page ${page}` : '';
+
+  const titleRaw = page === 1
+    ? `${originLabel} Origin ${religionLabel} Baby Names with Meanings & Lucky Numbers | NameVerse`
+    : `${originLabel} Origin ${religionLabel} Baby Names - Page ${page} | NameVerse`;
+
+  const descRaw = page === 1
+    ? `Discover authentic ${religionLabel} baby names from ${originLabel} origin with detailed meanings, pronunciation, lucky numbers, and cultural background. Browse our curated collection of ${originLabel} origin ${religionLabel} names on NameVerse — trusted by parents worldwide.`
+    : `Browse page ${page} of ${religionLabel} baby names from ${originLabel} origin. Find detailed name meanings, pronunciation guides, lucky numbers, and cultural origins for the perfect ${religionLabel} name.`;
+
+  const seoTitle = validateMetaTitle(titleRaw);
+  const seoDescription = validateMetaDescription(descRaw);
 
   return {
     title: seoTitle,
     description: seoDescription,
     keywords: [
-      `authentic ${originLabel} origin baby names`,
+      `${originLabel} origin ${religionLabel} baby names`,
       `${religionLabel} names from ${originLabel}`,
-      `${originLabel} name meanings`,
-      `${originLabel} origin name list`,
-      `${religionLabel} baby names origin`,
-      `2026 ${originLabel} baby names`,
+      `${originLabel} name meanings and origins`,
+      `${originLabel} origin baby name list`,
+      `${religionLabel} baby names with lucky numbers ${originLabel}`,
+      `2026 ${originLabel} origin ${religionLabel} names`,
+      `${religionLabel} baby names from ${originLabel}`,
       `NameVerse`
     ].join(', '),
     alternates: {
@@ -97,15 +106,17 @@ export async function generateMetadata({ params }) {
       },
     },
     openGraph: {
-      title: seoTitle,
-      description: seoDescription,
+      title: validateMetaTitle(`${originLabel} Origin ${religionLabel} Baby Names with Meanings | NameVerse`),
+      description: validateMetaDescription(
+        `Discover authentic ${religionLabel} baby names from ${originLabel} origin with meanings, pronunciation, and lucky numbers on NameVerse.`
+      ),
       url: canonical,
       type: 'website',
       siteName: 'NameVerse',
       images: [
         {
           url: ogImage,
-          alt: `${originLabel} origin ${religionLabel} names | NameVerse`,
+          alt: `${originLabel} origin ${religionLabel} baby names | NameVerse`,
           width: 1200,
           height: 630
         }
@@ -113,11 +124,23 @@ export async function generateMetadata({ params }) {
     },
     twitter: {
       card: 'summary_large_image',
-      title: seoTitle,
-      description: seoDescription,
+      title: validateMetaTitle(`${originLabel} Origin ${religionLabel} Baby Names | NameVerse`),
+      description: validateMetaDescription(
+        `Find authentic ${religionLabel} baby names from ${originLabel} origin with meanings and lucky numbers on NameVerse.`
+      ),
       images: [ogImage],
     },
-    robots: { index: true, follow: true },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-snippet': -1,
+        'max-image-preview': 'large',
+        'max-video-preview': -1,
+      },
+    },
   };
 }
 
