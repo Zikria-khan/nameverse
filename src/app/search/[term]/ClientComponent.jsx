@@ -9,6 +9,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import FavoriteButton from '@/components/FavoriteButton';
 import SearchWithSuggestions from '@/components/SearchWithSuggestions';
 import { getSiteUrl } from '@/lib/seo/site';
+import { createSafeSlug } from '@/lib/utils/createSafeSlug';
 
 export default function SearchResultsClient({
   initialNames,
@@ -21,7 +22,8 @@ export default function SearchResultsClient({
   const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || getSiteUrl();
   const dynamicTitle = `${searchTerm} - Names | NameVerse`;
   const dynamicDescription = `Discover ${initialTotalResults} name results for ${searchTerm}. Expert meanings, origins, and inspiration for your search.`;
-  const canonicalURL = `${DOMAIN}/search/${encodeURIComponent(searchTerm)}`;
+  const safeSearchTerm = createSafeSlug(searchTerm) || 'search';
+  const canonicalURL = `${DOMAIN}/search/${safeSearchTerm}`;
 
   const [viewMode, setViewMode] = useState('grid');
   const [activeTab, setActiveTab] = useState('all');
@@ -309,7 +311,7 @@ function NameCard({ name, viewMode, index, searchTerm, router }) {
     'christianity': 'christian',
   };
   const religion = religionMap[name.religion?.toLowerCase()] || 'islamic';
-  const url = `/names/${religion}/${name.slug || name.name?.toLowerCase().replace(/\s+/g, '-')}`;
+  const url = `/names/${religion}/${name.slug || createSafeSlug(name.name)}`;
 
   return (
     <article
@@ -329,7 +331,7 @@ function NameCard({ name, viewMode, index, searchTerm, router }) {
         <FavoriteButton
           nameData={{
             name: name.name,
-            slug: name.slug || name.name?.toLowerCase().replace(/\s+/g, '-'),
+            slug: name.slug || createSafeSlug(name.name),
             religion: religion,
             meaning: name.short_meaning || name.long_meaning,
             origin: name.origin

@@ -6,13 +6,14 @@ import { useRouter } from 'next/navigation';
 import { fetchNamesByLetter } from '@/lib/api/names';
 import { Sparkles, Moon, ChevronLeft, ChevronRight } from 'lucide-react';
 import FavoriteButton from '@/components/FavoriteButton';
+import { createSafeSlug } from '@/lib/utils/createSafeSlug';
 
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
 const NAMES_PER_PAGE = 50;
 
 function generateSlug(name) {
   if (!name || typeof name !== 'string') return '';
-  return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  return createSafeSlug(name);
 }
 
 export default function LetterNamesClient({ selectedReligion, letter, page }) {

@@ -4,12 +4,13 @@ import { serverFetchNamesWithAdvancedFilters } from '@/lib/api/server-fetch';
 import { validateMetaTitle, validateMetaDescription, generateCanonicalUrl } from '@/lib/seo/meta-helpers';
 import { Sparkles, Moon, ChevronLeft, ChevronRight } from 'lucide-react';
 import FavoriteButton from '@/components/FavoriteButton';
+import { createSafeSlug } from '@/lib/utils/createSafeSlug';
 
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
 const STATIC_CATEGORIES = ['modern', 'traditional', 'nature', 'religious', 'classical', 'unique'];
 
-// ISR with 7-day cache — category-filter lists refreshed regularly
-export const revalidate = 604800; // 7 days
+// ISR with 60-day cache to minimize writes
+export const revalidate = 5184000; // 60 days
 export const dynamicParams = true;
 
 // Pre-generate category pages at build time
@@ -166,7 +167,7 @@ export default async function CategoryNamesPage({ params }) {
 
   function generateSlug(name) {
     if (!name || typeof name !== 'string') return '';
-    return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    return createSafeSlug(name);
   }
 
   return (

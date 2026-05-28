@@ -9,6 +9,7 @@ import {
   MessageCircle, Copy, Check, ExternalLink, Palette
 } from 'lucide-react'
 import FavoriteButton from '@/components/FavoriteButton'
+import { createSafeSlug } from '@/lib/utils/createSafeSlug'
 
 // Religion-based theme configuration
 const religionThemes = {
@@ -280,7 +281,7 @@ export default function NameDetailClient({ data, initialLanguage }) {
     if (!mounted) return
     try {
       const favorites = JSON.parse(localStorage.getItem('favoriteNames') || '[]')
-      setIsFavorite(favorites.includes(data.slug || data.name.toLowerCase()))
+      setIsFavorite(favorites.includes(data.slug || createSafeSlug(data.name)))
     } catch (localErr) {
       // Corrupted localStorage — silently reset favorites list
       localStorage.removeItem('favoriteNames');
@@ -389,7 +390,7 @@ export default function NameDetailClient({ data, initialLanguage }) {
                 <FavoriteButton
                   nameData={{
                     name: data.name,
-                    slug: data.slug || data.name?.toLowerCase().replace(/\s+/g, '-'),
+                    slug: data.slug || createSafeSlug(data.name),
                     religion: data.religion?.toLowerCase() === 'islam' ? 'islamic' : data.religion?.toLowerCase(),
                     meaning: data.short_meaning || data.long_meaning || data.meaning,
                     origin: data.origin
@@ -470,7 +471,7 @@ export default function NameDetailClient({ data, initialLanguage }) {
                 onClick={() => {
                   try {
                     const favorites = JSON.parse(localStorage.getItem('favoriteNames') || '[]')
-                    const nameId = data.slug || data.name.toLowerCase()
+                    const nameId = data.slug || createSafeSlug(data.name)
 
                     if (favorites.includes(nameId)) {
                       const updated = favorites.filter(id => id !== nameId)
@@ -711,7 +712,7 @@ export default function NameDetailClient({ data, initialLanguage }) {
             {data.similar_sounding_names?.slice(0, 8).map((similarName) => (
               <Link
                 key={similarName}
-                href={`/names/${data.religion}/${similarName.toLowerCase().replace(/\s+/g, '-')}`}
+                href={`/names/${data.religion}/${createSafeSlug(similarName)}`}
                 className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all text-center"
               >
                 <div className="font-semibold text-blue-600">{similarName}</div>
@@ -814,7 +815,7 @@ export default function NameDetailClient({ data, initialLanguage }) {
               onClick={() => {
                 try {
                   const favorites = JSON.parse(localStorage.getItem('favoriteNames') || '[]')
-                  const nameId = data.slug || data.name.toLowerCase()
+                  const nameId = data.slug || createSafeSlug(data.name)
 
                   if (favorites.includes(nameId)) {
                     const updated = favorites.filter(id => id !== nameId)

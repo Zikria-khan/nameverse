@@ -7,6 +7,7 @@ import { validateMetaTitle, validateMetaDescription, generateCanonicalUrl } from
 import { ChevronLeft, ChevronRight, Sparkles, Moon, Globe, BookOpen, Heart, Star, TrendingUp, Users, Languages, Award } from 'lucide-react';
 import FavoriteButton from '@/components/FavoriteButton';
 import { getSiteUrl } from '@/lib/seo/site';
+import { createSafeSlug } from '@/lib/utils/createSafeSlug';
 
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
 const RELIGION_LABELS = {
@@ -15,8 +16,8 @@ const RELIGION_LABELS = {
   hindu: 'Hindu',
 };
 
-// ISR with 7-day cache — religion name list refreshed as data grows
-export const revalidate = 604800; // 7 days
+// ISR with 60-day cache to minimize writes
+export const revalidate = 5184000; // 60 days
 export const dynamicParams = true;
 
 // Pre-generate religion pages at build time
@@ -57,7 +58,7 @@ function normalizePage(page) {
 
 function generateSlug(name) {
   if (!name || typeof name !== 'string') return '';
-  return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  return createSafeSlug(name);
 }
 
 export async function generateMetadata({ params }) {
@@ -287,7 +288,7 @@ export default async function ReligionByPage({ params }) {
           url: canonical,
           items: (names || []).slice(0, 20).map((n) => ({
             title: n.name || n.title,
-            path: `names/${religion}/${(n.slug || (n.name || n.title || '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, ''))}`
+            path: `names/${religion}/${(n.slug || createSafeSlug(n.name || n.title || ''))}`
           }))
         }}
       />
@@ -524,9 +525,9 @@ export default async function ReligionByPage({ params }) {
           <>
             <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {names.map((nameItem, index) => {
-                const displayName = nameItem.name || nameItem.title || `Name ${index + 1}`;
-                const displayMeaning = nameItem.short_meaning || nameItem.meaning || nameItem.long_meaning || 'Meaning not available';
-                const slug = nameItem.slug || generateSlug(displayName);
+const displayName = nameItem.name || nameItem.title || `Name ${index + 1}`;
+                 const displayMeaning = nameItem.short_meaning || nameItem.meaning || nameItem.long_meaning || 'Meaning not available';
+                 const slug = nameItem.slug || generateSlug(displayName) || createSafeSlug(displayName) || '';
 
                 return (
                   <div key={slug} className="nv-card-solid group block p-6 transition hover:-translate-y-0.5">
@@ -656,95 +657,104 @@ export default async function ReligionByPage({ params }) {
             </h3>
             <div className="nv-card-solid mt-5 p-5">
               <div className="grid grid-cols-2 gap-3">
-                  {religion === 'islamic' && [
-                    { name: 'Muhammad', meaning: 'Praiseworthy' },
-                    { name: 'Fatima', meaning: 'One who abstains' },
-                    { name: 'Aisha', meaning: 'Living, prosperous' },
-                    { name: 'Ali', meaning: 'Exalted, noble' },
-                    { name: 'Omar', meaning: 'Long-lived' },
-                    { name: 'Zahra', meaning: 'Radiant, bright' }
-                  ].map((name, index) => (
-                    <div
-                      key={index}
-                      className="relative rounded-2xl bg-white/40 p-3 text-center transition hover:bg-white"
-                    >
-                      <div className="absolute top-2 right-2">
-                        <FavoriteButton
-                          nameData={{
-                            name: name.name,
-                            slug: name.name.toLowerCase(),
-                            religion: 'islamic',
-                            meaning: name.meaning
-                          }}
-                          size="small"
-                        />
-                      </div>
-                      <Link href={`/names/islamic/${name.name.toLowerCase()}`}>
-                        <div className="font-semibold text-slate-900">{name.name}</div>
-                        <div className="mt-1 text-xs text-slate-600">{name.meaning}</div>
-                      </Link>
-                    </div>
-                  ))}
+{religion === 'islamic' && [
+                     { name: 'Muhammad', meaning: 'Praiseworthy' },
+                     { name: 'Fatima', meaning: 'One who abstains' },
+                     { name: 'Aisha', meaning: 'Living, prosperous' },
+                     { name: 'Ali', meaning: 'Exalted, noble' },
+                     { name: 'Omar', meaning: 'Long-lived' },
+                     { name: 'Zahra', meaning: 'Radiant, bright' }
+                   ].map((nameItem, index) => {
+                     const slug = createSafeSlug(nameItem.name);
+                     return (
+                       <div
+                         key={index}
+                         className="relative rounded-2xl bg-white/40 p-3 text-center transition hover:bg-white"
+                       >
+                         <div className="absolute top-2 right-2">
+                           <FavoriteButton
+                             nameData={{
+                               name: nameItem.name,
+                               slug: slug,
+                               religion: 'islamic',
+                               meaning: nameItem.meaning
+                             }}
+                             size="small"
+                           />
+                         </div>
+                         <Link href={`/names/islamic/${slug}`}>
+                           <div className="font-semibold text-slate-900">{nameItem.name}</div>
+                           <div className="mt-1 text-xs text-slate-600">{nameItem.meaning}</div>
+                         </Link>
+                       </div>
+                     );
+                   })}
 
-                  {religion === 'hindu' && [
-                    { name: 'Aarav', meaning: 'Peaceful' },
-                    { name: 'Saanvi', meaning: 'Goddess Lakshmi' },
-                    { name: 'Vihaan', meaning: 'Dawn' },
-                    { name: 'Ananya', meaning: 'Unique' },
-                    { name: 'Arjun', meaning: 'White, clear' },
-                    { name: 'Diya', meaning: 'Light' }
-                  ].map((name, index) => (
-                    <div
-                      key={index}
-                      className="relative rounded-2xl bg-white/40 p-3 text-center transition hover:bg-white"
-                    >
-                      <div className="absolute top-2 right-2">
-                        <FavoriteButton
-                          nameData={{
-                            name: name.name,
-                            slug: name.name.toLowerCase(),
-                            religion: 'hindu',
-                            meaning: name.meaning
-                          }}
-                          size="small"
-                        />
-                      </div>
-                      <Link href={`/names/hindu/${name.name.toLowerCase()}`}>
-                        <div className="font-semibold text-slate-900">{name.name}</div>
-                        <div className="mt-1 text-xs text-slate-600">{name.meaning}</div>
-                      </Link>
-                    </div>
-                  ))}
+                   {religion === 'hindu' && [
+                     { name: 'Aarav', meaning: 'Peaceful' },
+                     { name: 'Saanvi', meaning: 'Goddess Lakshmi' },
+                     { name: 'Vihaan', meaning: 'Dawn' },
+                     { name: 'Ananya', meaning: 'Unique' },
+                     { name: 'Arjun', meaning: 'White, clear' },
+                     { name: 'Diya', meaning: 'Light' }
+                   ].map((nameItem, index) => {
+                     const slug = createSafeSlug(nameItem.name);
+                     return (
+                       <div
+                         key={index}
+                         className="relative rounded-2xl bg-white/40 p-3 text-center transition hover:bg-white"
+                       >
+                         <div className="absolute top-2 right-2">
+                           <FavoriteButton
+                             nameData={{
+                               name: nameItem.name,
+                               slug: slug,
+                               religion: 'hindu',
+                               meaning: nameItem.meaning
+                             }}
+                             size="small"
+                           />
+                         </div>
+                         <Link href={`/names/hindu/${slug}`}>
+                           <div className="font-semibold text-slate-900">{nameItem.name}</div>
+                           <div className="mt-1 text-xs text-slate-600">{nameItem.meaning}</div>
+                         </Link>
+                       </div>
+                     );
+                   })}
 
-                  {religion === 'christian' && [
-                    { name: 'Noah', meaning: 'Rest, comfort' },
-                    { name: 'Sophia', meaning: 'Wisdom' },
-                    { name: 'James', meaning: 'Supplanter' },
-                    { name: 'Mary', meaning: 'Beloved' },
-                    { name: 'David', meaning: 'Beloved' },
-                    { name: 'Sarah', meaning: 'Princess' }
-                  ].map((name, index) => (
-                    <div
-                      key={index}
-                      className="relative rounded-2xl bg-white/40 p-3 text-center transition hover:bg-white"
-                    >
-                      <div className="absolute top-2 right-2">
-                        <FavoriteButton
-                          nameData={{
-                            name: name.name,
-                            slug: name.name.toLowerCase(),
-                            religion: 'christian',
-                            meaning: name.meaning
-                          }}
-                          size="small"
-                        />
-                      </div>
-                      <Link href={`/names/christian/${name.name.toLowerCase()}`}>
-                        <div className="font-semibold text-slate-900">{name.name}</div>
-                        <div className="mt-1 text-xs text-slate-600">{name.meaning}</div>
-                      </Link>
-                    </div>
-                  ))}
+                   {religion === 'christian' && [
+                     { name: 'Noah', meaning: 'Rest, comfort' },
+                     { name: 'Sophia', meaning: 'Wisdom' },
+                     { name: 'James', meaning: 'Supplanter' },
+                     { name: 'Mary', meaning: 'Beloved' },
+                     { name: 'David', meaning: 'Beloved' },
+                     { name: 'Sarah', meaning: 'Princess' }
+                   ].map((nameItem, index) => {
+                     const slug = createSafeSlug(nameItem.name);
+                     return (
+                       <div
+                         key={index}
+                         className="relative rounded-2xl bg-white/40 p-3 text-center transition hover:bg-white"
+                       >
+                         <div className="absolute top-2 right-2">
+                           <FavoriteButton
+                             nameData={{
+                               name: nameItem.name,
+                               slug: slug,
+                               religion: 'christian',
+                               meaning: nameItem.meaning
+                             }}
+                             size="small"
+                           />
+                         </div>
+                         <Link href={`/names/christian/${slug}`}>
+                           <div className="font-semibold text-slate-900">{nameItem.name}</div>
+                           <div className="mt-1 text-xs text-slate-600">{nameItem.meaning}</div>
+                         </Link>
+                       </div>
+                     );
+                   })}
                 </div>
               </div>
             </div>

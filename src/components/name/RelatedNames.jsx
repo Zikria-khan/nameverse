@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { Link as LinkIcon } from 'lucide-react';
+import { createSafeSlug } from '@/lib/utils/createSafeSlug';
 
 const normalizeLink = (name, religion) => {
-  const segment = name.toLowerCase().replace(/\s+/g, '-');
+  const segment = createSafeSlug(name);
   return `/names/${religion}/${segment}`;
 };
 

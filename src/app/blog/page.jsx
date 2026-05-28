@@ -7,8 +7,8 @@ import BlogImageWithFallback from '@/components/Blog/BlogImageWithFallback';
 import { getSiteUrl } from '@/lib/seo/site';
 import SitePage from '@/components/Layout/SitePage';
 
-// ISR with 7-day cache for blog index — fresh content weekly
-export const revalidate = 604800; // 7 days
+// ISR with 90-day cache for blog index — keep content stable
+export const revalidate = 7776000; // 90 days
 
 const blogPostsData = JSON.parse(
   readFileSync(join(process.cwd(), 'public', 'data', 'blog-posts.json'), 'utf8')

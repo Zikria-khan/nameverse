@@ -5,6 +5,26 @@ const inputPath = 'E:\\code\\nameverse\\public\\data\\blog-posts.json';
 const outputPath = 'E:\\code\\nameverse\\public\\data\\blog-posts.json';
 const sitemapPath = 'E:\\code\\nameverse\\public\\blog_sitemap.xml';
 
+const URL_REGEX = /^[a-z0-9-]+$/;
+
+function createSafeSlug(input = "") {
+  return String(input || '')
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9\s-]/g, "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function validateSlug(slug, context) {
+  if (!slug) throw new Error('Empty slug in ' + context);
+  if (!URL_REGEX.test(slug)) throw new Error('Invalid slug in ' + context + ': "' + slug + '" does not match ^[a-z0-9-]+$');
+  return slug;
+}
+
 const islamicNames = ['Muhammad', 'Ali', 'Fatima', 'Aisha', 'Khadija', 'Zainab', 'Maryam', 'Amina', 'Zayd', 'Ibrahim', 'Hassan', 'Hussein', 'Bilal', 'Abdullah', 'Ahmad', 'Hamza', 'Saad'];
 const christianNames = ['Abraham', 'David', 'Sarah', 'Rebecca', 'Rachel', 'Naomi', 'Esther', 'Ruth', 'Elizabeth', 'John', 'Matthew', 'Thomas', 'James', 'Peter', 'Paul', 'Mary', 'Martha', 'Hannah', 'Anna'];
 const hinduNames = ['Krishna', 'Radha', 'Lakshmi', 'Saraswati', 'Ganesha', 'Shiva', 'Parvati', 'Vishnu', 'Durga', 'Rama', 'Sita', 'Arjuna', 'Karna', 'Draupadi', 'Priya', 'Meera', 'Devi', 'Uma'];
@@ -110,12 +130,35 @@ function generatePost(post, idx) {
 }
 
 function generateSitemap(posts) {
-  const urls = posts.map(p => `  <url>\n    <loc>https://nameverse.com/blog/${p.id}</loc>\n    <lastmod>${p.lastUpdated}</lastmod>\n    <changefreq>monthly</changefreq>\n  </url>`).join('\n');
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`;
+  let urlsXml = '';
+  const seenSlugs = new Set();
+  posts.forEach(p => {
+    const safeSlug = createSafeSlug(p.id);
+    validateSlug(safeSlug, 'blog sitemap slug');
+    if (seenSlugs.has(safeSlug)) {
+      throw new Error(`Duplicate blog slug in sitemap: ${safeSlug}`);
+    }
+    seenSlugs.add(safeSlug);
+    urlsXml += `  <url>
+    <loc>https://nameverse.com/blog/${safeSlug}</loc>
+    <lastmod>${p.lastUpdated}</lastmod>
+    <changefreq>monthly</changefreq>
+  </url>
+`;
+  });
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urlsXml}</urlset>`;
 }
 
 const existing = JSON.parse(fs.readFileSync(inputPath, 'utf8'));
-const newPosts = posts.map((p, i) => generatePost(p, i));
+const newPosts = posts.map((p, i) => {
+  const post = generatePost(p, i);
+  const safeId = createSafeSlug(post.id);
+  validateSlug(safeId, 'build-blogs.js post[' + i + '].id');
+  post.id = safeId;
+  return post;
+});
 const combined = [...existing, ...newPosts];
 
 fs.writeFileSync(outputPath, JSON.stringify(combined, null, 2));

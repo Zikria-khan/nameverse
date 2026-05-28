@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { Heart, Shield, Brain, Leaf, Sparkles, Star, Moon, ChevronRight } from 'lucide-react';
+import { Heart, Shield, Brain, Sparkles, Moon, ChevronRight } from 'lucide-react';
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
 import { getSiteUrl } from '@/lib/seo/site';
 import SitePage from '@/components/Layout/SitePage';
+import { createSafeSlug } from '@/lib/utils/createSafeSlug';
 
 export const metadata = {
   title: validateMetaTitle('Powerful Baby Names by Meaning: Love, Strength, Wisdom, Peace & More | NameVerse'),
@@ -224,10 +225,10 @@ export default async function NamesByMeaningPage() {
                     <div className="p-6">
                       <div className="grid sm:grid-cols-2 gap-4 mb-6">
                         {category.examples.map((name, idx) => (
-                          <Link
-                            key={idx}
-                            href={`/names/${name.religion}/${name.name.toLowerCase()}`}
-                            className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors group"
+<Link
+                             key={idx}
+                             href={`/names/${name.religion}/${createSafeSlug(name.name)}`}
+                             className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors group"
                           >
                             <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
                               <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-rose-600 transition-colors" />

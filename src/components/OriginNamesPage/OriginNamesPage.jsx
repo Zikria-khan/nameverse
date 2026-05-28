@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { fetchFilters, fetchNamesWithAdvancedFilters } from '@/lib/api/names';
 import { Sparkles, Moon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { createSafeSlug } from '@/lib/utils/createSafeSlug';
 
 const DEFAULT_RELIGION = 'islamic';
 const STATIC_ORIGINS = ['arabic', 'turkish', 'persian', 'indian', 'english', 'spanish'];
@@ -31,7 +32,7 @@ function validateAndSanitizeParams(params, availableOrigins) {
 
 function generateSlug(name) {
   if (!name || typeof name !== 'string') return '';
-  return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  return createSafeSlug(name);
 }
 
 function buildOriginHref(religionRoute, originValue) {

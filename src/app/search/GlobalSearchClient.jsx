@@ -5,6 +5,7 @@ import { Search, Loader2, FileText, User, TrendingUp, X } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { globalSearch, getPopularSearches } from '@/lib/api/search';
+import { createSafeSlug } from '@/lib/utils/createSafeSlug';
 import toast from 'react-hot-toast';
 
 // Native debounce implementation
@@ -247,10 +248,10 @@ export default function GlobalSearchClient() {
                       };
                       const religion = religionMap[name.religion?.toLowerCase()] || 'islamic';
                       return (
-                        <Link
-                          key={name._id}
-                          href={`/names/${religion}/${name.slug}`}
-                          className="block p-4 bg-white rounded-lg border-2 border-gray-100 hover:border-purple-300 hover:shadow-md transition-all"
+<Link
+                           key={name._id}
+                           href={`/names/${religion}/${createSafeSlug(name.name)}`}
+                           className="block p-4 bg-white rounded-lg border-2 border-gray-100 hover:border-purple-300 hover:shadow-md transition-all"
                         >
                           <h3 className="text-lg font-bold text-gray-900 mb-1">{name.name}</h3>
                           <p className="text-sm text-gray-600 mb-2">{name.short_meaning || name.long_meaning || name.meaning}</p>

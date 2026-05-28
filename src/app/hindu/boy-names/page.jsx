@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getSiteUrl } from '@/lib/seo/site';
 import { Heart, Star, BookOpen, Sparkles, Sun } from 'lucide-react';
 import namesData from '../../../../public/data/hindu-boy-names.json';
+import { createSafeSlug } from '@/lib/utils/createSafeSlug';
 
 // ==========================================
 // METADATA - World Class SEO
@@ -50,11 +51,7 @@ function generateStructuredData(names) {
     "@type": "ListItem",
     position: index + 1,
     name: n.name,
-    url: `${getSiteUrl()}/hindu/boy-names#${n.name.toLowerCase()}`,
-    description: `${n.name} means "${n.meaning}" - ${n.origin} origin`
-  }));
-
-  return {
+    url: `${getSiteUrl()}/hindu/boy-names#${createSafeSlug(n.name)}`,
     "@context": "https://schema.org",
     "@graph": [
       {
@@ -251,8 +248,8 @@ export default function HinduBoyNamesPage() {
             {namesData.map((nameItem, index) => (
               <Link
                 key={index}
-                href={`/names/hindu/${nameItem.name.toLowerCase().replace(/\s+/g, '-')}`}
-                id={nameItem.name.toLowerCase()}
+                href={`/names/hindu/${createSafeSlug(nameItem.name)}`}
+                id={createSafeSlug(nameItem.name)}
                 className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 border border-orange-100 hover:border-orange-300 group hover:-translate-y-1 block"
               >
                 <div className="flex items-start justify-between mb-4">

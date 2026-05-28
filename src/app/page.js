@@ -10,8 +10,8 @@ import ReligiousNamesSection from '@/components/HomePage/ReligiousNamesSection';
 import dynamic from 'next/dynamic';
 import { getSiteUrl } from '@/lib/seo/site';
 
-// ISR with 7-day cache for the homepage — keep trending data fresh
-export const revalidate = 604800; // 7 days
+// ISR with 30-day cache for the homepage — reduce writes
+export const revalidate = 2592000; // 30 days
 
 // ✅ Read domain from .env
 const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || getSiteUrl();

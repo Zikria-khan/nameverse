@@ -3,9 +3,9 @@ import { join } from 'path';
 
 const SITEMAP_FILE = join(process.cwd(), 'public', 'sitemap.xml');
 
-// ISR: 24 h — the sitemap doesn't change hourly and no-store on every request
-// was burning CPU by hitting Vercel's Lambda layer for every bots crawl.
-export const revalidate = 86400;
+// ISR: 7 days — sitemap rarely changes, static file is sufficient
+// Higher cache reduces Lambda invocations and ISR writes
+export const revalidate = 604800;
 
 const defaultHeaders = {
   'Content-Type': 'application/xml',

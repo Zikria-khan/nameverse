@@ -2,6 +2,24 @@ import { readFileSync, writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
+function createSafeSlug(input = "") {
+  return String(input || '')
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9\s-]/g, "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function validateSlug(slug) {
+  if (!/^[a-z0-9-]+$/.test(slug)) {
+    throw new Error('Invalid blog slug: "' + slug + '" does not match ^[a-z0-9-]+$');
+  }
+}
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const blogPath = join(__dirname, '../public/data/blog-posts.json');
 const sitemapPath = join(__dirname, '../public/blog_sitemap.xml');
@@ -47,7 +65,7 @@ makePost("holy-quran-names-meanings","60+ Holy Quran Names with Deep Meanings fo
 ),
 
 // POST 4: baby-name-shape-personality
-makePost("baby-name-shape-personality","The Hidden Power of Your Baby Name: How Names Shape Personality Development","Discover Scientific Research on How Your Childs Name Influences Their Future","Research shows names can influence personality, career choices, and how others perceive us. Learn the hidden psychology behind naming.","Dr. Sarah Mitchell","PhD in Psychology, Name Researcher","2026-01-15","Name Meanings",["Name Psychology","Baby Names","Personality","Name Meanings"],false,"baby name personality, name psychology, how names shape personality","Discover how names shape personality development through scientific research."),"https://images.unsplash.com/photo-1518152006812-edab29b069ac?w=1200&h=630&fit=crop&auto=format&q=80",
+makePost("baby-name-shape-personality","The Hidden Power of Your Baby Name: How Names Shape Personality Development","Discover Scientific Research on How Your Childs Name Influences Their Future","Research shows names can influence personality, career choices, and how others perceive us. Learn the hidden psychology behind naming.","Dr. Sarah Mitchell","PhD in Psychology, Name Researcher","2026-01-15","Name Meanings",["Name Psychology","Baby Names","Personality","Name Meanings"],false,"baby name personality, name psychology, how names shape personality","Discover how names shape personality development through scientific research.","151815200-7edab29b069ac",
 "Names are far more than labels. Research in psychology and sociology has revealed that the name you give your child can subtly influence their personality development, self-image, and even life outcomes. From the name-letter effect to implicit egotism, the science behind naming is both fascinating and profound.",
 [
 {title:"The Science of Name Psychology",content:"Studies by researchers like Jean Twenge at San Diego State University have shown that names can influence how people perceive themselves and how others treat them. The name-letter effect, first documented by Jozef Nuttin in 1985, shows that people are unconsciously drawn to things that share their initials. A child named Adam may develop an affinity for things starting with 'A.'"},
@@ -106,7 +124,7 @@ makePost("islamic-names-light-hope","50+ Beautiful Islamic Names That Mean Light
 ),
 
 // POST 7: psychology-baby-name-regret
-makePost("psychology-baby-name-regret","The Psychology Behind Baby Name Regret and How to Avoid It","Expert Strategies to Choose a Name You Will Love Forever","Research shows 1 in 5 parents regret their babys name. Learn the psychology behind name regret and expert strategies to avoid it.","Dr. Emily Chen","PhD in Psychology, Family Counselor","2026-02-01","Baby Naming Tips",["Baby Naming","Name Regret","Parenting Psychology","Name Selection"],false,"baby name regret, naming regret, choosing baby name psychology, avoid name regret","Learn the psychology behind baby name regret and discover expert strategies to avoid it."),"https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=1200&h=630&fit=crop&auto=format&q=80",
+makePost("psychology-baby-name-regret","The Psychology Behind Baby Name Regret and How to Avoid It","Expert Strategies to Choose a Name You Will Love Forever","Research shows 1 in 5 parents regret their babys name. Learn the psychology behind name regret and expert strategies to avoid it.","Dr. Emily Chen","PhD in Psychology, Family Counselor","2026-02-01","Baby Naming Tips",["Baby Naming","Name Regret","Parenting Psychology","Name Selection"],false,"baby name regret, naming regret, choosing baby name psychology, avoid name regret","Learn the psychology behind baby name regret and discover expert strategies to avoid it.","155525233-9f8e92e65df9",
 "Research suggests that approximately 1 in 5 parents experience some degree of regret about their babys name. Understanding the psychology behind this regret is the first step toward making a confident, lasting choice. Names carry identity, and when that identity feels misaligned with who a child becomes, discomfort can follow.",
 [
 {title:"Why Name Regret Happens",content:"Name regret often stems from mismatched expectations. Parents may choose a trendy name that dates quickly, or select a family name that clashes with the childs emerging personality. Some common causes include: following trends blindly, choosing names to honor family without considering fit, and not testing the name across different life stages."},
@@ -157,7 +175,9 @@ const SITE_URL = "https://nameverse.vercel.app";
 let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
 sitemap += `  <url><loc>${SITE_URL}/blog</loc><lastmod>2026-04-17</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>\n`;
 for (const p of allPosts) {
-  sitemap += `  <url><loc>${SITE_URL}/blog/${p.id}</loc><lastmod>${p.lastUpdated}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>\n`;
+  const safeId = createSafeSlug(p.id);
+  validateSlug(safeId);
+  sitemap += `  <url><loc>${SITE_URL}/blog/${safeId}</loc><lastmod>${p.lastUpdated}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>\n`;
 }
 sitemap += `</urlset>`;
 writeFileSync(sitemapPath, sitemap);

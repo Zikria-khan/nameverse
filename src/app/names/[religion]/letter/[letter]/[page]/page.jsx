@@ -11,8 +11,8 @@ const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ#'.split('');
 const NAMES_PER_PAGE = 50;
 
-// ISR with 7-day cache — name listings by letter refreshed regularly
-export const revalidate = 604800; // 7 days
+// ISR with 60-day cache to minimize writes
+export const revalidate = 5184000; // 60 days
 export const dynamicParams = true;
 
 // Pre-generate common letter/religion combinations at build time
@@ -57,9 +57,11 @@ function normalizePage(page) {
   return Number.isInteger(pageNumber) && pageNumber > 0 ? pageNumber : 1;
 }
 
+import { createSafeSlug } from '@/lib/utils/createSafeSlug';
+
 function generateSlug(name) {
   if (!name || typeof name !== 'string') return '';
-  return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  return createSafeSlug(name);
 }
 
 function getReligionEmoji(religion) {

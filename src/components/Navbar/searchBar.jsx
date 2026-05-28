@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { searchNames } from '@/lib/api/names';
 import { searchArticles } from '@/lib/api/articles';
+import { createSafeSlug } from '@/lib/utils/createSafeSlug';
 
 const NAME_FILES = [
   { filename: 'islamic_names.json', religion: 'islamic' },
@@ -14,11 +15,7 @@ const NAME_FILES = [
 ];
 
 function generateSlug(name) {
-  return name
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9-]/g, '');
+  return createSafeSlug(name);
 }
 
 async function loadLocalNames() {
@@ -291,7 +288,7 @@ const UniversalSearch = () => {
       router.push(`/blog/${result.slug}`);
     } else {
       const religion = result.religion?.toLowerCase() || 'global';
-      const slug = result.slug || result.name?.toLowerCase().replace(/\s+/g, '-');
+      const slug = result.slug || createSafeSlug(result.name);
       router.push(`/names/${religion}/${slug}`);
     }
   };

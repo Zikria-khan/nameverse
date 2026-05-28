@@ -9,9 +9,10 @@ import islamicNames from '../../../../public/islamic_names.json';
 import hinduNames from '../../../../public/hindu_names.json';
 import christianNames from '../../../../public/christians_names.json';
 import SitePage from '@/components/Layout/SitePage';
+import { createSafeSlug } from '@/lib/utils/createSafeSlug';
 
-// ISR with 7-day cache for blog posts — keep content fresher
-export const revalidate = 604800; // 7 days
+// ISR with 90-day cache for blog posts — keep content stable
+export const revalidate = 7776000; // 90 days
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
@@ -128,7 +129,7 @@ function FeaturedNameLink({ name, religion: blogReligion = 'islamic' }) {
   // Handle both string names and object names with a 'name' property
   const displayName = typeof name === 'string' ? name : name.name;
   // Generate a slug from the name for URL
-  const nameSlug = displayName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  const nameSlug = createSafeSlug(displayName);
   // Detect the correct religion for this specific name
   const detectedReligion = detectNameReligion(name);
   // If the blog's category maps to a specific religion (e.g. "Hindu Names" -> "hindu"),
@@ -359,11 +360,11 @@ export default async function BlogPostPage({ params }) {
                       Featured Names:
                     </h3>
                     <div className="flex flex-wrap gap-2">
-                  {section.featuredNames.map((name, i) => {
-                        const displayName = typeof name === 'string' ? name : name.name;
-                        const nameSlug = displayName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-                        return <FeaturedNameLink key={nameSlug || i} name={name} religion={religion} />;
-                      })}
+                    {section.featuredNames.map((name, i) => {
+                         const displayName = typeof name === 'string' ? name : name.name;
+                         const nameSlug = createSafeSlug(displayName);
+                         return <FeaturedNameLink key={nameSlug || i} name={name} religion={religion} />;
+                       })}
                     </div>
                   </div>
                 )}
@@ -421,11 +422,11 @@ export default async function BlogPostPage({ params }) {
                   Click on any name below to explore its meaning and origin:
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {post.content.relatedNames.map((name, i) => {
-                    const displayName = typeof name === 'string' ? name : name.name;
-                    const nameSlug = displayName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-                    return <FeaturedNameLink key={nameSlug || i} name={name} religion={religion} />;
-                  })}
+                   {post.content.relatedNames.map((name, i) => {
+                     const displayName = typeof name === 'string' ? name : name.name;
+                     const nameSlug = createSafeSlug(displayName);
+                     return <FeaturedNameLink key={nameSlug || i} name={name} religion={religion} />;
+                   })}
                 </div>
               </section>
             )}

@@ -4,6 +4,7 @@ import { BookOpen, Search, Sparkles, Moon, ChevronRight, Star, Quote, Heart } fr
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
 import { getSiteUrl } from '@/lib/seo/site';
 import SitePage from '@/components/Layout/SitePage';
+import { createSafeSlug } from '@/lib/utils/createSafeSlug';
 
 export const metadata = {
   title: validateMetaTitle('Baby Name Meanings — Complete Guide | NameVerse'),
@@ -252,10 +253,10 @@ export default async function NameMeaningsPage() {
                   </div>
                   <div className="grid sm:grid-cols-2 gap-4">
                     {category.names.map((name, idx) => (
-                      <Link
-                        key={idx}
-                        href={`/names/${name.religion}/${name.name.toLowerCase()}`}
-                        className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors group"
+<Link
+                         key={idx}
+                         href={`/names/${name.religion}/${createSafeSlug(name.name)}`}
+                         className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors group"
                       >
                         <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
                           <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-indigo-600 transition-colors" />

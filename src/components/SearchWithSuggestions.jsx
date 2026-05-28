@@ -10,13 +10,8 @@ const NAME_FILES = [
   { filename: 'christians_names.json', religion: 'christian' }
 ];
 
-function generateSlug(name) {
-  return name
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9-]/g, '');
-}
+import createSafeSlug from '../lib/utils/createSafeSlug';
+
 
 const SearchWithSuggestions = () => {
   const [query, setQuery] = useState('');
@@ -46,7 +41,7 @@ const SearchWithSuggestions = () => {
               return {
                 name: normalized,
                 religion,
-                slug: generateSlug(normalized)
+                slug: createSafeSlug(normalized)
               };
             })
           );
@@ -101,7 +96,7 @@ const SearchWithSuggestions = () => {
       return;
     }
 
-    router.push(`/search/${encodeURIComponent(trimmed)}`);
+    router.push(`/search/${createSafeSlug(trimmed)}`);
   };
 
   // Clear search

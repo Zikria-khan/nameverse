@@ -4,6 +4,26 @@ const path = require('path');
 const JSON_FILE = 'E:/code/nameverse/public/data/blog-posts.json';
 const SITEMAP_FILE = 'E:/code/nameverse/public/blog_sitemap.xml';
 
+const URL_REGEX = /^[a-z0-9-]+$/;
+
+function createSafeSlug(input = "") {
+  return String(input || '')
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9\s-]/g, "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function validateSlug(slug, context) {
+  if (!slug) throw new Error('Empty slug in ' + context);
+  if (!URL_REGEX.test(slug)) throw new Error('Invalid slug in ' + context + ': "' + slug + '" does not match ^[a-z0-9-]+$');
+  return slug;
+}
+
 const topics = [
   { slug: 'why-islamic-names-popular-2026', title: 'Why Islamic Names Are So Popular in 2026', category: 'Islamic Names', tags: ['Islamic Names', 'Baby Names', '2026 Trends', 'Muslim Names'], featured: true, author: 'Dr. Fatima Al-Zahra', authorCreds: 'PhD in Islamic Studies, Certified Nameologist', seoKeywords: 'islamic names popular 2026, muslim baby names, quranic names trend', metaDesc: 'Discover why Islamic names are dominating 2026 baby naming trends. Explore spiritual significance, cultural pride, and timeless meanings.' },
   { slug: 'holy-quran-names', title: 'Holy Quran Names: Divine Choices for Your Child', category: 'Islamic Names', tags: ['Quranic Names', 'Islamic Names', 'Arabic Names', 'Spiritual'], featured: true, author: 'Sheikh Abdullah Al-Rashid', authorCreds: 'Islamic Scholar, Qari of Quran', seoKeywords: 'quran names, holy quran baby names, allah names baby', metaDesc: 'Beautiful names directly from the Holy Quran. Discover divine names with profound spiritual meanings for your baby.' },
@@ -179,7 +199,9 @@ function generateFAQs(slug, category) {
 }
 
 function generateBlogPost(topic, index) {
-  const id = topic.slug;
+  const rawId = topic.slug;
+  const id = createSafeSlug(rawId);
+  validateSlug(id, 'add-blog-posts.js topic[' + index + '].slug');
   const title = `NameVerse — ${topic.title}`;
   const excerpt = generateExcerpt(topic);
   const publishDate = new Date(2025, 0, 15 + index).toISOString().split('T')[0];
@@ -256,11 +278,21 @@ function slugToURLSlug(slug) {
 }
 
 function generateSitemapEntries(posts) {
+  const seenSlugs = new Set();
   let xml = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
   posts.forEach(post => {
-    const url = `https://nameverse.com/blog/${post.id}`;
-    const lastmod = post.lastUpdated;
-    xml += `  <url>\n    <loc>${url}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>monthly</changefreq>\n  </url>\n`;
+    const safeSlug = createSafeSlug(post.id);
+    validateSlug(safeSlug, 'sitemap blog slug');
+    if (seenSlugs.has(safeSlug)) {
+      throw new Error('Duplicate blog slug in sitemap: ' + safeSlug);
+    }
+    seenSlugs.add(safeSlug);
+    xml += `  <url>
+    <loc>https://nameverse.com/blog/${safeSlug}</loc>
+    <lastmod>${post.lastUpdated}</lastmod>
+    <changefreq>monthly</changefreq>
+  </url>
+`;
   });
   xml += '</urlset>';
   return xml;

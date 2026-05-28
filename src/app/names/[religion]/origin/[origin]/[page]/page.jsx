@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Sparkles, Moon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getSiteUrl } from '@/lib/seo/site';
+import { createSafeSlug } from '@/lib/utils/createSafeSlug';
 import { validateMetaTitle, validateMetaDescription, generateCanonicalUrl } from '@/lib/seo/meta-helpers';
 import { serverFetchNamesWithAdvancedFilters } from '@/lib/api/server-fetch';
 
@@ -8,8 +9,8 @@ import { serverFetchNamesWithAdvancedFilters } from '@/lib/api/server-fetch';
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
 const STATIC_ORIGINS = ['arabic', 'persian', 'turkish', 'indian', 'english', 'other'];
 
-// ISR with 7-day cache — origin-filter lists refreshed regularly
-export const revalidate = 604800; // 7 days
+// ISR with 60-day cache to minimize writes
+export const revalidate = 5184000; // 60 days
 export const dynamicParams = true;
 
 // Pre-generate origin pages at build time
@@ -311,6 +312,6 @@ export default async function OriginNamesPage({ params }) {
 
 function generateSlug(name) {
   if (!name || typeof name !== 'string') return '';
-  return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  return createSafeSlug(name);
 }
 

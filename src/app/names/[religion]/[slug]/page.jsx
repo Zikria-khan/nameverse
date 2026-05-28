@@ -3,13 +3,14 @@ import { getSiteUrl } from '@/lib/seo/site';
 import { generateNamePageMetadata, generateNamePageSchemas } from '@/lib/seo/name-page-seo';
 import { serverFetchNameDetail } from '@/lib/api/server-fetch';
 import { sanitizeNameData } from '@/lib/utils/sanitizeNameData';
+import { createSafeSlug } from '@/lib/utils/createSafeSlug';
 import NameDetail from '@/components/name/NameDetail';
 import Script from 'next/script';
 import fs from 'fs';
 import path from 'path';
 
-// ISR: 30-day cache
-export const revalidate = 2592000; // 30 days
+// ISR: 90-day cache to minimize writes
+export const revalidate = 7776000; // 90 days
 export const dynamicParams = true;
 
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
@@ -27,20 +28,29 @@ export async function generateStaticParams() {
     // islamic-boy-names.json — all entries are islamic/boy
     const islamicBoysRaw = fs.readFileSync(path.join(namesDataDir, 'islamic-boy-names.json'), 'utf8');
     JSON.parse(islamicBoysRaw).forEach((n) => {
-      if (n.name) staticNames.push({ religion: 'islamic', slug: n.name.toLowerCase().trim() });
+      if (n.name) {
+        const slug = createSafeSlug(n.name);
+        if (slug) staticNames.push({ religion: 'islamic', slug });
+      }
     });
 
     // islamic-girl-names.json — all entries are islamic/girl
     const islamicGirlsRaw = fs.readFileSync(path.join(namesDataDir, 'islamic-girl-names.json'), 'utf8');
     JSON.parse(islamicGirlsRaw).forEach((n) => {
-      if (n.name) staticNames.push({ religion: 'islamic', slug: n.name.toLowerCase().trim() });
+      if (n.name) {
+        const slug = createSafeSlug(n.name);
+        if (slug) staticNames.push({ religion: 'islamic', slug });
+      }
     });
 
     // islamic_names.json — may contain mixed genders
     try {
       const islamicMixedRaw = fs.readFileSync(path.join(namesDataDir, 'islamic_names.json'), 'utf8');
       JSON.parse(islamicMixedRaw).forEach((n) => {
-        if (n.name) staticNames.push({ religion: 'islamic', slug: n.name.toLowerCase().trim() });
+        if (n.name) {
+          const slug = createSafeSlug(n.name);
+          if (slug) staticNames.push({ religion: 'islamic', slug });
+        }
       });
     } catch { /* file absent or malformed — skip */ }
 
@@ -48,7 +58,10 @@ export async function generateStaticParams() {
     try {
       const christianBoysRaw = fs.readFileSync(path.join(namesDataDir, 'christian-boy-names.json'), 'utf8');
       JSON.parse(christianBoysRaw).forEach((n) => {
-        if (n.name) staticNames.push({ religion: 'christian', slug: n.name.toLowerCase().trim() });
+        if (n.name) {
+          const slug = createSafeSlug(n.name);
+          if (slug) staticNames.push({ religion: 'christian', slug });
+        }
       });
     } catch { /* skip */ }
 
@@ -56,7 +69,10 @@ export async function generateStaticParams() {
     try {
       const christianGirlsRaw = fs.readFileSync(path.join(namesDataDir, 'christian-girl-names.json'), 'utf8');
       JSON.parse(christianGirlsRaw).forEach((n) => {
-        if (n.name) staticNames.push({ religion: 'christian', slug: n.name.toLowerCase().trim() });
+        if (n.name) {
+          const slug = createSafeSlug(n.name);
+          if (slug) staticNames.push({ religion: 'christian', slug });
+        }
       });
     } catch { /* skip */ }
 
@@ -64,7 +80,10 @@ export async function generateStaticParams() {
     try {
       const hinduBoysRaw = fs.readFileSync(path.join(namesDataDir, 'hindu-boy-names.json'), 'utf8');
       JSON.parse(hinduBoysRaw).forEach((n) => {
-        if (n.name) staticNames.push({ religion: 'hindu', slug: n.name.toLowerCase().trim() });
+        if (n.name) {
+          const slug = createSafeSlug(n.name);
+          if (slug) staticNames.push({ religion: 'hindu', slug });
+        }
       });
     } catch { /* skip */ }
 
@@ -72,7 +91,10 @@ export async function generateStaticParams() {
     try {
       const hinduGirlsRaw = fs.readFileSync(path.join(namesDataDir, 'hindu-girl-names.json'), 'utf8');
       JSON.parse(hinduGirlsRaw).forEach((n) => {
-        if (n.name) staticNames.push({ religion: 'hindu', slug: n.name.toLowerCase().trim() });
+        if (n.name) {
+          const slug = createSafeSlug(n.name);
+          if (slug) staticNames.push({ religion: 'hindu', slug });
+        }
       });
     } catch { /* skip */ }
 
@@ -114,7 +136,7 @@ function normalizeSlug(slug) {
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
   const religion = normalizeReligion(resolvedParams?.religion);
-  const slug = normalizeSlug(resolvedParams?.slug);
+  const slug = createSafeSlug(resolvedParams?.slug);
 
   if (!religion || !slug) {
     return {
@@ -150,7 +172,7 @@ function normalizeReligion(religion) {
 export default async function NameDetailPage({ params }) {
   const resolvedParams = await params;
   const religion = normalizeReligion(resolvedParams?.religion);
-  const slug = normalizeSlug(resolvedParams?.slug);
+  const slug = createSafeSlug(resolvedParams?.slug);
 
   if (!religion || !slug) {
     return notFound();
