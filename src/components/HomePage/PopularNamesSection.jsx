@@ -153,7 +153,7 @@ const PopularNamesSection = () => {
                 icon: TrendingUp,
                 title: 'Popular Names by State',
                 description: 'Regional name trends that show which names are rising in your area.',
-                link: '/popular-by-state',
+                link: '/names',
                 count: 'Updated daily',
                 color: 'from-blue-500 to-cyan-500'
               },
@@ -185,7 +185,7 @@ const PopularNamesSection = () => {
                 icon: Share2,
                 title: 'Viral Social Names',
                 description: 'Names trending on Instagram, TikTok, and Pinterest that parents are sharing now.',
-                link: '/viral-names',
+                link: '/trending-names',
                 count: 'Real-time updates',
                 color: 'from-violet-500 to-purple-500'
               }
@@ -216,7 +216,7 @@ const PopularNamesSection = () => {
               </p>
             </div>
             <Link
-              href="/popular-names"
+              href="/names"
               className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700 transition"
             >
               Explore All Popular Names

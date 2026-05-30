@@ -19,7 +19,7 @@ const TrendingNames = () => {
       title: 'Most Popular Names by State',
       description: 'See which names are trending in your region. Local popularity data helps you choose unique yet familiar names.',
       keywords: 'popular names by state, regional baby names, local name trends, US baby names by state',
-      link: '/popular-by-state',
+      link: '/names',
       count: 'Updated daily',
       color: 'from-blue-500 to-cyan-500'
     },
@@ -55,7 +55,7 @@ const TrendingNames = () => {
       title: 'Viral Baby Names on Social Media',
       description: 'Names gaining buzz on Instagram, TikTok, and Pinterest. Discover what parents are sharing and loving right now.',
       keywords: 'viral baby names, trending on TikTok, Instagram baby names, social media baby names',
-      link: '/viral-names',
+      link: '/trending-names',
       count: 'Real-time updates',
       color: 'from-violet-500 to-purple-500'
     }
