@@ -14,7 +14,7 @@ import { AppProvider } from "@/contexts/AppContext";
 import LoadingWrapper from "@/components/LoadingAnimation/LoadingWrapper";
 import { Suspense } from 'react';
 import RouteChrome from "@/components/Layout/RouteChrome";
-import MonetagAd from "@/components/ads/MonetagAd";
+import MonetagAd from "@/components/Ads/MonetagAd";
 
 import { getSiteUrl } from '@/lib/seo/site';
 // Use environment variable or default - will be overridden client-side if needed
