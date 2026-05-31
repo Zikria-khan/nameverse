@@ -149,7 +149,7 @@ const PopularNamesSection = () => {
                 count: '2,847 searches today',
                 color: 'from-orange-500 to-red-500'
               },
-              {
+{
                 icon: TrendingUp,
                 title: 'Popular Names by State',
                 description: 'Regional name trends that show which names are rising in your area.',
@@ -181,7 +181,7 @@ const PopularNamesSection = () => {
                 count: '500+ meanings',
                 color: 'from-pink-500 to-rose-500'
               },
-              {
+{
                 icon: Share2,
                 title: 'Viral Social Names',
                 description: 'Names trending on Instagram, TikTok, and Pinterest that parents are sharing now.',
@@ -215,7 +215,7 @@ const PopularNamesSection = () => {
                 Based on search volume growth and trending name interest, these names are gaining momentum across NameVerse.
               </p>
             </div>
-            <Link
+<Link
               href="/names"
               className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700 transition"
             >

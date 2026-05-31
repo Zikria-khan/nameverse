@@ -14,7 +14,7 @@ const TrendingNames = () => {
       count: '2,847 searches today',
       color: 'from-orange-500 to-red-500'
     },
-    {
+{
       icon: TrendingUp,
       title: 'Most Popular Names by State',
       description: 'See which names are trending in your region. Local popularity data helps you choose unique yet familiar names.',
@@ -50,7 +50,7 @@ const TrendingNames = () => {
       count: '500+ meanings',
       color: 'from-pink-500 to-rose-500'
     },
-    {
+{
       icon: Share2,
       title: 'Viral Baby Names on Social Media',
       description: 'Names gaining buzz on Instagram, TikTok, and Pinterest. Discover what parents are sharing and loving right now.',

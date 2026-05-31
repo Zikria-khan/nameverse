@@ -175,7 +175,7 @@ const SeasonalNamesSection = () => {
           </div>
 
           <div className="mt-6 text-center">
-            <Link 
+<Link 
               href="/names"
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-lg hover:shadow-lg transition-all"
             >
