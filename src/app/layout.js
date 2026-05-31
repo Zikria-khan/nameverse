@@ -137,6 +137,12 @@ export default function RootLayout({ children }) {
         <link rel="icon" type="image/png" href="/logo.png" />
         <link rel="shortcut icon" type="image/png" href="/logo.png" />
 
+        {/* ✅ Ahrefs Analytics Script */}
+        <Script
+          src="https://analytics.ahrefs.com/analytics.js"
+          strategy="afterInteractive"
+        />
+
         {/* ✅ Enhanced crawl hints */}
         <GoogleBotMeta siteUrl={siteUrl} />
 

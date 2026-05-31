@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 
-export const revalidate = 300;
+export const revalidate = 2592000; // 30 days
 
 export async function generateMetadata() {
   return {

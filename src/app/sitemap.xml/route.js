@@ -3,9 +3,9 @@ import { join } from 'path';
 
 const SITEMAP_FILE = join(process.cwd(), 'public', 'sitemap.xml');
 
-// ISR: 7 days — sitemap rarely changes, static file is sufficient
+// ISR: 30 days — sitemap rarely changes, static file is sufficient
 // Higher cache reduces Lambda invocations and ISR writes
-export const revalidate = 604800;
+export const revalidate = 2592000; // 30 days
 
 const defaultHeaders = {
   'Content-Type': 'application/xml',
