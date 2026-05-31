@@ -144,6 +144,13 @@ export default function RootLayout({ children }) {
           async
           strategy="afterInteractive"
         />
+        {/* ✅ Google AdSense Script */}
+        <Script
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1510675468129183"
+          async
+          crossorigin="anonymous"
+          strategy="afterInteractive"
+        />
 
         {/* ✅ Enhanced crawl hints */}
         <GoogleBotMeta siteUrl={siteUrl} />
