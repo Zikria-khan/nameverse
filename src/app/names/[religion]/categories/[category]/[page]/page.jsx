@@ -211,23 +211,22 @@ export default async function CategoryNamesPage({ params }) {
     <main className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-emerald-50">
       {/* Hero Section */}
       <section className="relative py-16 px-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 text-white overflow-hidden">
-             <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.3)_1px,transparent_0)] bg-[size:20px_20px]"></div>
-             <div className="max-w-7xl mx-auto text-center relative z-10">
-               <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-5 py-2.5 rounded-full text-sm font-medium mb-8 border border-white/30">
-                 <Sparkles className="w-4 h-4" />
-                 <span>{totalCount} Names Found</span>
-               </div>
-               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
-                 Names in {category.charAt(0).toUpperCase() + category.slice(1)} Category
-               </h1>
-               <p className="text-lg md:text-xl text-emerald-100 max-w-4xl mx-auto mb-10 leading-relaxed">
-                 Page {page} of {totalPages} • Discover beautiful names in the {category} category
-               </p>
-             </div>
-           </div>
-         </section>
-         
-         <AdSlot slotId="9605048980" className="mb-8" minHeight="90px" aria-label="Category header advertisement" />
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.3)_1px,transparent_0)] bg-[length:20px_20px]" />
+        <div className="max-w-7xl mx-auto text-center relative z-10">
+          <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-5 py-2.5 rounded-full text-sm font-medium mb-8 border border-white/30">
+            <Sparkles className="w-4 h-4" />
+            <span>{totalCount} Names Found</span>
+          </div>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+            Names in {category.charAt(0).toUpperCase() + category.slice(1)} Category
+          </h1>
+          <p className="text-lg md:text-xl text-emerald-100 max-w-4xl mx-auto mb-10 leading-relaxed">
+            Page {page} of {totalPages} • Discover beautiful names in the {category} category
+          </p>
+        </div>
+      </section>
+      
+      <AdSlot slotId="9605048980" className="mb-8" minHeight="90px" aria-label="Category header advertisement" />
          
          {/* Breadcrumb */}
       <nav className="max-w-7xl mx-auto px-4 py-5" aria-label="Breadcrumb">
