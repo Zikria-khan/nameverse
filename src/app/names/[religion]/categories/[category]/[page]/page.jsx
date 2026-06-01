@@ -251,7 +251,7 @@ export default async function CategoryNamesPage({ params }) {
             <Link
               key={cat}
               href={`/names/${religion}/categories/${cat}/1`}
-              className={`px-4 py-2 flex items-center justify-center rounded-lg font-semibold transition-all ${
+              className={`px-4 py-2 rounded-full font-semibold transition-all ${
                 cat === category
                   ? 'bg-emerald-600 text-white'
                   : 'bg-white text-gray-700 hover:bg-emerald-100 border border-emerald-200'
@@ -259,47 +259,70 @@ export default async function CategoryNamesPage({ params }) {
             >
               {cat.charAt(0).toUpperCase() + cat.slice(1)}
             </Link>
-                   ))}
-                 )}
-               </>
-             )}
-           </div>
-         </section>
-         
-         <AdSlot slotId="9605048981" className="mb-8" minHeight="90px" aria-label="Category mid-content advertisement" />
-         
-         {/* Pagination */}
-         <div className="flex items-center justify-center gap-4">
-              {hasPrev && (
-                <Link
-                  href={prevUrl}
-                  className="flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl hover:bg-emerald-700 transition-colors"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                  Previous
-                </Link>
+          ))}
+        </div>
+      </div>
+
+      <section className="max-w-7xl mx-auto px-4 pb-16">
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {names.map((item, index) => (
+            <article
+              key={`${item.name || item.id || index}-${index}`}
+              className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-md"
+            >
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900">{item.name}</h2>
+                  {item.gender && (
+                    <p className="text-sm text-gray-500 mt-1">{item.gender}</p>
+                  )}
+                </div>
+                <span className="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700">
+                  {item.origin || religion.charAt(0).toUpperCase() + religion.slice(1)}
+                </span>
+              </div>
+              {item.meaning && (
+                <p className="text-gray-600 mb-4 line-clamp-3">{item.meaning}</p>
               )}
+              <Link
+                href={`/names/${religion}/${generateSlug(item.name)}`}
+                className="inline-flex items-center gap-2 text-emerald-700 font-semibold hover:text-emerald-900"
+              >
+                View name details
+              </Link>
+            </article>
+          ))}
+        </div>
 
-              <span className="text-gray-600">
-                Page {page} of {totalPages}
-              </span>
+        <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          {hasPrev && (
+            <Link
+              href={prevUrl}
+              className="inline-flex items-center gap-2 rounded-full bg-emerald-600 px-6 py-3 text-white font-semibold hover:bg-emerald-700 transition-all"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Previous
+            </Link>
+          )}
 
-               {hasNext && (
-                 <Link
-                   href={nextUrl}
-                   className="flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl hover:bg-emerald-700 transition-colors"
-                 >
-                   Next
-                   <ChevronRight className="w-5 h-5" />
-                 </Link>
-               )}
-             </div>
-           </section>>
-         )}
-       </section>
-       
-       <AdSlot slotId="9605048982" className="mb-8" minHeight="90px" aria-label="Category footer advertisement" />
-       
-     </main>
-   );
- }
+          <span className="text-gray-700">
+            Page {page} of {totalPages}
+          </span>
+
+          {hasNext && (
+            <Link
+              href={nextUrl}
+              className="inline-flex items-center gap-2 rounded-full bg-emerald-600 px-6 py-3 text-white font-semibold hover:bg-emerald-700 transition-all"
+            >
+              Next
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          )}
+        </div>
+      </section>
+
+      <AdSlot slotId="9605048982" className="mb-8" minHeight="90px" aria-label="Category footer advertisement" />
+
+    </main>
+  );
+}

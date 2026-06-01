@@ -392,38 +392,34 @@ export default async function BlogPostPage({ params }) {
  
              {/* FAQs Section */}
              {post.content.faqs && post.content.faqs.length > 0 && (
-              <section className="mb-10">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                  Frequently Asked Questions
-                </h2>
-                <div className="space-y-4">
-                  {post.content.faqs.map((faq, index) => (
-                    <details 
-                      key={index} 
-                      className="group bg-gray-50 rounded-lg border border-gray-200 overflow-hidden"
-                    >
-                      <summary className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-100 transition-colors">
-                        <h3 className="font-semibold text-gray-900 pr-4">
-                          {faq.question}
-                        </h3>
-                        <ChevronDown className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform flex-shrink-0" />
-                      </summary>
-                      <div className="px-4 pb-4">
-                        <p className="text-gray-600 leading-relaxed">
-                          {faq.answer}
-                        </p>
-                      </div>
-                    </details>
-                       ))}
+               <section className="mb-10">
+                 <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                   Frequently Asked Questions
+                 </h2>
+                 <div className="space-y-4">
+                   {post.content.faqs.map((faq, index) => (
+                     <details
+                       key={index}
+                       className="group bg-gray-50 rounded-lg border border-gray-200 overflow-hidden"
+                     >
+                       <summary className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-100 transition-colors">
+                         <h3 className="font-semibold text-gray-900 pr-4">
+                           {faq.question}
+                         </h3>
+                         <ChevronDown className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform flex-shrink-0" />
+                       </summary>
+                       <div className="px-4 pb-4">
+                         <p className="text-gray-600 leading-relaxed">
+                           {faq.answer}
+                         </p>
+                       </div>
                      </details>
-               ))}
-             }
-           </div>
-         </div>
-       </section>
-     )}
+                   ))}
+                 </div>
+               </section>
+             )}
  
-     <AdSlot slotId="9605048979" className="mb-8" minHeight="90px" aria-label="Blog post CTA advertisement" />
+             <AdSlot slotId="9605048979" className="mb-8" minHeight="90px" aria-label="Blog post CTA advertisement" />
  
      {/* CTA */}
      <section className="py-12 px-4">
