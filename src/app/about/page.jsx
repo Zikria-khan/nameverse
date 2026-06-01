@@ -2,6 +2,7 @@ import PageLayout from '@/components/Layout/PageLayout';
 import StructuredData from '@/components/SEO/StructuredData';
 import { getSiteUrl } from '@/lib/seo/site';
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
+import AdSlot from '@/components/Ads/AdSlot';
 
 const siteUrl = getSiteUrl();
 
@@ -93,19 +94,21 @@ export default function AboutPage() {
                 >
                   WhatsApp Consultation
                 </a>
-                <a 
-                  href="https://www.linkedin.com/in/zakriya-khan-a6321a390/" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="px-6 py-3 bg-white/20 backdrop-blur-sm text-white font-bold rounded-xl hover:bg-white hover:text-purple-700 transition-all border border-white/30"
-                >
-                  LinkedIn Profile
-                </a>
-              </div>
-            </div>
-          </section>
-
-          {/* Stats */}
+                 <a 
+                   href="https://www.linkedin.com/in/zakriya-khan-a6321a390/" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   className="px-6 py-3 bg-white/20 backdrop-blur-sm text-white font-bold rounded-xl hover:bg-white hover:text-purple-700 transition-all border border-white/30"
+                 >
+                   LinkedIn Profile
+                 </a>
+               </div>
+             </div>
+           </section>
+           
+           <AdSlot slotId="9605048985" className="mb-8" minHeight="90px" aria-label="About header advertisement" />
+           
+           {/* Stats */}
           <section className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
             <div className="bg-white rounded-xl p-6 text-center shadow-sm">
               <div className="text-3xl font-bold text-indigo-600 mb-2">5000+</div>
@@ -148,11 +151,13 @@ export default function AboutPage() {
                 <p className="text-gray-600">
                   All information is verified through authentic religious texts and scholarly sources.
                 </p>
-              </div>
-            </div>
-          </section>
-
-          {/* Story Section */}
+               </div>
+             </div>
+           </section>
+           
+           <AdSlot slotId="9605048986" className="mb-8" minHeight="90px" aria-label="About mid-content advertisement" />
+           
+           {/* Story Section */}
           <section className="bg-white rounded-xl p-8 sm:p-12 shadow-sm mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
               My Journey
@@ -216,11 +221,13 @@ export default function AboutPage() {
               <p>
                 Baby name research is my passion, and I continuously update my knowledge base with the latest trends and traditional wisdom. Whether you're looking for baby names A to Z, specific letter-based names, or names with particular meanings, I offer expert advice to help you make an informed decision.
               </p>
-            </div>
-          </section>
-
-          {/* CTA */}
-          <section className="bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-2xl p-8 sm:p-12 text-center">
+             </div>
+           </section>
+           
+           <AdSlot slotId="9605048987" className="mb-8" minHeight="90px" aria-label="About lower content advertisement" />
+           
+           {/* CTA */}
+           <section className="bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-2xl p-8 sm:p-12 text-center">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
               Ready to Find the Perfect Name?
             </h2>

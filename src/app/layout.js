@@ -15,6 +15,8 @@ import LoadingWrapper from "@/components/LoadingAnimation/LoadingWrapper";
 import { Suspense } from 'react';
 import RouteChrome from "@/components/Layout/RouteChrome";
 import MonetagAd from "@/components/Ads/MonetagAd";
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 import { getSiteUrl } from '@/lib/seo/site';
 // Use environment variable or default - will be overridden client-side if needed
@@ -111,6 +113,23 @@ export const viewport = {
 };
 
 export default function RootLayout({ children }) {
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleRouteChange = (url) => {
+      // Trigger ad refresh on route change
+      if (window.adsbygoogle) {
+        window.adsbygoogle.push({});
+      }
+      // Note: Monetag refresh would require their specific API
+    };
+
+    router.events.on('routeChangeComplete', handleRouteChange);
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [router.events]);
+
   return (
     <html lang="en" dir="ltr">
       <head>

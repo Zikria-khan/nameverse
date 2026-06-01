@@ -3,6 +3,7 @@ import Meaning from './Meaning';
 import FAQ from './FAQ';
 import RelatedNames from './RelatedNames';
 import SitePage from '@/components/Layout/SitePage';
+import AdSlot from '@/components/Ads/AdSlot';
 
 export default function NameDetail({ data, faqData = [], pageUrl }) {
   return (
@@ -16,10 +17,14 @@ export default function NameDetail({ data, faqData = [], pageUrl }) {
     >
       <div className="nv-stack">
         <NameHero data={data} pageUrl={pageUrl} />
+        <AdSlot slotId="9605048967" className="mb-6" minHeight="90px" aria-label="Header advertisement" />
         <div className="nv-stack">
           <Meaning data={data} />
+          <AdSlot slotId="9605048968" className="mb-6" minHeight="250px" aria-label="Middle advertisement" />
           <RelatedNames data={data} />
+          <AdSlot slotId="9605048969" className="mb-6" minHeight="90px" aria-label="Related content advertisement" />
           <FAQ faqData={faqData} name={data.name} />
+          <AdSlot slotId="9605048970" className="mb-6" minHeight="90px" aria-label="Footer advertisement" />
         </div>
       </div>
     </SitePage>

@@ -6,6 +6,7 @@ import { getSiteUrl } from '@/lib/seo/site';
 import { Sparkles, Moon, ChevronLeft, ChevronRight } from 'lucide-react';
 import FavoriteButton from '@/components/FavoriteButton';
 import { createSafeSlug } from '@/lib/utils/createSafeSlug';
+import AdSlot from '@/components/Ads/AdSlot';
 
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
 const STATIC_CATEGORIES = ['modern', 'traditional', 'nature', 'religious', 'classical', 'unique'];
@@ -210,22 +211,25 @@ export default async function CategoryNamesPage({ params }) {
     <main className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-emerald-50">
       {/* Hero Section */}
       <section className="relative py-16 px-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 text-white overflow-hidden">
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.3)_1px,transparent_0)] bg-[size:20px_20px]"></div>
-        <div className="max-w-7xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-5 py-2.5 rounded-full text-sm font-medium mb-8 border border-white/30">
-            <Sparkles className="w-4 h-4" />
-            <span>{totalCount} Names Found</span>
-          </div>
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
-            Names in {category.charAt(0).toUpperCase() + category.slice(1)} Category
-          </h1>
-          <p className="text-lg md:text-xl text-emerald-100 max-w-4xl mx-auto mb-10 leading-relaxed">
-            Page {page} of {totalPages} • Discover beautiful names in the {category} category
-          </p>
-        </div>
-      </section>
-
-      {/* Breadcrumb */}
+             <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.3)_1px,transparent_0)] bg-[size:20px_20px]"></div>
+             <div className="max-w-7xl mx-auto text-center relative z-10">
+               <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-5 py-2.5 rounded-full text-sm font-medium mb-8 border border-white/30">
+                 <Sparkles className="w-4 h-4" />
+                 <span>{totalCount} Names Found</span>
+               </div>
+               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+                 Names in {category.charAt(0).toUpperCase() + category.slice(1)} Category
+               </h1>
+               <p className="text-lg md:text-xl text-emerald-100 max-w-4xl mx-auto mb-10 leading-relaxed">
+                 Page {page} of {totalPages} • Discover beautiful names in the {category} category
+               </p>
+             </div>
+           </div>
+         </section>
+         
+         <AdSlot slotId="9605048980" className="mb-8" minHeight="90px" aria-label="Category header advertisement" />
+         
+         {/* Breadcrumb */}
       <nav className="max-w-7xl mx-auto px-4 py-5" aria-label="Breadcrumb">
         <ol className="flex items-center gap-2 text-sm">
           <li><Link href="/" className="text-emerald-600 hover:text-emerald-800 font-medium">Home</Link></li>
@@ -255,83 +259,17 @@ export default async function CategoryNamesPage({ params }) {
             >
               {cat.charAt(0).toUpperCase() + cat.slice(1)}
             </Link>
-          ))}
-        </div>
-      </div>
-
-      {/* Names Grid */}
-      <section className="max-w-7xl mx-auto px-4 pb-16">
-        {names.length === 0 ? (
-          <div className="text-center py-16">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">No Names Found</h2>
-            <p className="text-gray-600">No names found in {category} category. Try another category.</p>
-          </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
-              {names.map((nameItem, index) => {
-                const displayMeaning = nameItem.short_meaning || nameItem.meaning || nameItem.long_meaning || 'No meaning available';
-                const itemKey = nameItem.slug || generateSlug(nameItem.name) || nameItem._id || index;
-
-                return (
-                  <Link
-                    key={itemKey}
-                    href={`/names/${religion}/${generateSlug(nameItem.name)}`}
-                    className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 border border-emerald-100 hover:border-emerald-300 group hover:-translate-y-1 block"
-                  >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <h3 className="text-2xl font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">
-                          {nameItem.name || 'Unknown'}
-                        </h3>
-                        {nameItem.quranicReference && (
-                          <span className="inline-block mt-2 bg-emerald-100 text-emerald-700 text-xs px-3 py-1 rounded-full font-medium">
-                            Quranic
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <FavoriteButton
-                          nameData={{
-                            name: nameItem.name,
-                            slug: generateSlug(nameItem.name),
-                            religion: religion,
-                            meaning: nameItem.short_meaning || nameItem.meaning,
-                            origin: nameItem.origin
-                          }}
-                          size="small"
-                        />
-                        <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-                          <Moon className="w-6 h-6 text-emerald-600" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <p className="text-emerald-600 font-semibold text-lg mb-4">
-                      "{displayMeaning}"
-                    </p>
-
-                    <div className="space-y-2 text-sm text-gray-600">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium">Origin:</span>
-                        <span>{nameItem.origin || 'Unknown'}</span>
-                      </div>
-                      {nameItem.luckyNumber && (
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium">Lucky Number:</span>
-                          <span className="inline-flex items-center justify-center w-8 h-8 bg-amber-100 text-amber-700 rounded-full font-bold">
-                            {nameItem.luckyNumber || 'N/A'}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-
-            {/* Pagination */}
-            <div className="flex items-center justify-center gap-4">
+                   ))}
+                 )}
+               </>
+             )}
+           </div>
+         </section>
+         
+         <AdSlot slotId="9605048981" className="mb-8" minHeight="90px" aria-label="Category mid-content advertisement" />
+         
+         {/* Pagination */}
+         <div className="flex items-center justify-center gap-4">
               {hasPrev && (
                 <Link
                   href={prevUrl}
@@ -346,19 +284,22 @@ export default async function CategoryNamesPage({ params }) {
                 Page {page} of {totalPages}
               </span>
 
-              {hasNext && (
-                <Link
-                  href={nextUrl}
-                  className="flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl hover:bg-emerald-700 transition-colors"
-                >
-                  Next
-                  <ChevronRight className="w-5 h-5" />
-                </Link>
-              )}
-            </div>
-          </>
-        )}
-      </section>
-    </main>
-  );
-}
+               {hasNext && (
+                 <Link
+                   href={nextUrl}
+                   className="flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl hover:bg-emerald-700 transition-colors"
+                 >
+                   Next
+                   <ChevronRight className="w-5 h-5" />
+                 </Link>
+               )}
+             </div>
+           </section>
+         )}
+       </section>
+       
+       <AdSlot slotId="9605048982" className="mb-8" minHeight="90px" aria-label="Category footer advertisement" />
+       
+     </main>
+   );
+ }

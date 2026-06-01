@@ -10,6 +10,7 @@ import hinduNames from '../../../../public/hindu_names.json';
 import christianNames from '../../../../public/christians_names.json';
 import SitePage from '@/components/Layout/SitePage';
 import { createSafeSlug } from '@/lib/utils/createSafeSlug';
+import AdSlot from '@/components/Ads/AdSlot';
 
 // ISR with 90-day cache for blog posts — keep content stable
 export const revalidate = 7776000; // 90 days
@@ -318,12 +319,14 @@ export default async function BlogPostPage({ params }) {
                 <Clock className="w-4 h-4" />
                 <span>{post.readTime}</span>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Content */}
-        <article className="py-12 px-4">
+             </div>
+           </div>
+         </section>
+ 
+         <AdSlot slotId="9605048975" className="mb-8" minHeight="90px" aria-label="Blog post header advertisement" />
+ 
+         {/* Content */}
+         <article className="py-12 px-4">
           <div className="max-w-4xl mx-auto">
             {/* Author Box */}
             <div className="flex items-center gap-4 mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200">
@@ -336,15 +339,17 @@ export default async function BlogPostPage({ params }) {
               </div>
             </div>
 
-            {/* Introduction */}
-            <div className="prose max-w-none mb-8">
-              <p className="text-gray-700 leading-relaxed text-lg">
-                {post.content.introduction}
-              </p>
-            </div>
-
-            {/* Sections */}
-            {post.content.sections && post.content.sections.map((section, index) => (
+             {/* Introduction */}
+             <div className="prose max-w-none mb-8">
+               <p className="text-gray-700 leading-relaxed text-lg">
+                 {post.content.introduction}
+               </p>
+             </div>
+             
+             <AdSlot slotId="9605048976" className="mb-8" minHeight="90px" aria-label="Blog post mid-content advertisement" />
+ 
+             {/* Sections */}
+             {post.content.sections && post.content.sections.map((section, index) => (
               <section key={index} className="mb-10">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">
                   {section.title}
@@ -369,22 +374,24 @@ export default async function BlogPostPage({ params }) {
                   </div>
                 )}
 
-                {/* Subsections */}
-                {section.subsections && section.subsections.map((subsection, subIndex) => (
-                  <div key={subIndex} className="ml-4 pl-4 border-l-2 border-blue-200 mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                      {subsection.title}
-                    </h3>
-                    <p className="text-gray-600 leading-relaxed">
-                      {subsection.content}
-                    </p>
-                  </div>
-                ))}
-              </section>
-            ))}
-
-            {/* FAQs Section */}
-            {post.content.faqs && post.content.faqs.length > 0 && (
+                 {/* Subsections */}
+                 {section.subsections && section.subsections.map((subsection, subIndex) => (
+                   <div key={subIndex} className="ml-4 pl-4 border-l-2 border-blue-200 mb-4">
+                     <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                       {subsection.title}
+                     </h3>
+                     <p className="text-gray-600 leading-relaxed">
+                       {subsection.content}
+                     </p>
+                   </div>
+                 ))}
+               </section>
+             ))}
+             
+             <AdSlot slotId="9605048977" className="mb-8" minHeight="90px" aria-label="Blog post lower content advertisement" />
+ 
+             {/* FAQs Section */}
+             {post.content.faqs && post.content.faqs.length > 0 && (
               <section className="mb-10">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">
                   Frequently Asked Questions
@@ -407,91 +414,19 @@ export default async function BlogPostPage({ params }) {
                         </p>
                       </div>
                     </details>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* Related Names Section */}
-            {post.content.relatedNames && post.content.relatedNames.length > 0 && (
-              <section className="mb-10">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  Explore Related Names
-                </h2>
-                <p className="text-gray-600 mb-4">
-                  Click on any name below to explore its meaning and origin:
-                </p>
-                <div className="flex flex-wrap gap-2">
-                   {post.content.relatedNames.map((name, i) => {
-                     const displayName = typeof name === 'string' ? name : name.name;
-                     const nameSlug = createSafeSlug(displayName);
-                     return <FeaturedNameLink key={nameSlug || i} name={name} religion={religion} />;
-                   })}
-                </div>
-              </section>
-            )}
-
-            {/* Tags */}
-            <div className="mt-10 pt-6 border-t border-gray-200">
-              <div className="flex items-center gap-2 mb-3">
-                <Tag className="w-4 h-4 text-gray-500" />
-                <span className="text-sm font-medium text-gray-700">Tags:</span>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {post.tags.map((tag, i) => (
-                  <span key={tag || i} className="bg-gray-100 text-gray-700 px-3 py-1 rounded text-sm">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Share */}
-            <div className="flex items-center gap-4 mt-6 pt-6 border-t border-gray-200">
-              <span className="text-sm font-medium text-gray-700">Share:</span>
-              <a
-                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(`${getSiteUrl()}/blog/${post.id}`)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
-                title="Share on Twitter"
-              >
-                <Share2 className="w-4 h-4" />
-              </a>
-            </div>
-          </div>
-        </article>
-
-        {/* Related Posts */}
-        {relatedPosts.length > 0 && (
-          <section className="py-12 px-4 bg-gray-50">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Articles</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {relatedPosts.map((relatedPost) => (
-                  <Link 
-                    key={relatedPost.id}
-                    href={`/blog/${relatedPost.id}`}
-                    className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow"
-                  >
-                    <span className="text-xs text-blue-600 font-medium">
-                      {relatedPost.category}
-                    </span>
-                    <h3 className="font-semibold text-gray-900 mt-2 mb-2 line-clamp-2">
-                      {relatedPost.title}
-                    </h3>
-                    <p className="text-gray-600 text-sm line-clamp-2">
-                      {relatedPost.excerpt}
-                    </p>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* CTA */}
-        <section className="py-12 px-4">
+                       ))}
+                     </details>
+               ))}
+             }
+           </div>
+         </div>
+       </section>
+     )}
+ 
+     <AdSlot slotId="9605048979" className="mb-8" minHeight="90px" aria-label="Blog post CTA advertisement" />
+ 
+     {/* CTA */}
+     <section className="py-12 px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               Ready to Find the Perfect Name?

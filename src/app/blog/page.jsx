@@ -6,6 +6,7 @@ import StructuredData from '@/components/SEO/StructuredData';
 import BlogImageWithFallback from '@/components/Blog/BlogImageWithFallback';
 import { getSiteUrl } from '@/lib/seo/site';
 import SitePage from '@/components/Layout/SitePage';
+import AdSlot from '@/components/Ads/AdSlot';
 
 // ISR with 90-day cache for blog index — keep content stable
 export const revalidate = 7776000; // 90 days
@@ -75,24 +76,26 @@ export default function BlogPage() {
         faq={blogFaq}
       />
 
-      {/* Hero Section - Clean & Professional */}
-      <section className="py-16 px-4 bg-white border-b border-gray-200">
-        <div className="max-w-6xl mx-auto">
-          <nav className="mb-6 text-sm text-gray-500">
-            <Link href="/" className="hover:text-gray-700">Home</Link>
-            <span className="mx-2">/</span>
-            <span className="text-gray-900 font-medium">Blog</span>
-          </nav>
-          
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Baby Names Blog & Expert Guides
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl">
-            Expert advice, naming traditions, cultural insights, and the latest trends 
-            to help you choose the perfect name for your baby.
-          </p>
-        </div>
-      </section>
+       {/* Hero Section - Clean & Professional */}
+       <section className="py-16 px-4 bg-white border-b border-gray-200">
+         <div className="max-w-6xl mx-auto">
+           <nav className="mb-6 text-sm text-gray-500">
+             <Link href="/" className="hover:text-gray-700">Home</Link>
+             <span className="mx-2">/</span>
+             <span className="text-gray-900 font-medium">Blog</span>
+           </nav>
+           
+           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+             Baby Names Blog & Expert Guides
+           </h1>
+           <p className="text-xl text-gray-600 max-w-2xl">
+             Expert advice, naming traditions, cultural insights, and the latest trends 
+             to help you choose the perfect name for your baby.
+           </p>
+         </div>
+       </section>
+       
+       <AdSlot slotId="9605048971" className="mb-8" minHeight="90px" aria-label="Blog header advertisement" />
 
       {/* Blog internal links */}
       <section className="py-10 px-4 bg-gradient-to-r from-indigo-50 via-white to-cyan-50 border-b border-gray-200">
@@ -198,10 +201,13 @@ export default function BlogPage() {
                 </article>
               );
             })}
+            </div>
           </div>
         </div>
       </section>
-
+      
+      <AdSlot slotId="9605048972" className="mb-8" minHeight="90px" aria-label="Blog mid-content advertisement" />
+      
       {/* Browse Names Section */}
       <section className="py-12 px-4">
         <div className="max-w-6xl mx-auto">
@@ -293,10 +299,12 @@ export default function BlogPage() {
             })}
           </div>
         </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="py-16 px-4 bg-slate-50">
+       </section>
+ 
+       <AdSlot slotId="9605048973" className="mb-8" minHeight="90px" aria-label="Blog lower content advertisement" />
+ 
+       {/* FAQ Section */}
+       <section className="py-16 px-4 bg-slate-50">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -306,12 +314,14 @@ export default function BlogPage() {
                 <p className="text-gray-600 leading-relaxed">{item.answer}</p>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 px-4">
+           </div>
+         </div>
+       </section>
+ 
+       <AdSlot slotId="9605048974" className="mb-8" minHeight="90px" aria-label="Blog CTA advertisement" />
+ 
+       {/* CTA Section */}
+       <section className="py-16 px-4">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
             Ready to Find the Perfect Name?

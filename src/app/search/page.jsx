@@ -2,6 +2,7 @@ import GlobalSearchClient from './GlobalSearchClient';
 import { Suspense } from 'react';
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
 import { getSiteUrl } from '@/lib/seo/site';
+import AdSlot from '@/components/Ads/AdSlot';
 
 const publishedDate = new Date().toISOString().split('T')[0];
 const DOMAIN = getSiteUrl();
@@ -202,10 +203,52 @@ const searchPageStructuredData = {
             "text": "NameVerse uses a fast, client-side search that instantly filters through 65,000+ names as you type. Simply select your preferred religion filter (Islamic, Hindu, Christian, or All) and start typing to see real-time results with meanings and details.",
             "datePublished": publishedDate,
             "author": { "@type": "Organization", "name": "NameVerse" }
-          }
-        }
-      ]
-    }
+           }
+         }
+       ]
+     };
+   };
+
+   export default function SearchPage() {
+     return (
+       <div className="min-h-screen">
+         {/* Hero Section */}
+         <section className="py-16 px-4 bg-gradient-to-br from-emerald-50 via-white to-blue-50">
+           <div className="max-w-6xl mx-auto">
+             <nav className="mb-6 text-sm text-gray-500">
+               <Link href="/" className="hover:text-gray-700">Home</Link>
+               <span className="mx-2">/</span>
+               <span className="text-gray-900 font-medium">Search</span>
+             </nav>
+             
+             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+               Search Baby Names
+             </h1>
+             <p className="text-lg md:text-xl text-gray-600 max-w-3xl">
+               Find the perfect name for your baby by searching across 65,000+ verified 
+               Islamic, Hindu & Christian names with meanings, origins, and trending data.
+             </p>
+           </div>
+         </section>
+         
+         <AdSlot slotId="9605048983" className="mb-8" minHeight="90px" aria-label="Search header advertisement" />
+         
+         {/* Search Results */}
+         <div className="max-w-6xl mx-auto px-4 pb-16">
+           <Suspense fallback={<div className="text-center py-8">Loading search...</div>}>
+             <GlobalSearchClient />
+           </Suspense>
+         </div>
+         
+         <AdSlot slotId="9605048984" className="mb-8" minHeight="90px" aria-label="Search footer advertisement" />
+         
+         {/* Footer Ads - Already in layout */}
+         <div className="pb-16">
+           {/* Footer AdSense unit is automatically included via layout.js */}
+         </div>
+       </div>
+     );
+   }
   ]
 };
 
