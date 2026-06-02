@@ -1,22 +1,18 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useRef } from 'react';
+import useAdSenseSlot from './useAdSenseSlot';
 
 const AdUnit = ({ slotId = '9605048966', className = '', minHeight = '90px', ariaLabel = 'Advertisement' }) => {
-  useEffect(() => {
-    try {
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    } catch (error) {
-      console.warn('AdSense init failed:', error);
-    }
-  }, [slotId]);
+  const adRef = useRef(null);
+  useAdSenseSlot(slotId, adRef);
 
   return (
-    <div className={`w-full my-6 flex justify-center ${className}`} aria-label={ariaLabel} role="region">
+    <div ref={adRef} className={`w-full my-6 flex justify-center ${className}`} aria-label={ariaLabel} role="region">
       <div className="w-full max-w-4xl" style={{ minHeight, width: '100%' }}>
         <ins
           className="adsbygoogle"
-          style={{ display: 'block' }}
+          style={{ display: 'block', width: '100%', minHeight }}
           data-ad-client="ca-pub-1510675468129183"
           data-ad-slot={slotId}
           data-ad-format="auto"

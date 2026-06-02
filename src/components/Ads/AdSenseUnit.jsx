@@ -1,26 +1,17 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useRef } from 'react';
+import useAdSenseSlot from './useAdSenseSlot';
 
-const AdSenseUnit = ({ slotId = '9605048966', className = '' }) => {
-  useEffect(() => {
-    const pushAd = () => {
-      try {
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-      } catch (error) {
-        console.warn('AdSense push failed:', error);
-      }
-    };
-
-    const raf = requestAnimationFrame(pushAd);
-    return () => cancelAnimationFrame(raf);
-  }, []);
+const AdSenseUnit = ({ slotId = '9605048966', className = '', minHeight = '90px' }) => {
+  const adRef = useRef(null);
+  useAdSenseSlot(slotId, adRef);
 
   return (
-    <div className={`w-full my-8 flex justify-center ${className}`}>
+    <div ref={adRef} className={`w-full my-8 flex justify-center ${className}`}>
       <ins
         className="adsbygoogle"
-        style={{ display: 'block', width: '100%' }}
+        style={{ display: 'block', width: '100%', minHeight }}
         data-ad-client="ca-pub-1510675468129183"
         data-ad-slot={slotId}
         data-ad-format="auto"
