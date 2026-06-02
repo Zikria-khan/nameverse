@@ -203,11 +203,8 @@ export default function BlogPage() {
             })}
             </div>
           </div>
-        </div>
-      </section>
-      
-      <AdSlot slotId="9605048972" className="mb-8" minHeight="90px" aria-label="Blog mid-content advertisement" />
-      
+        </section>
+
       {/* Browse Names Section */}
       <section className="py-12 px-4">
         <div className="max-w-6xl mx-auto">

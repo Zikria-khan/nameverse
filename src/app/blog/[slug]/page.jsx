@@ -439,6 +439,8 @@ export default async function BlogPostPage({ params }) {
             </Link>
           </div>
         </section>
+          </div>
+        </article>
       </SitePage>
     </>
   );

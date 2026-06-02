@@ -112,23 +112,6 @@ export const viewport = {
 };
 
 export default function RootLayout({ children }) {
-  const router = useRouter();
-
-  useEffect(() => {
-    const handleRouteChange = (url) => {
-      // Trigger ad refresh on route change
-      if (window.adsbygoogle) {
-        window.adsbygoogle.push({});
-      }
-      // Note: Monetag refresh would require their specific API
-    };
-
-    router.events.on('routeChangeComplete', handleRouteChange);
-    return () => {
-      router.events.off('routeChangeComplete', handleRouteChange);
-    };
-  }, [router.events]);
-
   return (
     <html lang="en" dir="ltr">
       <head>
@@ -200,6 +183,7 @@ export default function RootLayout({ children }) {
             <RouteChrome>{children}</RouteChrome>
             <Footer />
             <AppInstallPopup />
+          <AdRefreshHandler />
           </AppProvider>
         </div>
 
