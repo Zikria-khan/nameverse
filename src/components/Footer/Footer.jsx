@@ -84,7 +84,7 @@ export default function Footer() {
               <li><Link href="/about" className="transition hover:text-slate-900">ℹ️ About Us</Link></li>
               <li><Link href="/privacy" className="transition hover:text-slate-900">🔒 Privacy Policy</Link></li>
               <li><Link href="/terms" className="transition hover:text-slate-900">📄 Terms of Service</Link></li>
-              <li><Link href="/sitemap.xml" className="transition hover:text-slate-900">🗺️ Sitemap</Link></li>
+              <li><a href="/sitemap.xml" className="transition hover:text-slate-900">🗺️ Sitemap</a></li>
             </ul>
           </div>
           </div>
@@ -95,7 +95,7 @@ export default function Footer() {
             <p>© {currentYear} NameVerse. All rights reserved.</p>
             <Link href="/privacy" className="transition hover:text-slate-900">Privacy Policy</Link>
             <Link href="/terms" className="transition hover:text-slate-900">Terms of Service</Link>
-            <Link href="/sitemap.xml" className="transition hover:text-slate-900">Sitemap</Link>
+            <a href="/sitemap.xml" className="transition hover:text-slate-900">Sitemap</a>
           </div>
           {/* Social links - Only show if you have actual social media accounts
           <div className="flex space-x-4">

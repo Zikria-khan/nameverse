@@ -17,28 +17,40 @@ export default function useAdSenseSlot(slotId, targetRef) {
     let timeoutId = null;
     let destroyed = false;
 
-    const canPush = () =>
-      window.adsbygoogle && typeof window.adsbygoogle.push === 'function';
+        const getAdSlot = () => {
+      return targetRef.current?.querySelector('ins.adsbygoogle');
+    };
+
+    const isSlotFilled = () => {
+      const ins = getAdSlot();
+      if (!ins) return false;
+      if (ins.querySelector('iframe')) return true;
+      return ins.innerHTML.trim().length > 0;
+    };
 
     const pushAd = () => {
-      if (destroyed) return false;
-      if (!canPush()) return false;
+      if (destroyed || isSlotFilled()) return true;
+      if (!window.adsbygoogle || typeof window.adsbygoogle.push !== 'function') return false;
 
       try {
         window.adsbygoogle.push({});
         return true;
       } catch (error) {
+        const message = String(error || '');
+        if (message.includes('already have ads in them') || message.includes('TagError')) {
+          return true;
+        }
         console.warn(`AdSense push failed for slot ${slotId}:`, error);
         return false;
       }
     };
 
     const scheduleRetry = () => {
-      if (destroyed || retryCount >= MAX_RETRY_COUNT) return;
+      if (destroyed || retryCount >= MAX_RETRY_COUNT || isSlotFilled()) return;
       retryCount += 1;
 
       timeoutId = window.setTimeout(() => {
-        if (destroyed || !targetRef.current) return;
+        if (destroyed || !targetRef.current || isSlotFilled()) return;
         const rect = targetRef.current.getBoundingClientRect();
         if (rect.width <= 0) {
           scheduleRetry();
@@ -52,7 +64,7 @@ export default function useAdSenseSlot(slotId, targetRef) {
     };
 
     const attemptLoad = () => {
-      if (destroyed || !targetRef.current) return;
+      if (destroyed || !targetRef.current || isSlotFilled()) return;
       const rect = targetRef.current.getBoundingClientRect();
       if (rect.width <= 0) {
         scheduleRetry();
