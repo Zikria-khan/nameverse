@@ -1,16 +1,10 @@
 'use client';
 
-import Script from 'next/script';
-
 export default function MonetagAd() {
-  return (
-    <>
-      <Script
-        id="monetag-inpage-push"
-        src="https://nap5k.com/tag.min.js"
-        data-zone="11058633"
-        strategy="lazyOnload"
-      />
+  // Monetag is intentionally disabled. Only Google AdSense remains.
+  return null;
+}
+
       <div
         id="monetag-container"
         style={{

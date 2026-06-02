@@ -1,25 +1,24 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 export default function AdRefreshHandler() {
-  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
-    const handleRouteChange = (url) => {
-      // Trigger ad refresh on route change
-      if (window.adsbygoogle) {
-        window.adsbygoogle.push({});
-      }
-      // Note: Monetag refresh would require their specific API
-    };
+    if (typeof window === 'undefined') {
+      return;
+    }
 
-    router.events.on('routeChangeComplete', handleRouteChange);
-    return () => {
-      router.events.off('routeChangeComplete', handleRouteChange);
-    };
-  }, [router.events]);
+    if (window.adsbygoogle && Array.isArray(window.adsbygoogle)) {
+      try {
+        window.adsbygoogle.push({});
+      } catch (error) {
+        console.warn('Ad refresh failed:', error);
+      }
+    }
+  }, [pathname]);
 
   return null;
 }

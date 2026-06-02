@@ -14,7 +14,6 @@ import { AppProvider } from "@/contexts/AppContext";
 import LoadingWrapper from "@/components/LoadingAnimation/LoadingWrapper";
 import { Suspense } from 'react';
 import RouteChrome from "@/components/Layout/RouteChrome";
-import MonetagAd from "@/components/Ads/MonetagAd";
 import AdRefreshHandler from "@/components/Ads/AdRefreshHandler";
 
 import { getSiteUrl } from '@/lib/seo/site';
@@ -145,13 +144,6 @@ export default function RootLayout({ children }) {
           async
           strategy="afterInteractive"
         />
-        {/* ✅ Google AdSense Script */}
-        <Script
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1510675468129183"
-          async
-          crossorigin="anonymous"
-          strategy="afterInteractive"
-        />
 
         {/* ✅ Enhanced crawl hints */}
         <GoogleBotMeta siteUrl={siteUrl} />
@@ -187,9 +179,12 @@ export default function RootLayout({ children }) {
           </AppProvider>
         </div>
 
-        {/* Monetag In-Page Push Ad — loaded at bottom, after all content */}
-        {/* This ensures ads don't block rendering and don't affect LCP/CLS */}
-        <MonetagAd />
+        {/* ✅ Google AdSense script placed after page content for safer load ordering */}
+        <Script
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1510675468129183"
+          strategy="afterInteractive"
+          crossorigin="anonymous"
+        />
       </body>
     </html>
   );
