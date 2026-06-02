@@ -17,24 +17,9 @@ export const dynamicParams = true;
 
 // Pre-generate category pages at build time
 export async function generateStaticParams() {
-  const religions = ['islamic', 'christian', 'hindu'];
-  const categories = ['modern', 'traditional', 'nature', 'religious', 'classical', 'unique'];
-  const params = [];
-
-  for (const religion of religions) {
-    for (const category of categories) {
-      // Pre-generate first 3 pages for each category/religion combo
-      for (let page = 1; page <= 3; page++) {
-        params.push({
-          religion,
-          category,
-          page: String(page),
-        });
-      }
-    }
-  }
-
-  return params;
+  // Disabled pre-generation for category listing pages to stay within the
+  // build-time static page budget. These pages will be generated on-demand via ISR.
+  return [];
 }
 
 function normalizeReligion(religion) {

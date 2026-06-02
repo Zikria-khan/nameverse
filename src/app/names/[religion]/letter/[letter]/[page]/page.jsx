@@ -17,24 +17,9 @@ export const dynamicParams = true;
 
 // Pre-generate common letter/religion combinations at build time
 export async function generateStaticParams() {
-  const religions = ['islamic', 'christian', 'hindu'];
-  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-  const params = [];
-
-  for (const religion of religions) {
-    for (const letter of letters) {
-      // Pre-generate first 3 pages for each letter/religion combo
-      for (let page = 1; page <= 3; page++) {
-        params.push({
-          religion,
-          letter,
-          page: String(page),
-        });
-      }
-    }
-  }
-
-  return params;
+  // Disabled pre-generation for letter pages to keep build-time static pages
+  // under the 100-page budget. These pages will be generated on-demand via ISR.
+  return [];
 }
 
 function normalizeReligion(religion) {

@@ -7,6 +7,19 @@ import AdSlot from '@/components/Ads/AdSlot';
 const publishedDate = new Date().toISOString().split('T')[0];
 const DOMAIN = getSiteUrl();
 
+// Structured data for search page (Site SearchAction)
+const searchPageStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "url": `${DOMAIN}/search`,
+  "name": "NameVerse Search",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": `${DOMAIN}/search?q={search_term_string}`,
+    "query-input": "required name=search_term_string"
+  }
+};
+
 // ISR: 30-day cache — static content
 export const revalidate = 2592000; // 30 days
 

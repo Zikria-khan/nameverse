@@ -15,24 +15,9 @@ export const dynamicParams = true;
 
 // Pre-generate origin pages at build time
 export async function generateStaticParams() {
-  const religions = ['islamic', 'christian', 'hindu'];
-  const origins = ['arabic', 'persian', 'turkish', 'indian', 'english', 'other'];
-  const params = [];
-
-  for (const religion of religions) {
-    for (const origin of origins) {
-      // Pre-generate first 3 pages for each origin/religion combo
-      for (let page = 1; page <= 3; page++) {
-        params.push({
-          religion,
-          origin,
-          page: String(page),
-        });
-      }
-    }
-  }
-
-  return params;
+  // Disabled pre-generation for origin listing pages to stay within static page budget.
+  // Origin pages will be generated on-demand via ISR.
+  return [];
 }
 
 function resolveOrigin(origin, availableOrigins) {

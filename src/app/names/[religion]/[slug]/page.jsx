@@ -111,10 +111,10 @@ export async function generateStaticParams() {
     }
   }
 
-  // Limit to 50 popular names per religion (150 total) to keep build under 250 pages
+  // Limit to ~28 popular names per religion (~84 total) to keep build under 100 pages
   // Remaining names will be generated on-demand via ISR
   const limited = {};
-  const perReligionLimit = 50;
+  const perReligionLimit = 28;
   
   for (const entry of deduped) {
     if (!limited[entry.religion]) limited[entry.religion] = [];
