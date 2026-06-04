@@ -1,15 +1,14 @@
 // lib/seo/name-page-seo.jsx
-// CULTURAL ONOMASTICS SEO SYSTEM — Linguistic Origin Analysis & Cultural Semantic Research
+// CULTURAL ONOMASTICS SEO SYSTEM — UNIFIED URL GENERATION VIA url-builder.js
+// ALL URLs: lowercase, no trailing slash, consistent religion names
 
 import { getSiteUrl } from '@/lib/seo/site';
+import { nameAbsoluteUrl, nameRelativeUrl } from '@/lib/seo/url-builder';
 import { generateCTRTitle, generateCTRDescription, generateKeywords } from '@/lib/seo/title-generator';
 import { generateNameDatasetSchema, generateNameScholarlyArticle, generateFAQSchema, generateBreadcrumbSchema } from '@/lib/seo/structured-data';
 
 const siteUrl = getSiteUrl();
 
-/**
- * Deterministic hash function for consistent rotation
- */
 function getStableHash(str) {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
@@ -25,63 +24,37 @@ function getStableVariantIndex(name, religion, variantsCount) {
   return hash % variantsCount;
 }
 
-function formatTraitList(traits = []) {
-  const list = Array.isArray(traits) ? traits.filter(Boolean) : [];
-  return list.slice(0, 3).join(', ');
-}
-
-function getPersonalitySummary(data) {
-  const traits = [
-    ...(Array.isArray(data.emotional_traits) ? data.emotional_traits : []),
-    ...(Array.isArray(data.hidden_personality_traits) ? data.hidden_personality_traits : []),
-  ].filter(Boolean);
-  return formatTraitList(traits);
-}
-
 function extractCoreEmotion(meaning) {
   if (!meaning || typeof meaning !== 'string') return 'meaningful context';
-  
   let cleaned = meaning.trim();
   cleaned = cleaned.split(',')[0];
   cleaned = cleaned.split('·')[0];
   cleaned = cleaned.split('.')[0];
   cleaned = cleaned.split('\n')[0];
-  
   const words = cleaned.split(' ').filter(w => w.length > 0);
   const coreWords = words.slice(0, 5).join(' ');
-  
   if (coreWords.length < 2) return words[0] || 'meaningful';
   if (coreWords.length > 35) return coreWords.substring(0, 32) + '...';
-  
   return coreWords;
 }
 
-/**
- * Generate scholarly/academic title for name pages
- */
 export function generateOptimizedTitle(data, religion) {
   const name = data.name || '';
   const origin = data.origin || '';
   return generateCTRTitle(data, religion, origin);
 }
 
-/**
- * Generate scholarly description for name pages
- */
 export function generateOptimizedDescription(data, religion) {
   const description = generateCTRDescription(data, religion);
   return { desktop: description, mobile: description };
 }
 
-/**
- * Keywords generator
- */
 export function generateOptimizedKeywords(data, religion) {
   return generateKeywords(data, religion);
 }
 
 /**
- * Build FAQ item list from page data — rewritten for academic onomastics context
+ * Build FAQ items — academic onomastics style
  */
 function generateDynamicFaqItems(data, religion) {
   const name = data.name || 'This name';
@@ -142,14 +115,15 @@ function generateDynamicFaqItems(data, religion) {
 }
 
 /**
- * Generate structured data — Dataset + ScholarlyArticle schemas
+ * Generate ALL structured data schemas for a name page
+ * Uses url-builder for consistent URL format
  */
 export function generateOptimizedSchemas(data, religion, slug) {
-  const pageUrl = `${siteUrl}/names/${religion}/${slug}`;
+  // 🔥 USE THE SHARED URL BUILDER — single source of truth
+  const pageUrl = nameAbsoluteUrl(religion, slug);
+  const relativeUrl = nameRelativeUrl(religion, slug);
   const name = data.name;
   const faqItems = generateDynamicFaqItems(data, religion);
-
-  const publishedDate = data.published_date || data.created_at || data.updated_at || new Date().toISOString().split('T')[0];
 
   // Generate Dataset schema (primary)
   const datasetSchema = generateNameDatasetSchema(data, religion, slug);
@@ -160,10 +134,10 @@ export function generateOptimizedSchemas(data, religion, slug) {
   // Generate FAQ schema
   const faqSchema = generateFAQSchema(faqItems);
 
-  // Generate Breadcrumb schema
+  // Generate Breadcrumb schema — uses url-builder for ALL links
   const breadcrumbSchema = generateBreadcrumbSchema([
     { label: `${religion.charAt(0).toUpperCase() + religion.slice(1)} Names`, href: `/names/${religion}` },
-    { label: name, href: pageUrl },
+    { label: name, href: relativeUrl },
   ]);
 
   return {
@@ -176,10 +150,12 @@ export function generateOptimizedSchemas(data, religion, slug) {
 }
 
 /**
- * Main metadata generator — Linguistic & Cultural research oriented
+ * Main metadata generator
+ * Uses url-builder for canonical, OG, and all URLs
  */
 export async function generateNamePageMetadata(data, religion, slug) {
-  const pageUrl = `${siteUrl}/names/${religion}/${slug}`;
+  // 🔥 USE THE SHARED URL BUILDER
+  const pageUrl = nameAbsoluteUrl(religion, slug);
   const name = data.name;
   const shortMeaning = data.short_meaning || data.meaning || '';
   const origin = data.origin || '';
@@ -187,9 +163,7 @@ export async function generateNamePageMetadata(data, religion, slug) {
   const publishedDate = data.published_date || data.created_at || data.updated_at || new Date().toISOString().split('T')[0];
   const modifiedDate = data.updated_at || data.published_date || data.created_at || new Date().toISOString().split('T')[0];
 
-  // Safe meaning extraction for OG image
   const safeMeaning = extractCoreEmotion(shortMeaning);
-
   const title = generateOptimizedTitle(data, religion);
   const descriptionObj = generateOptimizedDescription(data, religion);
   const description = descriptionObj.desktop;
@@ -200,7 +174,6 @@ export async function generateNamePageMetadata(data, religion, slug) {
     description,
     keywords,
     alternates: { canonical: pageUrl },
-
     openGraph: {
       title,
       description,
@@ -214,21 +187,18 @@ export async function generateNamePageMetadata(data, religion, slug) {
         alt: `${name} — Linguistic Origin Analysis & Cultural Context | NameVerse`,
       }],
     },
-
     twitter: {
       card: 'summary_large_image',
       title,
       description,
       images: [`${siteUrl}/api/og?name=${encodeURIComponent(name)}&meaning=${encodeURIComponent(safeMeaning.substring(0, 40))}&religion=${religion}`],
     },
-
     robots: {
       index: true,
       follow: true,
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
-
     other: {
       'theme-color': '#D97706',
       'article:section': 'Cultural Onomastics',

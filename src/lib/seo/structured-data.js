@@ -3,7 +3,8 @@
  * Replaced: Product/Article schema types
  * With: Dataset, ScholarlyArticle, Linguistic system schemas
  */
-import { getSiteUrl, absoluteUrl } from '@/lib/seo/site';
+import { getSiteUrl } from '@/lib/seo/site';
+import { nameAbsoluteUrl } from '@/lib/seo/url-builder';
 
 /**
  * Generate NameDataset schema for individual name pages
@@ -14,7 +15,7 @@ import { getSiteUrl, absoluteUrl } from '@/lib/seo/site';
  * @returns {Object} Dataset schema
  */
 export function generateNameDatasetSchema(nameData, religion, slug) {
-  const pageUrl = absoluteUrl(`/names/${religion}/${slug}`);
+  const pageUrl = nameAbsoluteUrl(religion, slug);
   const name = nameData.name || '';
   const coreMeaning = nameData.short_meaning || nameData.meaning || '';
   const origin = nameData.origin || 'Multiple linguistic traditions';
@@ -106,7 +107,7 @@ export function generateNameDatasetSchema(nameData, religion, slug) {
  * Replaces the old "Article" basic SEO spam type
  */
 export function generateNameScholarlyArticle(nameData, religion, slug) {
-  const pageUrl = absoluteUrl(`/names/${religion}/${slug}`);
+  const pageUrl = nameAbsoluteUrl(religion, slug);
   const name = nameData.name || '';
   const coreMeaning = nameData.short_meaning || nameData.meaning || '';
   const origin = nameData.origin || '';
@@ -120,7 +121,7 @@ export function generateNameScholarlyArticle(nameData, religion, slug) {
     name: `${name} — Linguistic Origin Analysis`,
     description: `Linguistic origin analysis of the name "${name}": root language etymology, phonetic structure, cultural semantic interpretation across traditions, and historical naming evolution through civilizations. Part of the NameVerse multilingual onomastics knowledge base.`,
     url: pageUrl,
-    image: absoluteUrl('/logo.png'),
+    image: `${getSiteUrl()}/logo.png`,
     datePublished: publishedDate,
     dateModified: modifiedDate,
     inLanguage: 'en',
@@ -134,7 +135,7 @@ export function generateNameScholarlyArticle(nameData, religion, slug) {
       name: 'NameVerse',
       logo: {
         '@type': 'ImageObject',
-        url: absoluteUrl('/logo.png'),
+        url: `${getSiteUrl()}/logo.png`,
         width: 512,
         height: 512
       }
