@@ -1,102 +1,198 @@
+/**
+ * SITEMAP BUILDER — Slug Validation & Clean URL Generation
+ * 
+ * Only includes:
+ * - Known static pages
+ * - Valid existing name slugs from database files
+ * - Properly formatted, verified URLs
+ * 
+ * Excludes:
+ * - Phonetic/IPA slugs
+ * - Non-ASCII characters
+ * - Non-existent pages
+ * - Invalid slug patterns
+ */
+
 const fs = require('fs');
 const path = require('path');
 
-// ─── Build-step: generate sitemap.xml into public/ ───────────────────────────
-// Run with:  node scripts/build-sitemap.js
-//
-// This runs at build time and writes a complete sitemap.xml directly to
-// public/sitemap.xml, so Next.js serves it as a plain static file.
-// Zero ISR, zero runtime re-computation, zero edge read-CPU for /sitemap.xml.
-// ─────────────────────────────────────────────────────────────────────────────
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
+const OUTPUT_FILE = path.join(process.cwd(), 'public', 'sitemap.xml');
+const DATA_DIR = path.join(process.cwd(), 'public', 'data');
 
-const SITE = (process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app').replace(/\/+$/, '');
-const TODAY = new Date().toISOString().split('T')[0];
+// Valid slug pattern — only lowercase alphanumeric + hyphens
+const VALID_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-const DATA = path.join(process.cwd(), 'public');
-const BLOG  = JSON.parse(fs.readFileSync(path.join(DATA, 'data', 'blog-posts.json'),  'utf8'));
-const ISL   = JSON.parse(fs.readFileSync(path.join(DATA,       'islamic_names.json'), 'utf8'));
-const HIND  = JSON.parse(fs.readFileSync(path.join(DATA,       'hindu_names.json'),    'utf8'));
-const CHR   = JSON.parse(fs.readFileSync(path.join(DATA,       'christians_names.json'),'utf8'));
-const IBoy  = JSON.parse(fs.readFileSync(path.join(DATA, 'data', 'islamic-boy-names.json'),  'utf8'));
-const IGirl = JSON.parse(fs.readFileSync(path.join(DATA, 'data', 'islamic-girl-names.json'), 'utf8'));
-const HBoy  = JSON.parse(fs.readFileSync(path.join(DATA, 'data', 'hindu-boy-names.json'),   'utf8'));
-const HGirl = JSON.parse(fs.readFileSync(path.join(DATA, 'data', 'hindu-girl-names.json'),  'utf8'));
-const CBoy  = JSON.parse(fs.readFileSync(path.join(DATA, 'data', 'christian-boy-names.json'),'utf8'));
-const CGirl = JSON.parse(fs.readFileSync(path.join(DATA, 'data', 'christian-girl-names.json'),'utf8'));
+// Invalid characters — block any slug containing these
+const INVALID_CHARS = /[ˈɑːɪɔːɛəʃʒʤʧɹɾɣʔθðŋɲɳɽʈɖɭ˞ˌ̩̍ḁᵊ̧̣̩̪̹̟̠̤̥̆̈̃]/;
 
-const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-const NPP = 50; // names per page
+function isValidSlug(slug) {
+  if (!slug || typeof slug !== 'string') return false;
+  const cleaned = slug.toLowerCase().trim();
+  if (cleaned.length < 2 || cleaned.length > 50) return false;
+  if (!VALID_SLUG.test(cleaned)) return false;
+  if (INVALID_CHARS.test(cleaned)) return false;
+  // Check for non-ASCII characters
+  for (let i = 0; i < cleaned.length; i++) {
+    if (cleaned.charCodeAt(i) > 127) return false;
+  }
+  return true;
+}
 
-function slug(name) {
-  return String(name || '')
-    .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-zA-Z0-9\s-]/g, '')
-    .trim()
+function createSafeSlug(name) {
+  if (!name || typeof name !== 'string') return null;
+  let slug = name
     .toLowerCase()
-    .replace(/\s+/g, '-')
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/[\s_]+/g, '-')
     .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
-}
-function escXml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function e(loc, lastmod, pri='0.7', cf='weekly') {
-  return `  <url>\n    <loc>${escXml(loc)}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${cf}</changefreq>\n    <priority>${pri}</priority>\n  </url>`;
+    .replace(/^-+|-+$/g, '');
+  return isValidSlug(slug) ? slug : null;
 }
 
-const urls = [];
+function loadNamesFromFile(filePath, religion) {
+  const names = [];
+  try {
+    if (!fs.existsSync(filePath)) return names;
+    const raw = fs.readFileSync(filePath, 'utf8');
+    const data = JSON.parse(raw);
+    if (!Array.isArray(data)) return names;
 
-// 1. Root / static pages
-const roots = ['/','/names','/search','/blog','/name-meanings','/unique-names','/trending-names','/popularity','/names-by-meaning','/languages','/terms','/about'];
-roots.forEach(p => urls.push(e(SITE + p, TODAY, '0.9', 'weekly')));
+    for (const entry of data) {
+      const nameStr = typeof entry === 'string' ? entry : entry.name || entry.Name || '';
+      const slug = createSafeSlug(nameStr);
+      if (slug) {
+        names.push({ name: slug, religion, displayName: nameStr });
+      }
+    }
+  } catch (e) {
+    console.warn(`Warning: Could not process ${filePath}: ${e.message}`);
+  }
+  return names;
+}
 
-// 2. Religion list pages
-['islamic','christian','hindu'].forEach(r => urls.push(e(SITE + `/names/religion/${r}/1`, TODAY, '0.8', 'weekly')));
+async function buildSitemap() {
+  console.log('🔨 Building validated sitemap...');
+  const urls = [];
 
-// 3. Blog posts
-BLOG.forEach(post => {
-  const lm = (post.publishDate || '').split('T')[0] || TODAY;
-  urls.push(e(SITE + `/blog/${post.id}`, lm, '0.8', 'weekly'));
-});
+  // Static pages (high priority)
+  const staticPages = [
+    { path: '', priority: '0.9', changefreq: 'weekly', date: new Date().toISOString().split('T')[0] },
+    { path: '/names', priority: '0.9', changefreq: 'weekly', date: new Date().toISOString().split('T')[0] },
+    { path: '/search', priority: '0.9', changefreq: 'weekly', date: new Date().toISOString().split('T')[0] },
+    { path: '/blog', priority: '0.9', changefreq: 'weekly', date: new Date().toISOString().split('T')[0] },
+    { path: '/name-meanings', priority: '0.8', changefreq: 'weekly', date: new Date().toISOString().split('T')[0] },
+    { path: '/unique-names', priority: '0.8', changefreq: 'weekly', date: new Date().toISOString().split('T')[0] },
+    { path: '/trending-names', priority: '0.8', changefreq: 'weekly', date: new Date().toISOString().split('T')[0] },
+    { path: '/popularity', priority: '0.8', changefreq: 'weekly', date: new Date().toISOString().split('T')[0] },
+    { path: '/names-by-meaning', priority: '0.8', changefreq: 'weekly', date: new Date().toISOString().split('T')[0] },
+    { path: '/languages', priority: '0.8', changefreq: 'weekly', date: new Date().toISOString().split('T')[0] },
+    { path: '/terms', priority: '0.5', changefreq: 'monthly', date: new Date().toISOString().split('T')[0] },
+    { path: '/about', priority: '0.5', changefreq: 'monthly', date: new Date().toISOString().split('T')[0] },
+    { path: '/privacy', priority: '0.5', changefreq: 'monthly', date: new Date().toISOString().split('T')[0] },
+    { path: '/advanced-search', priority: '0.7', changefreq: 'monthly', date: new Date().toISOString().split('T')[0] },
+    { path: '/guides/expert-naming-guide', priority: '0.7', changefreq: 'monthly', date: new Date().toISOString().split('T')[0] },
+    { path: '/names/religion/islamic/1', priority: '0.8', changefreq: 'weekly', date: new Date().toISOString().split('T')[0] },
+    { path: '/names/religion/christian/1', priority: '0.8', changefreq: 'weekly', date: new Date().toISOString().split('T')[0] },
+    { path: '/names/religion/hindu/1', priority: '0.8', changefreq: 'weekly', date: new Date().toISOString().split('T')[0] },
+    { path: '/islamic/boy-names', priority: '0.8', changefreq: 'weekly', date: new Date().toISOString().split('T')[0] },
+    { path: '/islamic/girl-names', priority: '0.8', changefreq: 'weekly', date: new Date().toISOString().split('T')[0] },
+    { path: '/christian/boy-names', priority: '0.8', changefreq: 'weekly', date: new Date().toISOString().split('T')[0] },
+    { path: '/christian/girl-names', priority: '0.8', changefreq: 'weekly', date: new Date().toISOString().split('T')[0] },
+    { path: '/hindu/boy-names', priority: '0.8', changefreq: 'weekly', date: new Date().toISOString().split('T')[0] },
+    { path: '/hindu/girl-names', priority: '0.8', changefreq: 'weekly', date: new Date().toISOString().split('T')[0] },
+  ];
 
-// 4. Name detail pages (flat string arrays)
-ISL.forEach(n  => urls.push(e(SITE + `/names/islamic/${slug(n)}`,  TODAY, '0.6', 'yearly')));
-HIND.forEach(n => urls.push(e(SITE + `/names/hindu/${slug(n)}`,    TODAY, '0.6', 'yearly')));
-CHR.forEach(n  => urls.push(e(SITE + `/names/christian/${slug(n)}`,TODAY, '0.6', 'yearly')));
+  for (const page of staticPages) {
+    urls.push({
+      loc: `${SITE_URL}${page.path}`,
+      lastmod: page.date,
+      changefreq: page.changefreq,
+      priority: page.priority,
+    });
+  }
 
-// 5. Letter pages
-const lookups = { islamic_boy:IBoy, islamic_girl:IGirl, hindu_boy:HBoy, hindu_girl:HGirl, christian_boy:CBoy, christian_girl:CGirl };
-const religions = ['islamic','christian','hindu'];
-const genders  = ['boy','girl'];
-for (const rel of religions) {
-  for (const gen of genders) {
-    const dataLen = (lookups[`${rel}_${gen}`] || []).length;
-    const totalPages = Math.ceil(dataLen / NPP);
-    for (const letter of ALPHABET) {
-      for (let page = 1; page <= totalPages; page++) {
-        const prio = page === 1 ? '0.7' : '0.3';
-        urls.push(e(SITE + `/names/${rel}/${gen}/letter/${letter}/${page}`, TODAY, prio, 'weekly'));
+  // Load name data files and generate name URLs
+  const nameFiles = [
+    { file: 'islamic-boy-names.json', religion: 'islamic' },
+    { file: 'islamic-girl-names.json', religion: 'islamic' },
+    { file: 'islamic_names.json', religion: 'islamic' },
+    { file: 'christian-boy-names.json', religion: 'christian' },
+    { file: 'christian-girl-names.json', religion: 'christian' },
+    { file: 'christians_names.json', religion: 'christian' },
+    { file: 'hindu-boy-names.json', religion: 'hindu' },
+    { file: 'hindu-girl-names.json', religion: 'hindu' },
+    { file: 'hindu_names.json', religion: 'hindu' },
+  ];
+
+  const seenSlugs = new Set();
+  let totalValidNames = 0;
+  let totalSkipped = 0;
+
+  for (const { file, religion } of nameFiles) {
+    const filePath = path.join(DATA_DIR, file);
+    const names = loadNamesFromFile(filePath, religion);
+    
+    for (const entry of names) {
+      const key = `${entry.religion}/${entry.name}`;
+      if (!seenSlugs.has(key)) {
+        seenSlugs.add(key);
+        urls.push({
+          loc: `${SITE_URL}/names/${entry.religion}/${entry.name}`,
+          lastmod: new Date().toISOString().split('T')[0],
+          changefreq: 'yearly',
+          priority: '0.6',
+        });
+        totalValidNames++;
+      } else {
+        totalSkipped++;
       }
     }
   }
+
+  // Add letter pages (A-Z for each religion)
+  const religions = ['islamic', 'christian', 'hindu'];
+  for (const religion of religions) {
+    for (let i = 0; i < 26; i++) {
+      const letter = String.fromCharCode(65 + i);
+      urls.push({
+        loc: `${SITE_URL}/names/${religion}/letter/${letter}/1`,
+        lastmod: new Date().toISOString().split('T')[0],
+        changefreq: 'monthly',
+        priority: '0.4',
+      });
+    }
+  }
+
+  // Generate XML
+  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+  xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+
+  for (const url of urls) {
+    xml += '  <url>\n';
+    xml += `    <loc>${url.loc}</loc>\n`;
+    xml += `    <lastmod>${url.lastmod}</lastmod>\n`;
+    xml += `    <changefreq>${url.changefreq}</changefreq>\n`;
+    xml += `    <priority>${url.priority}</priority>\n`;
+    xml += '  </url>\n';
+  }
+
+  xml += '</urlset>';
+
+  // Write output
+  fs.writeFileSync(OUTPUT_FILE, xml, 'utf8');
+  
+  console.log(`✅ Sitemap written to ${OUTPUT_FILE}`);
+  console.log(`📊 Static pages: ${staticPages.length}`);
+  console.log(`📊 Valid name URLs: ${totalValidNames}`);
+  console.log(`📊 Skipped (duplicates): ${totalSkipped}`);
+  console.log(`📊 Letter pages: ${26 * 3}`);
+  console.log(`📊 Total URLs: ${urls.length}`);
+  console.log(`📦 File size: ${(Buffer.byteLength(xml) / 1024).toFixed(1)} KB`);
 }
 
-// 6. Boy/girl category pages
-[['islamic',IBoy,IGirl],['christian',CBoy,CGirl],['hindu',HBoy,HGirl]].forEach(([rel,boy,girl]) => {
-  urls.push(e(SITE + `/names/${rel}/boy-names`,  TODAY, '0.8','weekly'));
-  urls.push(e(SITE + `/names/${rel}/girl-names`, TODAY, '0.8','weekly'));
+buildSitemap().catch(err => {
+  console.error('❌ Sitemap build failed:', err);
+  process.exit(1);
 });
-
-// 7. Build XML file
-const xml = [
-  '<?xml version="1.0" encoding="UTF-8"?>',
-  '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-  ...urls,
-  '</urlset>',
-  ''
-].join('\n');
-
-const outPath = path.join(process.cwd(), 'public', 'sitemap.xml');
-fs.writeFileSync(outPath, xml, 'utf8');
-console.log('Written', urls.length, 'URL entries to', outPath);

@@ -12,7 +12,8 @@
     "clear-all-cache": "rimraf .next node_modules/.cache",
     "dev:clean": "npm run clear-all-cache && next dev",
     "rebuild": "npm run clear-all-cache && next build",
-    "reset": "npm run clear-all-cache && npm run dev"
+    "reset": "npm run clear-all-cache && npm run dev",
+    "build-sitemap": "node scripts/build-sitemap.js"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
