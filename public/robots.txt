@@ -1,32 +1,52 @@
-# NameVerse Robots.txt
-# Allow all search engines to crawl the site
+# NameVerse Robots.txt — SEO Firewall
+# Strict allow/block rules for index quality
 
 User-agent: *
 Allow: /
-
-# Dynamic sitemap location (generated at build time)
 Sitemap: https://nameverse.vercel.app/sitemap.xml
 
-# Disallow admin or private areas (if any)
-# Disallow: /admin/
-# Disallow: /private/
-
-# Allow all static assets
-Allow: /_next/static/
-
-# Block access to API endpoints
-Disallow: /api/
-
-# Allow search pages to be indexed for SEO - they provide valuable content
-# Disallow: /search/
-# Disallow: /search?q=
-
-# Allow blog and guides
+# ✅ ALLOW — Main content (canonical)
+Allow: /names/
 Allow: /blog/
 Allow: /guides/
-
-# Allow all name pages
-Allow: /names/
+Allow: /search
+Allow: /about
+Allow: /privacy
+Allow: /terms
+Allow: /languages
+Allow: /popularity
+Allow: /name-meanings
+Allow: /names-by-meaning
+Allow: /unique-names
+Allow: /trending-names
+Allow: /advanced-search
+Allow: /my-names
+Allow: /popular-by-state
+Allow: /viral-names
 Allow: /islamic/
 Allow: /christian/
 Allow: /hindu/
+
+# ✅ ALLOW — Static assets
+Allow: /_next/static/
+Allow: /images/
+Allow: /logo.png
+
+# 🚫 BLOCK — Never index
+Disallow: /api/
+Disallow: /api/og/
+Disallow: /api/og/
+Disallow: /_next/
+Disallow: /_next/data/
+Disallow: /apple-icon
+Disallow: /icon
+Disallow: /opengraph-image
+Disallow: /performance
+Disallow: /install
+
+# 🚫 BLOCK — Parameterized & dynamic URLs
+Disallow: /*?ref=
+Disallow: /*?utm_
+Disallow: /*?source=
+Disallow: /*?q=*
+Disallow: /*?query=*

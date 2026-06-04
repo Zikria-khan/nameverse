@@ -11,8 +11,13 @@ const nextConfig = {
 
   // Performance Optimizations
   compress: true,
-  poweredByHeader: false, // Remove X-Powered-By header
-  productionBrowserSourceMaps: false, // Reduce bundle size (remove source maps in prod)
+  poweredByHeader: false,
+  productionBrowserSourceMaps: false,
+
+  // Trailing slash policy: NO trailing slashes — single URL version only
+  // This eliminates: /names/islamic/abdullah vs /names/islamic/abdullah/ duplication
+  skipTrailingSlashRedirect: false,
+  trailingSlash: false,
 
   // Image Optimization
   images: {
@@ -25,49 +30,94 @@ const nextConfig = {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    minimumCacheTTL: 31536000, // 1 year cache
+    minimumCacheTTL: 31536000,
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+  },
+
+  // REDIRECT CLEANUP: All redirects in one place — no chains, no loops
+  // Rule: ONE URL → ONE redirect → final 200 page
+  async redirects() {
+    return [
+      // Religion name normalization → lowercase canonical form
+      // Prevents: /names/Islam/Abdullah vs /names/islamic/abdullah
+      {
+        source: '/names/islam/:path*',
+        destination: '/names/islamic/:path*',
+        permanent: true,
+      },
+      {
+        source: '/names/muslim/:path*',
+        destination: '/names/islamic/:path*',
+        permanent: true,
+      },
+      {
+        source: '/names/christianity/:path*',
+        destination: '/names/christian/:path*',
+        permanent: true,
+      },
+      {
+        source: '/names/hinduism/:path*',
+        destination: '/names/hindu/:path*',
+        permanent: true,
+      },
+      // Old /baby-names/ paths → new /names/ structure
+      {
+        source: '/baby-names/:path*',
+        destination: '/names/:path*',
+        permanent: true,
+      },
+      {
+        source: '/baby-names',
+        destination: '/names',
+        permanent: true,
+      },
+      // /name/ (singular) → /names/ (plural canonical)
+      {
+        source: '/name/:path*',
+        destination: '/names/:path*',
+        permanent: true,
+      },
+      // Legacy blog paths cleanup
+      {
+        source: '/article/:path*',
+        destination: '/blog/:path*',
+        permanent: true,
+      },
+    ];
   },
 
   // Headers for Performance & Edge Caching
   async headers() {
     return [
-      // API routes - no cache
+      // API routes - no cache + noindex
       {
         source: '/api/:path*',
         headers: [
-          {
-            key: 'Cache-Control',
-            value: 'no-store, max-age=0, must-revalidate',
-          },
+          { key: 'Cache-Control', value: 'no-store, max-age=0, must-revalidate' },
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
+        ],
+      },
+      // OG image generation - noindex, nofollow
+      {
+        source: '/api/og/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'no-store, max-age=0, must-revalidate' },
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
         ],
       },
       // Main pages with comprehensive CSP
       {
         source: '/:path*',
         headers: [
-          {
-            key: 'X-DNS-Prefetch-Control',
-            value: 'on'
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff'
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN'
-          },
-          {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block'
-          },
+          { key: 'X-DNS-Prefetch-Control', value: 'on' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'X-XSS-Protection', value: '1; mode=block' },
           {
             key: 'Content-Security-Policy',
             value: [
-              // Default: only self
-"default-src 'self'",
+              "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://analytics.ahrefs.com https://pagead2.googlesyndication.com https://www.google-analytics.com https://www.googletagmanager.com https://*.googleadservices.com https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.googletagmanager.com https://my.rtmark.net https://jhnwr.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: https: http:",
@@ -75,72 +125,49 @@ const nextConfig = {
               "font-src 'self' data: https://fonts.gstatic.com",
               "frame-src 'self' https://*.googleadservices.com https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com",
               "worker-src 'self' blob:",
-              // Prevent framing of our site
               "frame-ancestors 'self'",
-              // Block plugins
               "object-src 'none'",
-              // Base URI
               "base-uri 'self'",
-              // Manifest
               "manifest-src 'self'",
-              // Media sources for video ads
               "media-src 'self' https: http:"
-            ].join('; ')
+            ].join('; '),
           },
-          {
-            key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin'
-          },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
         ],
       },
-      // Next.js data - ISR caching
+      // Next.js data
       {
         source: '/_next/data/:path*',
         headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=0, stale-while-revalidate=2592000',
-          },
+          { key: 'Cache-Control', value: 'public, max-age=0, stale-while-revalidate=2592000' },
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
         ],
       },
-      // Static assets - long-term caching
+      // Static assets - long-term caching + noindex
       {
         source: '/images/:path*',
         headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       },
       {
         source: '/_next/static/:path*',
         headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       },
       {
         source: '/_next/image/:path*',
         headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       },
     ];
   },
 
-  // Rewrites for image fallbacks
+  // Rewrites for image fallbacks (keep minimal, no API exposure)
   async rewrites() {
     return [
-      {
-        source: '/article/:path*',
-        destination: '/logo.png',
-      },
       {
         source: '/images/articles/:path*',
         destination: '/logo.png',
@@ -148,7 +175,7 @@ const nextConfig = {
     ];
   },
 
-  // Optimize package imports (tree-shaking)
+  // Optimize package imports
   experimental: {
     optimizePackageImports: [
       '@radix-ui/react-dropdown-menu',
@@ -158,7 +185,6 @@ const nextConfig = {
     ],
   },
 
-  // Turbopack configuration (using Turbopack by default in Next.js 16)
   turbopack: {},
 };
 
