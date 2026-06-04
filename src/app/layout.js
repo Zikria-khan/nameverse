@@ -2,6 +2,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer/Footer";
 import StickyBottomAd from '@/components/Ads/StickyBottomAd';
+import AdSlot from '@/components/Ads/AdSlot';
 import AppInstallPopup from "./install";
 import Script from 'next/script';
 import { Fraunces, Instrument_Sans } from 'next/font/google';
@@ -172,6 +173,21 @@ export default function RootLayout({ children }) {
             <Suspense fallback={<div>Loading Navbar...</div>}>
               <Navbar />
             </Suspense>
+
+            {/* Top display ad (autorelaxed) — hidden on small screens for UX, eager load for instant display */}
+            <Suspense fallback={<div />}> 
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <AdSlot
+                  slotId="9781955008"
+                  adFormat="autorelaxed"
+                  eager={true}
+                  className="mb-4 hidden md:block"
+                  minHeight="90px"
+                  aria-label="Top display advertisement"
+                />
+              </div>
+            </Suspense>
+
             <RouteChrome>{children}</RouteChrome>
             <Footer />
             <AppInstallPopup />
@@ -187,10 +203,10 @@ export default function RootLayout({ children }) {
         </div>
 
         {/* ✅ Google AdSense script placed after page content for safer load ordering */}
-        <script
-          async
+        <Script
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1510675468129183"
           crossOrigin="anonymous"
+          strategy="afterInteractive"
         />
       </body>
     </html>

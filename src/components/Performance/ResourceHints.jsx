@@ -40,6 +40,12 @@ export default function ResourceHints() {
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
 
+      {/* Preconnect / DNS prefetch for Google AdSense to speed ad script loading */}
+      <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+      <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
+      <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net" />
+      <link rel="preconnect" href="https://googleads.g.doubleclick.net" crossOrigin="anonymous" />
+
       {/* Prefetch critical routes */}
       <link rel="prefetch" href="/names/religion/islamic/1" as="document" />
       <link rel="prefetch" href="/blog" as="document" />
