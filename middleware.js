@@ -13,7 +13,8 @@ import { NextResponse } from 'next/server';
  * - Valid ASCII-only paths with proper route structure
  * - Only known valid route prefixes
  * 
- * Returns 410 Gone for invalid URLs — NEVER redirects to homepage.
+ * Returns 410 Gone as PLAIN TEXT/HTML for invalid URLs — NEVER redirects to homepage.
+ * Never returns JSON. Google needs a proper HTTP 410 response, not API JSON.
  * 410 Gone tells Google "this URL is permanently gone, stop crawling it"
  * which is better than 404 for crawl budget cleanup.
  */
@@ -65,6 +66,30 @@ const VALID_PREFIXES = [
 // Valid slug pattern: lowercase alphanumeric + hyphens only
 const VALID_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
+// 410 HTML response — plain HTTP page, NOT JSON
+// Google needs real HTML/text, not API response
+const GONE_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>410 Gone</title>
+<meta name="robots" content="noindex, nofollow">
+<style>body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#f8fafc;color:#1e293b}div{text-align:center}h1{font-size:3rem;margin:0;color:#0f172a}p{color:#64748b;margin:8px 0}.code{font-family:monospace;color:#94a3b8}</style>
+</head><body><div>
+<h1>410</h1>
+<p>This page has been permanently removed.</p>
+<p class="code">410 Gone</p>
+</div></body></html>`;
+
+function sendGone() {
+  return new NextResponse(GONE_HTML, {
+    status: 410,
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'X-Robots-Tag': 'noindex, nofollow',
+      'Cache-Control': 'public, max-age=31536000, immutable',
+    },
+  });
+}
+
 export function middleware(request) {
   const { pathname } = request.nextUrl;
   const path = pathname.toLowerCase();
@@ -87,33 +112,13 @@ export function middleware(request) {
 
   // STEP 2: BLOCK phonetic/IPA characters
   if (PHONETIC_UNICODE_RANGES.test(path) || INVALID_CHARS.test(path) || IPA_PATTERN.test(path)) {
-    return new NextResponse(
-      JSON.stringify({ error: 'Gone', message: 'This URL is no longer available.' }),
-      {
-        status: 410,
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Robots-Tag': 'noindex, nofollow',
-          'Cache-Control': 'public, max-age=31536000, immutable',
-        },
-      }
-    );
+    return sendGone();
   }
 
   // STEP 3: BLOCK URLs with non-ASCII characters
   for (let i = 0; i < path.length; i++) {
     if (path.charCodeAt(i) > 127 && path[i] !== '/') {
-      return new NextResponse(
-        JSON.stringify({ error: 'Gone', message: 'This URL is no longer available.' }),
-        {
-          status: 410,
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Robots-Tag': 'noindex, nofollow',
-            'Cache-Control': 'public, max-age=31536000, immutable',
-          },
-        }
-      );
+      return sendGone();
     }
   }
 
@@ -128,7 +133,6 @@ export function middleware(request) {
     if (namesMatch) {
       const religion = namesMatch[1];
       const slug = namesMatch[2];
-      // Allow only valid religions and valid slugs
       if (['islamic', 'christian', 'hindu'].includes(religion) && VALID_SLUG.test(slug)) {
         return NextResponse.next();
       }
@@ -177,37 +181,16 @@ export function middleware(request) {
       return NextResponse.next();
     }
 
-    // Block everything else with 410
-    return new NextResponse(
-      JSON.stringify({ error: 'Gone', message: 'This URL is no longer available.' }),
-      {
-        status: 410,
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Robots-Tag': 'noindex, nofollow',
-          'Cache-Control': 'public, max-age=31536000, immutable',
-        },
-      }
-    );
+    // Block everything else with 410 HTML
+    return sendGone();
   }
 
   // STEP 5: For /names/[religion]/[slug] paths, validate the slug
   const nameSlugMatch = path.match(/^\/names\/([a-z]+)\/([a-z0-9-]+)/);
   if (nameSlugMatch) {
     const slug = nameSlugMatch[2];
-    // Block slugs that look like phonetic/IPA strings
     if (slug.length < 2 || slug.length > 50 || !VALID_SLUG.test(slug)) {
-      return new NextResponse(
-        JSON.stringify({ error: 'Gone', message: 'This URL is no longer available.' }),
-        {
-          status: 410,
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Robots-Tag': 'noindex, nofollow',
-            'Cache-Control': 'public, max-age=31536000, immutable',
-          },
-        }
-      );
+      return sendGone();
     }
   }
 
