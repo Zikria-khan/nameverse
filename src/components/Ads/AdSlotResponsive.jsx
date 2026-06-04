@@ -3,18 +3,20 @@
 import React, { useRef, useState, useEffect } from 'react';
 import useAdSenseSlot from './useAdSenseSlot';
 
-const AdSlot = ({
+const AdSlotResponsive = ({
   slotId,
   className = '',
   minHeight = '90px',
+  maxHeight = '500px',
   ariaLabel = 'Advertisement',
   adFormat = 'auto',
-  eager = false,
   responsive = true,
+  eager = false,
   collapseOnEmpty = true,
 }) => {
   const adRef = useRef(null);
   const [adLoaded, setAdLoaded] = useState(false);
+  const [adHeight, setAdHeight] = useState(null);
   useAdSenseSlot(slotId, adRef);
 
   useEffect(() => {
@@ -22,20 +24,40 @@ const AdSlot = ({
 
     const checkAdStatus = () => {
       const ins = adRef.current?.querySelector('ins.adsbygoogle');
-      if (!ins) return false;
+      if (!ins) return;
 
       const iframe = ins.querySelector('iframe');
-      const hasContent = !!(iframe && iframe.offsetHeight > 0);
-      return hasContent;
+      const hasContent = ins.children.length > 0 || (iframe && iframe.offsetHeight > 0);
+
+      if (hasContent) {
+        setAdLoaded(true);
+        const currentHeight = ins.offsetHeight;
+        if (currentHeight > 0) {
+          setAdHeight(currentHeight);
+        }
+      }
     };
 
-    const interval = setInterval(() => {
-      if (checkAdStatus()) {
-        setAdLoaded(true);
-      }
-    }, 300);
+    checkAdStatus();
+    const interval = setInterval(checkAdStatus, 500);
 
-    return () => clearInterval(interval);
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.target.querySelector('ins.adsbygoogle iframe')) {
+          setAdLoaded(true);
+          setAdHeight(entry.contentRect.height);
+        }
+      }
+    });
+
+    if (adRef.current) {
+      resizeObserver.observe(adRef.current);
+    }
+
+    return () => {
+      clearInterval(interval);
+      resizeObserver.disconnect();
+    };
   }, [collapseOnEmpty]);
 
   useEffect(() => {
@@ -50,19 +72,25 @@ const AdSlot = ({
     }
   }, [eager, slotId]);
 
-  const containerClasses = `${className} ad-container`.trim();
-
-  if (collapseOnEmpty && !adLoaded) {
+  if (!collapseOnEmpty || adLoaded) {
     return (
       <div
         ref={adRef}
-        className={`${containerClasses} invisible`}
+        className={`w-full my-6 flex justify-center ${className}`}
         aria-label={ariaLabel}
         role="region"
+        style={{
+          minHeight: collapseOnEmpty ? (adLoaded ? adHeight || minHeight : 0) : minHeight,
+          maxHeight: collapseOnEmpty && adLoaded ? maxHeight : undefined,
+        }}
       >
         <ins
           className="adsbygoogle"
-          style={{ display: 'block', width: '100%', minHeight }}
+          style={{
+            display: 'block',
+            width: '100%',
+            minHeight: collapseOnEmpty && adLoaded ? 'auto' : minHeight,
+          }}
           data-ad-client="ca-pub-1510675468129183"
           data-ad-slot={slotId}
           data-ad-format={adFormat}
@@ -73,12 +101,7 @@ const AdSlot = ({
   }
 
   return (
-    <div
-      ref={adRef}
-      className={`w-full my-6 flex justify-center ${containerClasses}`}
-      aria-label={ariaLabel}
-      role="region"
-    >
+    <div ref={adRef} className={`w-full my-6 flex justify-center ${className}`} aria-label={ariaLabel} role="region">
       <ins
         className="adsbygoogle"
         style={{ display: 'block', width: '100%', minHeight }}
@@ -91,4 +114,4 @@ const AdSlot = ({
   );
 };
 
-export default AdSlot;
+export default AdSlotResponsive;

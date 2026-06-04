@@ -3,30 +3,25 @@
 import React, { useRef, useState, useEffect } from 'react';
 import useAdSenseSlot from './useAdSenseSlot';
 
-const AdSlot = ({
+const AdSlotMultiplex = ({
   slotId,
   className = '',
-  minHeight = '90px',
   ariaLabel = 'Advertisement',
-  adFormat = 'auto',
   eager = false,
-  responsive = true,
-  collapseOnEmpty = true,
 }) => {
   const adRef = useRef(null);
   const [adLoaded, setAdLoaded] = useState(false);
   useAdSenseSlot(slotId, adRef);
 
   useEffect(() => {
-    if (!collapseOnEmpty || !adRef.current) return;
+    if (!adRef.current) return;
 
     const checkAdStatus = () => {
       const ins = adRef.current?.querySelector('ins.adsbygoogle');
       if (!ins) return false;
 
       const iframe = ins.querySelector('iframe');
-      const hasContent = !!(iframe && iframe.offsetHeight > 0);
-      return hasContent;
+      return !!(iframe && iframe.offsetHeight > 0 && ins.children.length > 0);
     };
 
     const interval = setInterval(() => {
@@ -35,8 +30,19 @@ const AdSlot = ({
       }
     }, 300);
 
-    return () => clearInterval(interval);
-  }, [collapseOnEmpty]);
+    const observer = new MutationObserver(() => {
+      if (checkAdStatus()) {
+        setAdLoaded(true);
+      }
+    });
+
+    observer.observe(adRef.current, { childList: true, subtree: true });
+
+    return () => {
+      clearInterval(interval);
+      observer.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     if (!eager) return;
@@ -50,45 +56,32 @@ const AdSlot = ({
     }
   }, [eager, slotId]);
 
-  const containerClasses = `${className} ad-container`.trim();
-
-  if (collapseOnEmpty && !adLoaded) {
-    return (
-      <div
-        ref={adRef}
-        className={`${containerClasses} invisible`}
-        aria-label={ariaLabel}
-        role="region"
-      >
-        <ins
-          className="adsbygoogle"
-          style={{ display: 'block', width: '100%', minHeight }}
-          data-ad-client="ca-pub-1510675468129183"
-          data-ad-slot={slotId}
-          data-ad-format={adFormat}
-          data-full-width-responsive={responsive ? 'true' : 'false'}
-        />
-      </div>
-    );
+  if (!adLoaded) {
+    return null;
   }
 
   return (
     <div
       ref={adRef}
-      className={`w-full my-6 flex justify-center ${containerClasses}`}
+      className={`w-full flex justify-center ${className}`}
       aria-label={ariaLabel}
       role="region"
     >
       <ins
         className="adsbygoogle"
-        style={{ display: 'block', width: '100%', minHeight }}
+        style={{
+          display: 'block',
+          width: '100%',
+          maxWidth: '970px',
+          minHeight: 'auto',
+        }}
         data-ad-client="ca-pub-1510675468129183"
         data-ad-slot={slotId}
-        data-ad-format={adFormat}
-        data-full-width-responsive={responsive ? 'true' : 'false'}
+        data-ad-format="autorelaxed"
+        data-full-width-responsive="true"
       />
     </div>
   );
 };
 
-export default AdSlot;
+export default AdSlotMultiplex;

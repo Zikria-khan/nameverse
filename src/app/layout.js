@@ -174,19 +174,20 @@ export default function RootLayout({ children }) {
               <Navbar />
             </Suspense>
 
-            {/* Top display ad (autorelaxed) — hidden on small screens for UX, eager load for instant display */}
-            <Suspense fallback={<div />}> 
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <AdSlot
-                  slotId="9781955008"
-                  adFormat="autorelaxed"
-                  eager={true}
-                  className="mb-4 mx-auto w-full max-w-[320px] md:max-w-full"
-                  minHeight="65px"
-                  aria-label="Top display advertisement"
-                />
-              </div>
-            </Suspense>
+{/* Top display ad (autorelaxed) — lazy loaded with collapse on empty */}
+             <Suspense fallback={null}>
+               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                 <AdSlot
+                   slotId="9781955008"
+                   adFormat="autorelaxed"
+                   eager={false}
+                   collapseOnEmpty={true}
+                   className="mb-4 mx-auto w-full max-w-[320px] md:max-w-full"
+                   minHeight="65px"
+                   aria-label="Top display advertisement"
+                 />
+               </div>
+             </Suspense>
 
             <RouteChrome>{children}</RouteChrome>
             <Footer />

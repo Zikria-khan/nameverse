@@ -196,3 +196,46 @@ body {
   animation-iteration-count: 1 !important;
   transition-duration: 0.01ms !important;
 }
+
+/* AdSense responsive container with CLS prevention */
+.adsbygoogle {
+  transition: min-height 0.3s ease-out;
+}
+
+.ad-container {
+  position: relative;
+  width: 100%;
+}
+
+.ad-container.invisible {
+  position: absolute;
+  visibility: hidden;
+  height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+/* Prevent layout shift for ads - reserve space only when loaded */
+.ad-container:not(.invisible) {
+  min-height: var(--ad-min-height, auto);
+}
+
+/* Multiplex ad responsive sizing */
+@media (max-width: 768px) {
+  .adsbygoogle[data-ad-format="autorelaxed"] {
+    max-width: 100% !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .adsbygoogle[data-ad-format="autorelaxed"] {
+    max-width: 728px !important;
+  }
+}
+
+/* Dark mode ad styling */
+@media (prefers-color-scheme: dark) {
+  .adsbygoogle {
+    background-color: transparent;
+  }
+}
