@@ -178,10 +178,10 @@ export async function serverFetchNameDetail(religion, slug) {
 
   if (data?.success && data.data) {
     const nameData = data.data;
-    // Normalize religion
+    // Normalize religion (handle "Islam", "Christian", "Hindu" as well)
     if (nameData.religion) {
-      const r = nameData.religion.toLowerCase();
-      if (r === 'islamic' || r === 'muslim') nameData.religion = 'islamic';
+      const r = String(nameData.religion).toLowerCase();
+      if (r === 'islamic' || r === 'muslim' || r === 'islam') nameData.religion = 'islamic';
       else if (r === 'christianity' || r === 'christian') nameData.religion = 'christian';
       else if (r === 'hinduism' || r === 'hindu') nameData.religion = 'hindu';
     }

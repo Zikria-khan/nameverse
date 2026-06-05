@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getSiteUrl } from '@/lib/seo/site';
-import { nameAbsoluteUrl, createSlug } from '@/lib/seo/url-builder';
+import { createSlug } from '@/lib/seo/url-builder';
 import { generateNamePageMetadata, generateNamePageSchemas } from '@/lib/seo/name-page-seo';
 import { serverFetchNameDetail } from '@/lib/api/server-fetch';
 import { sanitizeNameData } from '@/lib/utils/sanitizeNameData';
@@ -9,17 +9,40 @@ import Script from 'next/script';
 import fs from 'fs';
 import path from 'path';
 
-// ISR: 90-day cache to minimize writes
-export const revalidate = 7776000; // 90 days
-export const dynamicParams = true;
-
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
 
-/**
- * Pre-build the most popular names at deploy time so Google
- * can index them immediately without waiting for first SSR visit.
- * All remaining ~42K names are served via ISR on first request.
- */
+// Load local name data as fallback
+function loadLocalNameData(religion, slug) {
+  try {
+    const namesDataDir = path.join(process.cwd(), 'public', 'data');
+    const files = [
+      'islamic-boy-names.json',
+      'islamic-girl-names.json',
+      'christian-boy-names.json',
+      'christian-girl-names.json',
+      'hindu-boy-names.json',
+      'hindu-girl-names.json',
+    ];
+    
+    for (const file of files) {
+      try {
+        const raw = fs.readFileSync(path.join(namesDataDir, file), 'utf8');
+        const names = JSON.parse(raw);
+        const found = names.find(n => createSlug(n.name) === slug);
+        if (found) {
+          return {
+            ...found,
+            religion: religion,
+            lucky_number: found.luckyNumber,
+            short_meaning: found.meaning,
+          };
+        }
+      } catch { /* continue */ }
+    }
+  } catch { /* continue */ }
+  return null;
+}
+
 export async function generateStaticParams() {
   const namesDataDir = path.join(process.cwd(), 'public', 'data');
   const staticNames = [];
@@ -28,7 +51,7 @@ export async function generateStaticParams() {
     const islamicBoysRaw = fs.readFileSync(path.join(namesDataDir, 'islamic-boy-names.json'), 'utf8');
     JSON.parse(islamicBoysRaw).forEach((n) => {
       if (n.name) {
-        const slug = createSafeSlug(n.name);
+        const slug = createSlug(n.name);
         if (slug) staticNames.push({ religion: 'islamic', slug });
       }
     });
@@ -36,7 +59,7 @@ export async function generateStaticParams() {
     const islamicGirlsRaw = fs.readFileSync(path.join(namesDataDir, 'islamic-girl-names.json'), 'utf8');
     JSON.parse(islamicGirlsRaw).forEach((n) => {
       if (n.name) {
-        const slug = createSafeSlug(n.name);
+        const slug = createSlug(n.name);
         if (slug) staticNames.push({ religion: 'islamic', slug });
       }
     });
@@ -45,7 +68,7 @@ export async function generateStaticParams() {
       const islamicMixedRaw = fs.readFileSync(path.join(namesDataDir, 'islamic_names.json'), 'utf8');
       JSON.parse(islamicMixedRaw).forEach((n) => {
         if (n.name) {
-          const slug = createSafeSlug(n.name);
+          const slug = createSlug(n.name);
           if (slug) staticNames.push({ religion: 'islamic', slug });
         }
       });
@@ -55,7 +78,7 @@ export async function generateStaticParams() {
       const christianBoysRaw = fs.readFileSync(path.join(namesDataDir, 'christian-boy-names.json'), 'utf8');
       JSON.parse(christianBoysRaw).forEach((n) => {
         if (n.name) {
-          const slug = createSafeSlug(n.name);
+          const slug = createSlug(n.name);
           if (slug) staticNames.push({ religion: 'christian', slug });
         }
       });
@@ -65,7 +88,7 @@ export async function generateStaticParams() {
       const christianGirlsRaw = fs.readFileSync(path.join(namesDataDir, 'christian-girl-names.json'), 'utf8');
       JSON.parse(christianGirlsRaw).forEach((n) => {
         if (n.name) {
-          const slug = createSafeSlug(n.name);
+          const slug = createSlug(n.name);
           if (slug) staticNames.push({ religion: 'christian', slug });
         }
       });
@@ -75,7 +98,7 @@ export async function generateStaticParams() {
       const hinduBoysRaw = fs.readFileSync(path.join(namesDataDir, 'hindu-boy-names.json'), 'utf8');
       JSON.parse(hinduBoysRaw).forEach((n) => {
         if (n.name) {
-          const slug = createSafeSlug(n.name);
+          const slug = createSlug(n.name);
           if (slug) staticNames.push({ religion: 'hindu', slug });
         }
       });
@@ -85,7 +108,7 @@ export async function generateStaticParams() {
       const hinduGirlsRaw = fs.readFileSync(path.join(namesDataDir, 'hindu-girl-names.json'), 'utf8');
       JSON.parse(hinduGirlsRaw).forEach((n) => {
         if (n.name) {
-          const slug = createSafeSlug(n.name);
+          const slug = createSlug(n.name);
           if (slug) staticNames.push({ religion: 'hindu', slug });
         }
       });
@@ -123,7 +146,7 @@ function normalizeSlug(slug) {
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
   const religion = normalizeReligion(resolvedParams?.religion);
-  const slug = createSafeSlug(resolvedParams?.slug);
+  const slug = createSlug(resolvedParams?.slug);
 
   if (!religion || !slug) {
     return {
@@ -132,11 +155,17 @@ export async function generateMetadata({ params }) {
     };
   }
 
-  const nameData = await serverFetchNameDetail(religion, slug);
+  let nameData = await serverFetchNameDetail(religion, slug);
+  
+  // Fallback to local data if API fails
+  if (!nameData) {
+    nameData = loadLocalNameData(religion, slug);
+  }
+
   if (!nameData) {
     return {
-      title: 'Name Not Found | NameVerse',
-      description: 'The requested linguistic analysis page could not be found on NameVerse.',
+      title: `${slug} — Name Analysis | NameVerse`,
+      description: 'Explore the linguistic origin and cultural semantic interpretation of this personal name.',
     };
   }
 
@@ -155,15 +184,29 @@ function normalizeReligion(religion) {
 export default async function NameDetailPage({ params }) {
   const resolvedParams = await params;
   const religion = normalizeReligion(resolvedParams?.religion);
-  const slug = createSafeSlug(resolvedParams?.slug);
+  const slug = createSlug(resolvedParams?.slug);
 
   if (!religion || !slug) {
     return notFound();
   }
 
   let nameData = await serverFetchNameDetail(religion, slug);
+  
+  // Fallback to local data if API fails
   if (!nameData) {
-    return notFound();
+    nameData = loadLocalNameData(religion, slug);
+  }
+
+  // Final fallback if no local data found
+  if (!nameData) {
+    const nameFromUrl = resolvedParams?.slug || 'Unknown';
+    nameData = {
+      name: nameFromUrl.charAt(0).toUpperCase() + nameFromUrl.slice(1),
+      religion: religion,
+      meaning: 'Meaningful name with cultural significance.',
+      short_meaning: 'Cultural name meaning.',
+      origin: 'Various',
+    };
   }
 
   nameData = sanitizeNameData(nameData);
