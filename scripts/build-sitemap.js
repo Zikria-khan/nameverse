@@ -4,11 +4,11 @@
  * Generates:
  *   sitemap.xml            — Sitemap index (references all sub-sitemaps)
  *   sitemap-pages.xml      — Static pages, categories, letters, origins, blog, guides
- *   sitemap-islamic-names.xml — Islamic names from all data sources
- *   sitemap-christian-names.xml — Christian names from all data sources
- *   sitemap-hindu-names.xml — Hindu names from all data sources
+ *   sitemap-islamic-names-1.xml ... sitemap-islamic-names-N.xml — Islamic names (max 2500 per file)
+ *   sitemap-christian-names-1.xml ... sitemap-christian-names-N.xml — Christian names (max 2500 per file)
+ *   sitemap-hindu-names-1.xml ... sitemap-hindu-names-N.xml — Hindu names (max 2500 per file)
  *
- * Each sub-sitemap is under 50,000 URLs (Google limit).
+ * Each sub-sitemap is under 2,500 URLs to stay safe for large datasets.
  * All URLs validated: ASCII-only, lowercase, no IPA/Unicode/encoded chars.
  */
 
@@ -19,6 +19,9 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.a
 const PUBLIC_DIR = path.join(process.cwd(), 'public');
 const DATA_DIR = path.join(PUBLIC_DIR, 'data');
 const OUTPUT_DIR = PUBLIC_DIR;
+
+// ── LIMITS ──
+const MAX_URLS_PER_FILE = 2500;
 
 // ── VALIDATION CONSTANTS ──
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
@@ -228,11 +231,11 @@ function buildPagesSitemap() {
 }
 
 // ══════════════════════════════════════════
-// 2. NAME SITEMAPS (one per religion)
+// 2. NAME SITEMAPS — SPLIT INTO CHUNKS OF 2500
 // ══════════════════════════════════════════
-function buildNameSitemap(religion, label, dataFiles) {
-  console.log(`\n📛 Building sitemap-${label}-names.xml...`);
-  const urls = [];
+function buildNameSitemapSplit(religion, label, dataFiles) {
+  console.log(`\n📛 Building sitemap-${label}-names-*.xml (split at ${MAX_URLS_PER_FILE})...`);
+  const allUrls = [];
   const seen = new Set();
   let totalNames = 0;
 
@@ -244,14 +247,31 @@ function buildNameSitemap(religion, label, dataFiles) {
       const loc = `${SITE_URL}/names/${religion}/${slug}`;
       if (seen.has(loc)) continue;
       seen.add(loc);
-      urls.push({ loc, lastmod: TODAY, changefreq: 'yearly', priority: '0.6' });
+      allUrls.push({ loc, lastmod: TODAY, changefreq: 'yearly', priority: '0.6' });
     }
   }
 
-  const bad = validateUrls(urls);
-  const count = writeSitemap(`sitemap-${label}-names.xml`, urls);
-  console.log(`  Raw names: ${totalNames}, Unique URLs: ${count}, Invalid: ${bad}`);
-  return count;
+  const bad = validateUrls(allUrls);
+  console.log(`  Raw names: ${totalNames}, Unique URLs: ${allUrls.length}, Invalid: ${bad}`);
+
+  // Split into chunks of MAX_URLS_PER_FILE
+  const chunks = [];
+  for (let i = 0; i < allUrls.length; i += MAX_URLS_PER_FILE) {
+    chunks.push(allUrls.slice(i, i + MAX_URLS_PER_FILE));
+  }
+
+  const writtenFiles = [];
+  for (let i = 0; i < chunks.length; i++) {
+    const part = i + 1;
+    // Single chunk: no part number. Multiple chunks: add -1, -2, etc.
+    const filename = chunks.length === 1
+      ? `sitemap-${label}-names.xml`
+      : `sitemap-${label}-names-${part}.xml`;
+    const count = writeSitemap(filename, chunks[i]);
+    writtenFiles.push({ file: filename, count });
+  }
+
+  return writtenFiles;
 }
 
 // ══════════════════════════════════════════
@@ -274,36 +294,36 @@ function buildSitemapIndex(subSitemaps) {
 // MAIN BUILD
 // ══════════════════════════════════════════
 function build() {
-  console.log('🔨 Building multi-file sitemap system...\n');
+  console.log('🔨 Building multi-file sitemap system (max 2,500 URLs per file)...\n');
   const subSitemaps = [];
 
   // 1. Pages sitemap
   const pageCount = buildPagesSitemap();
   subSitemaps.push({ file: 'sitemap-pages.xml', count: pageCount });
 
-  // 2. Islamic names
-  const islamicCount = buildNameSitemap('islamic', 'islamic', [
+  // 2. Islamic names (split into 2500-chunk files)
+  const islamicFiles = buildNameSitemapSplit('islamic', 'islamic', [
     { file: 'islamic-boy-names.json', dir: DATA_DIR },
     { file: 'islamic-girl-names.json', dir: DATA_DIR },
     { file: 'islamic_names.json', dir: PUBLIC_DIR },
   ]);
-  subSitemaps.push({ file: 'sitemap-islamic-names.xml', count: islamicCount });
+  subSitemaps.push(...islamicFiles);
 
-  // 3. Christian names
-  const christianCount = buildNameSitemap('christian', 'christian', [
+  // 3. Christian names (split into 2500-chunk files)
+  const christianFiles = buildNameSitemapSplit('christian', 'christian', [
     { file: 'christian-boy-names.json', dir: DATA_DIR },
     { file: 'christian-girl-names.json', dir: DATA_DIR },
     { file: 'christians_names.json', dir: PUBLIC_DIR },
   ]);
-  subSitemaps.push({ file: 'sitemap-christian-names.xml', count: christianCount });
+  subSitemaps.push(...christianFiles);
 
-  // 4. Hindu names
-  const hinduCount = buildNameSitemap('hindu', 'hindu', [
+  // 4. Hindu names (split into 2500-chunk files)
+  const hinduFiles = buildNameSitemapSplit('hindu', 'hindu', [
     { file: 'hindu-boy-names.json', dir: DATA_DIR },
     { file: 'hindu-girl-names.json', dir: DATA_DIR },
     { file: 'hindu_names.json', dir: PUBLIC_DIR },
   ]);
-  subSitemaps.push({ file: 'sitemap-hindu-names.xml', count: hinduCount });
+  subSitemaps.push(...hinduFiles);
 
   // 5. Sitemap index
   buildSitemapIndex(subSitemaps);
@@ -318,6 +338,7 @@ function build() {
   }
   console.log(`  ─────────────────────────`);
   console.log(`  Total indexable URLs: ${totalUrls}`);
+  console.log(`  Max per sitemap file: ${MAX_URLS_PER_FILE}`);
   console.log('═══════════════════════════════════════');
   console.log('✅ All sitemaps built and validated.\n');
 }
