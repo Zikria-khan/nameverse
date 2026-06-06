@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getSiteUrl } from '@/lib/seo/site';
 import { Heart, Star, BookOpen, Sparkles, Moon } from 'lucide-react';
+import AdBanner from '@/components/Ads/AdBanner';
 import namesData from '../../../../public/data/islamic-boy-names.json';
 import { createSafeSlug } from '@/lib/utils/createSafeSlug';
 
@@ -251,6 +252,10 @@ export default function IslamicBoyNamesPage() {
             </div>
           </div>
         </section>
+
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <AdBanner />
+        </div>
 
 {/* Names Grid */}
         <section className="max-w-7xl mx-auto px-4 pb-16">
