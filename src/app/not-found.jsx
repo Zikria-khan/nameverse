@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Search, Home, BookOpen, Globe, ArrowLeft } from 'lucide-react';
+import { createSafeSlug } from '@/lib/utils/createSafeSlug';
 
 export default function NotFound() {
   const router = useRouter();
@@ -12,7 +13,7 @@ export default function NotFound() {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/search/${encodeURIComponent(searchQuery.trim())}`);
+      router.push(`/search/${createSafeSlug(searchQuery.trim()) || 'search'}`);
     }
   };
 

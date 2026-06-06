@@ -1,11 +1,15 @@
 # NameVerse Robots.txt — SEO Firewall
-# Strict allow/block rules for index quality
+# Strict allow/block rules for crawl budget optimization
+# Only legitimate, indexable pages are allowed
 
 User-agent: *
+# Default: Allow all legitimate content
 Allow: /
+
+# ── SITEMAP ──
 Sitemap: https://nameverse.vercel.app/sitemap.xml
 
-# ✅ ALLOW — Main content (canonical)
+# ── ALLOW: Main content pages (canonical) ──
 Allow: /names/
 Allow: /blog/
 Allow: /guides/
@@ -27,26 +31,46 @@ Allow: /islamic/
 Allow: /christian/
 Allow: /hindu/
 
-# ✅ ALLOW — Static assets
+# ── ALLOW: Static assets ──
 Allow: /_next/static/
-Allow: /images/
 Allow: /logo.png
 
-# 🚫 BLOCK — Never index
+# ── BLOCK: Internal APIs — never index ──
 Disallow: /api/
 Disallow: /api/og/
-Disallow: /api/og/
+
+# ── BLOCK: Next.js internals ──
 Disallow: /_next/
 Disallow: /_next/data/
+
+# ── BLOCK: System/icon routes — not content pages ──
 Disallow: /apple-icon
 Disallow: /icon
 Disallow: /opengraph-image
+Disallow: /feed.xml
+
+# ── BLOCK: Non-content routes ──
 Disallow: /performance
 Disallow: /install
 
-# 🚫 BLOCK — Parameterized & dynamic URLs
+# ── BLOCK: Parameterized URLs — prevent duplicate crawling ──
 Disallow: /*?ref=
 Disallow: /*?utm_
 Disallow: /*?source=
 Disallow: /*?q=*
 Disallow: /*?query=*
+Disallow: /*?page=
+Disallow: /*?sort=
+Disallow: /*?filter=
+
+# ── BLOCK: Old/redirected URL patterns ──
+Disallow: /baby-names/
+Disallow: /baby-names
+Disallow: /name/
+Disallow: /article/
+
+# ── BLOCK: Religion URL variants (canonical is /names/[religion]/) ──
+Disallow: /names/islam/
+Disallow: /names/muslim/
+Disallow: /names/christianity/
+Disallow: /names/hinduism/

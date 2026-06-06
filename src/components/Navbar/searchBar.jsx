@@ -89,7 +89,7 @@ export default function SearchBar() {
     if (match) {
       router.push(`/names/${match.religion}/${match.slug}`);
     } else {
-      router.push(`/search/${encodeURIComponent(trimmed)}`);
+      router.push(`/search/${createSafeSlug(trimmed) || 'search'}`);
     }
     setShowSuggestions(false);
   };

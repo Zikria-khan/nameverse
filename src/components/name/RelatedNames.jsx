@@ -4,6 +4,7 @@ import { createSafeSlug } from '@/lib/utils/createSafeSlug';
 
 const normalizeLink = (name, religion) => {
   const segment = createSafeSlug(name);
+  if (!segment) return null;
   return `/names/${religion}/${segment}`;
 };
 
@@ -33,15 +34,19 @@ export default function RelatedNames({ data }) {
           <div>
             <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Similar sounding</h3>
             <div className="flex flex-wrap gap-2">
-              {data.similar_sounding_names.slice(0, 10).map((name) => (
-                <Link
-                  key={name}
-                  href={normalizeLink(name, religionKey)}
-                  className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm text-slate-700 transition hover:bg-slate-100"
-                >
-                  {name}
-                </Link>
-              ))}
+              {data.similar_sounding_names.slice(0, 10).map((name) => {
+                const link = normalizeLink(name, religionKey);
+                if (!link) return null;
+                return (
+                  <Link
+                    key={name}
+                    href={link}
+                    className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm text-slate-700 transition hover:bg-slate-100"
+                  >
+                    {name}
+                  </Link>
+                );
+              })}
             </div>
           </div>
         )}

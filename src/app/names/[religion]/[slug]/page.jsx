@@ -137,12 +137,6 @@ export async function generateStaticParams() {
   return Object.values(limited).flat();
 }
 
-function normalizeSlug(slug) {
-  if (!slug || typeof slug !== 'string') return null;
-  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug.trim().toLowerCase())) return null;
-  return slug.trim().toLowerCase();
-}
-
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
   const religion = normalizeReligion(resolvedParams?.religion);
@@ -152,6 +146,7 @@ export async function generateMetadata({ params }) {
     return {
       title: 'Name Not Found | NameVerse',
       description: 'The requested linguistic analysis page could not be found on NameVerse.',
+      robots: { index: false, follow: false },
     };
   }
 
@@ -164,8 +159,9 @@ export async function generateMetadata({ params }) {
 
   if (!nameData) {
     return {
-      title: `${slug} — Name Analysis | NameVerse`,
-      description: 'Explore the linguistic origin and cultural semantic interpretation of this personal name.',
+      title: 'Name Not Found | NameVerse',
+      description: 'The requested name page does not exist on NameVerse.',
+      robots: { index: false, follow: false },
     };
   }
 
@@ -197,16 +193,9 @@ export default async function NameDetailPage({ params }) {
     nameData = loadLocalNameData(religion, slug);
   }
 
-  // Final fallback if no local data found
+  // If no data found anywhere, return 404 — never serve fake/garbage content
   if (!nameData) {
-    const nameFromUrl = resolvedParams?.slug || 'Unknown';
-    nameData = {
-      name: nameFromUrl.charAt(0).toUpperCase() + nameFromUrl.slice(1),
-      religion: religion,
-      meaning: 'Meaningful name with cultural significance.',
-      short_meaning: 'Cultural name meaning.',
-      origin: 'Various',
-    };
+    return notFound();
   }
 
   nameData = sanitizeNameData(nameData);
