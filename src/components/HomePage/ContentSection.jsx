@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Compass, Sparkles, BookOpenText, ArrowUpRight } from 'lucide-react';
+import AdBanner from '@/components/Ads/AdBanner';
 
 const ContentSection = () => {
   const items = [
@@ -88,6 +89,11 @@ const ContentSection = () => {
               );
             })}
           </div>
+        </div>
+
+        {/* Ad — naturally embedded within content section, after feature cards */}
+        <div className="mt-10 sm:mt-12 lg:mt-14">
+          <AdBanner />
         </div>
       </div>
     </section>
