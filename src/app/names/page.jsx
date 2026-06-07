@@ -368,10 +368,7 @@ export default function Page() {
         </div>
       </section>
 
-      {/* Ad Banner — placed after main content to avoid SEO impact */}
-      <div className="max-w-7xl mx-auto px-4 py-6 mb-16">
-        <AdBanner />
-      </div>
+      <AdBanner />
 
       {/* ── FAQ Section ── */}
       <section className="max-w-3xl mx-auto px-4 mb-20">

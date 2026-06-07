@@ -207,10 +207,7 @@ export default async function TrendingNamesPage() {
           </div>
         </section>
 
-        {/* Ad — placed mid-scroll after first section for natural reading flow */}
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <AdBanner />
-        </div>
+        <AdBanner />
 
         {/* Social Media Analysis */}
         <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-fuchsia-50 to-purple-50/30">

@@ -246,9 +246,7 @@ export default async function LanguagesPage() {
           </div>
         </section>
 
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <AdBanner />
-        </div>
+        <AdBanner />
 
         {/* Popular Names by Language */}
         <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 bg-white">

@@ -252,9 +252,7 @@ export default function ChristianBoyNamesPage() {
           </div>
         </section>
 
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <AdBanner />
-        </div>
+        <AdBanner />
 
         {/* Names Grid */}
         <section className="max-w-7xl mx-auto px-4 pb-16">

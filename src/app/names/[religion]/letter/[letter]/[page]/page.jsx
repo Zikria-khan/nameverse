@@ -544,10 +544,6 @@ export default async function LetterNamesPage({ params }) {
               })}
             </div>
 
-            {/* Ad — embedded inside the content, between first half and second half of names */}
-            <div className="max-w-7xl mx-auto px-4 mb-8">
-              <AdBanner />
-            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-12">
               {names.slice(Math.ceil(names.length / 2)).map((nameItem, index) => {
@@ -674,6 +670,8 @@ export default async function LetterNamesPage({ params }) {
           </>
         )}
       </section>
+
+        <AdBanner />
 
       {/* FAQ Section */}
       <FAQSection 

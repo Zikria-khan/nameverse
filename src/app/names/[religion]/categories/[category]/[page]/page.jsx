@@ -277,11 +277,6 @@ export default async function CategoryNamesPage({ params }) {
           ))}
         </div>
 
-        {/* Ad — embedded inside content, between first half and second half */}
-        <div className="max-w-7xl mx-auto px-4 mb-8 mt-8">
-          <AdBanner />
-        </div>
-
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {names.slice(Math.ceil(names.length / 2)).map((item, index) => (
             <article
@@ -337,6 +332,8 @@ export default async function CategoryNamesPage({ params }) {
             </Link>
           )}
         </div>
+
+        <AdBanner />
       </section>
 
       {/* Cross-page internal links */}
