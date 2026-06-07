@@ -1,22 +1,71 @@
 /**
- * Single source of truth for public site URL (no trailing slash).
+ * Single source of truth for public site URL (no trailing slash)
+ * SEO-safe + canonical-safe version
  */
 
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://nameverse.vercel.app").replace(
-  /\/$/,
-  ""
-);
+export const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL || "https://nameverse.vercel.app"
+)
+  .trim()
+  .replace(/\/+$/, ""); // removes ALL trailing slashes safely
 
+/**
+ * Normalize path to avoid duplicate URL issues:
+ * /page, page, //page -> /page
+ */
+function normalizePath(path = "") {
+  if (!path) return "";
+
+  // if full URL, return as-is
+  if (/^https?:\/\//i.test(path)) return path;
+
+  // remove spaces + fix multiple slashes
+  let clean = path.trim().replace(/\/+/g, "/");
+
+  // ensure single leading slash
+  if (!clean.startsWith("/")) {
+    clean = "/" + clean;
+  }
+
+  return clean;
+}
+
+/**
+ * Base site URL
+ */
 export function getSiteUrl() {
   return SITE_URL;
 }
 
-/** Absolute URL for meta / OG (path must start with / or be full URL). */
+/**
+ * Absolute URL builder (SEO-safe)
+ * Used for:
+ * - OG tags
+ * - canonical URLs
+ * - sitemap URLs
+ */
 export function absoluteUrl(path) {
   if (!path) return SITE_URL;
+
   if (/^https?:\/\//i.test(path)) return path;
-  const p = path.startsWith("/") ? path : `/${path}`;
-  return `${SITE_URL}${p}`;
+
+  const cleanPath = normalizePath(path);
+
+  return `${SITE_URL}${cleanPath}`;
+}
+
+/**
+ * Canonical URL helper (VERY IMPORTANT FOR YOUR INDEXING ISSUES)
+ */
+export function canonicalUrl(path) {
+  return absoluteUrl(path).split("?")[0]; // removes query params
+}
+
+/**
+ * Safe OG image generator
+ */
+export function ogImageUrl(path = "/logo.png") {
+  return absoluteUrl(path || "/logo.png");
 }
 
 export const DEFAULT_OG_PATH = "/logo.png";

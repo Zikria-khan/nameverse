@@ -1,61 +1,163 @@
 /**
- * Meta description validation and generation utilities
- * Updated for Cultural Onomastics — NameVerse = Cultural Name Knowledge Base
+ * NameVerse SEO Meta System (FULL UPGRADE)
+ * Goals:
+ * - Fix duplicate canonical issues
+ * - Improve indexing quality
+ * - Reduce template detection
+ * - Increase CTR stability
+ * - Control crawl budget waste
  */
+
 import { getSiteUrl } from '@/lib/seo/site';
 
-/**
- * Validate meta title length (up to 60 characters)
- * @param {string} title - Meta title to validate
- * @returns {string} Validated title
- */
-export function validateMetaTitle(title) {
-  if (!title) return 'NameVerse — Cultural Name Knowledge Base';
+/* -----------------------------------
+   CONFIG
+----------------------------------- */
+const SITE_NAME = 'NameVerse';
+const DEFAULT_TITLE = 'NameVerse — Cultural Name Knowledge Base';
 
-  const cleaned = title.trim();
-  if (cleaned.length <= 60) return cleaned;
+const CHAR_LIMIT_TITLE = 60;
+const CHAR_LIMIT_DESC = 300;
 
-  const truncated = cleaned.substring(0, 57);
-  const lastSpace = truncated.lastIndexOf(' ');
-  return lastSpace > 0 ? `${truncated.substring(0, lastSpace)}...` : `${truncated}...`;
+/* -----------------------------------
+   SAFE TEXT UTIL
+----------------------------------- */
+function cleanText(text = '') {
+  return String(text)
+    .trim()
+    .replace(/\s+/g, ' ')
+    .replace(/[<>]/g, '');
 }
 
-/**
- * Validate meta description length (160-300 characters)
- */
+/* -----------------------------------
+   TITLE VALIDATION (CTR OPTIMIZED)
+----------------------------------- */
+export function validateMetaTitle(title) {
+  const t = cleanText(title);
+
+  if (!t) return DEFAULT_TITLE;
+
+  if (t.length <= CHAR_LIMIT_TITLE) return t;
+
+  const cut = t.substring(0, CHAR_LIMIT_TITLE - 3);
+  const lastSpace = cut.lastIndexOf(' ');
+
+  return lastSpace > 10
+    ? `${cut.substring(0, lastSpace)}...`
+    : `${cut}...`;
+}
+
+/* -----------------------------------
+   DESCRIPTION VALIDATION (ANTI-TEMPLATE)
+----------------------------------- */
 export function validateMetaDescription(description) {
-  if (!description) return 'NameVerse is a structured cultural and linguistic knowledge base for personal names across civilizations. Explore linguistic origin analysis, cultural semantic interpretation, and historical naming evolution.';
+  let d = cleanText(description);
 
-  description = description.trim();
-
-  if (description.length < 160) {
-    const suffix = ' Part of the NameVerse multilingual onomastics system — a cultural naming research platform for linguistic intelligence and cross-cultural analysis.';
-    description = (description + suffix).slice(0, 300);
-  } else if (description.length > 300) {
-    description = description.slice(0, 300);
+  if (!d) {
+    return `${SITE_NAME} provides structured cultural and linguistic analysis of personal names across civilizations.`;
   }
 
-  return description;
+  // prevent thin content
+  if (d.length < 140) {
+    d += ` Explore ${SITE_NAME} for linguistic origin, cultural meaning, and historical naming patterns.`;
+  }
+
+  // enforce max limit
+  if (d.length > CHAR_LIMIT_DESC) {
+    d = d.substring(0, CHAR_LIMIT_DESC - 3) + '...';
+  }
+
+  return d;
 }
 
-/**
- * Generate canonical URL ensuring no trailing slashes
- */
+/* -----------------------------------
+   CANONICAL URL SYSTEM (FIXED)
+----------------------------------- */
+function normalizePath(path = '') {
+  if (!path) return '';
+
+  // external URL → return as-is
+  if (/^https?:\/\//i.test(path)) return path;
+
+  let p = cleanText(path);
+
+  // REMOVE query params (CRITICAL FIX FOR DUPLICATE INDEXING)
+  p = p.split('?')[0];
+
+  // fix multiple slashes
+  p = p.replace(/\/+/g, '/');
+
+  // ensure leading slash
+  if (!p.startsWith('/')) p = '/' + p;
+
+  return p;
+}
+
 export function generateCanonicalUrl(path, baseUrl) {
-  const cleanPath = path.replace(/\/+$|^\s+|\s+$/g, '');
-  const cleanBase = (baseUrl || getSiteUrl()).replace(/\/+$|^\s+|\s+$/g, '');
-  return `${cleanBase}${cleanPath}`;
+  const base = (baseUrl || getSiteUrl()).replace(/\/+$/, '');
+  const cleanPath = normalizePath(path);
+
+  return `${base}${cleanPath}`;
 }
 
-/**
- * Generate meta description for name pages — academic onomastics style
- */
-export function generateNameMetaDescription(data) {
-  const name = data.name || 'this name';
-  const religion = data.religion || 'multicultural';
-  const gender = data.gender || 'personal';
-  const meaning = data.short_meaning || 'meaningful cultural context';
-  const origin = data.origin || 'multiple linguistic traditions';
+/* -----------------------------------
+   OG URL (SAFE)
+----------------------------------- */
+export function generateOgUrl(path = '/logo.png') {
+  return generateCanonicalUrl(path);
+}
 
-  return `Linguistic origin analysis of ${name}: a ${gender} personal name of ${origin} origin within ${religion} cultural context. Semantic interpretation: "${meaning}". Part of the NameVerse Cultural Name Knowledge Base — cross-cultural onomastics research.`;
+/* -----------------------------------
+   META DESCRIPTION GENERATOR (UPGRADED)
+   → removes template footprint
+   → adds variation logic
+----------------------------------- */
+export function generateNameMetaDescription(data) {
+  const name = cleanText(data.name || 'this name');
+  const religion = cleanText(data.religion || 'cultural');
+  const gender = cleanText(data.gender || 'personal');
+  const meaning = cleanText(data.short_meaning || 'cultural significance');
+  const origin = cleanText(data.origin || 'diverse linguistic traditions');
+
+  const variants = [
+    `${name} is a ${gender} name from ${origin} tradition meaning "${meaning}".`,
+    `${name} originates from ${origin} cultural background with the meaning "${meaning}".`,
+    `The name ${name} reflects ${religion} naming traditions and means "${meaning}".`,
+    `${name} is associated with ${origin} heritage and carries the meaning "${meaning}".`,
+  ];
+
+  // stable but non-predictable selection
+  let hash = 0;
+  const key = name + religion;
+  for (let i = 0; i < key.length; i++) {
+    hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
+  }
+
+  let desc = variants[hash % variants.length];
+
+  return validateMetaDescription(desc);
+}
+
+/* -----------------------------------
+   META TITLE CLEANER (OPTIONAL USE)
+----------------------------------- */
+export function generateSafeTitle(name, suffix = 'Name Meaning') {
+  return validateMetaTitle(`${name} ${suffix}`);
+}
+
+/* -----------------------------------
+   KEY SEO RULE HELPERS (IMPORTANT)
+----------------------------------- */
+
+/**
+ * Use this BEFORE indexing a page (VERY IMPORTANT for your 75K pages)
+ */
+export function shouldIndexPage(data) {
+  const name = data?.name;
+  const meaning = data?.short_meaning;
+
+  if (!name || name.length < 2) return false;
+  if (!meaning || meaning.length < 30) return false;
+
+  return true;
 }
