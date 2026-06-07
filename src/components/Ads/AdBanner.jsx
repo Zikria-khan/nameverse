@@ -3,19 +3,24 @@
 import { useEffect, useRef } from 'react';
 
 /**
- * Ad Banner Component — Clean, Responsive, Separated from Content
- *
- * This component is designed to be placed in a dedicated sponsored zone,
- * NOT inside content blocks. It provides a clear visual separation
- * with a subtle "— Sponsored —" label so users know it's ad content.
+ * Ad Banner Component — Dual Ad Network Setup
+ * 
+ * Shows TWO ads side by side (responsive):
+ * 1. Revolthem (existing)
+ * 2. Google AdSense (added alongside)
+ * 
+ * Responsive: stacked on mobile, side-by-side on desktop
  */
 export default function AdBanner({ className = '' }) {
-  const containerRef = useRef(null);
-  const scriptLoaded = useRef(false);
+  const revolthemRef = useRef(null);
+  const adsenseRef = useRef(null);
+  const revolthemLoaded = useRef(false);
+  const adsenseLoaded = useRef(false);
 
+  // Load Revolthem ad
   useEffect(() => {
-    if (scriptLoaded.current) return;
-    if (!containerRef.current) return;
+    if (revolthemLoaded.current) return;
+    if (!revolthemRef.current) return;
 
     const script = document.createElement('script');
     script.src = 'https://revolthem.com/1606e7870f004d67136f85f2b1698cd3/invoke.js';
@@ -24,14 +29,38 @@ export default function AdBanner({ className = '' }) {
     script.setAttribute('type', 'text/javascript');
 
     script.onload = () => {
-      scriptLoaded.current = true;
+      revolthemLoaded.current = true;
     };
 
     script.onerror = () => {
-      console.warn('Ad script failed to load');
+      console.warn('Revolthem ad script failed to load');
     };
 
-    containerRef.current.appendChild(script);
+    revolthemRef.current.appendChild(script);
+  }, []);
+
+  // Load Google AdSense
+  useEffect(() => {
+    if (adsenseLoaded.current) return;
+    if (!adsenseRef.current) return;
+
+    // Load the AdSense script once globally
+    if (!document.querySelector('script[src*="pagead2.googlesyndication.com"]')) {
+      const gScript = document.createElement('script');
+      gScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1510675468129183';
+      gScript.async = true;
+      gScript.setAttribute('crossorigin', 'anonymous');
+      document.head.appendChild(gScript);
+    }
+
+    // Push the ad unit
+    try {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (e) {
+      console.warn('AdSense push failed', e);
+    }
+
+    adsenseLoaded.current = true;
   }, []);
 
   return (
@@ -59,16 +88,29 @@ export default function AdBanner({ className = '' }) {
           </span>
         </div>
 
-        {/* Ad container */}
-        <div
-          ref={containerRef}
-          className="flex items-center justify-center w-full overflow-hidden rounded-xl bg-gray-50/40 border border-gray-100/50"
-        >
-          <div
-            id="container-1606e7870f004d67136f85f2b1698cd3"
-            className="flex flex-col items-center justify-center w-full min-h-[80px] sm:min-h-[90px] md:min-h-[100px] overflow-hidden"
-            style={{ maxWidth: '100%' }}
-          />
+        {/* Two ads: stacked on mobile, side by side on lg+ */}
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+          {/* --- Ad 1: Revolthem --- */}
+          <div className="flex-1 flex items-center justify-center w-full overflow-hidden rounded-xl bg-gray-50/40 border border-gray-100/50 min-h-[90px]">
+            <div
+              ref={revolthemRef}
+              className="flex flex-col items-center justify-center w-full min-h-[80px] sm:min-h-[90px] overflow-hidden"
+              style={{ maxWidth: '100%' }}
+            />
+          </div>
+
+          {/* --- Ad 2: Google AdSense --- */}
+          <div className="flex-1 flex items-center justify-center w-full overflow-hidden rounded-xl bg-gray-50/40 border border-gray-100/50 min-h-[90px]">
+            <ins
+              ref={adsenseRef}
+              className="adsbygoogle"
+              style={{ display: 'block', width: '100%', minHeight: '90px' }}
+              data-ad-client="ca-pub-1510675468129183"
+              data-ad-slot="6846580140"
+              data-ad-format="auto"
+              data-full-width-responsive="true"
+            />
+          </div>
         </div>
       </div>
     </div>
