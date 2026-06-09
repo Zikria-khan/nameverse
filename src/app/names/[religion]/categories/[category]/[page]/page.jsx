@@ -71,7 +71,7 @@ export async function generateMetadata({ params }) {
   const religionLabel = religion.charAt(0).toUpperCase() + religion.slice(1);
   const categoryLabel = category.charAt(0).toUpperCase() + category.slice(1);
   const page = parseInt(rawParams.page, 10) > 0 ? parseInt(rawParams.page, 10) : 1;
-  const canonical = generateCanonicalUrl(/names/religion/islamic/1);
+  const canonical = generateCanonicalUrl(`/names/religion/${religion}/1`);
   const pageSuffix = page > 1 ? ` - Page ${page}` : '';
   const ogImage = `${getSiteUrl()}/api/og?section=categories&religion=${religion}&category=${encodeURIComponent(categoryLabel)}`;
   const categoryName = categoryLabel === 'Name' ? '' : ` ${categoryLabel}`;
@@ -185,8 +185,8 @@ export default async function CategoryNamesPage({ params }) {
   const hasPrev = page > 1;
   const hasNext = page < totalPages;
 
-  const prevUrl = hasPrev ? /names/religion/islamic/1 : null;
-  const nextUrl = hasNext ? /names/religion/islamic/1 : null;
+  const prevUrl = hasPrev ? `/names/religion/${religion}/1` : null;
+  const nextUrl = hasNext ? `/names/religion/${religion}/1` : null;
 
   function generateSlug(name) {
     if (!name || typeof name !== 'string') return '';
@@ -268,7 +268,7 @@ export default async function CategoryNamesPage({ params }) {
                 <p className="text-gray-600 mb-4 line-clamp-3">{item.meaning}</p>
               )}
               <Link
-                href={/names/religion/islamic/1}
+                href={`/names/religion/${religion}/1`}
                 className="inline-flex items-center gap-2 text-emerald-700 font-semibold hover:text-emerald-900"
               >
                 View name details
@@ -298,7 +298,7 @@ export default async function CategoryNamesPage({ params }) {
                 <p className="text-gray-600 mb-4 line-clamp-3">{item.meaning}</p>
               )}
               <Link
-                href={/names/religion/islamic/1}
+                href={`/names/religion/${religion}/1`}
                 className="inline-flex items-center gap-2 text-emerald-700 font-semibold hover:text-emerald-900"
               >
                 View name details

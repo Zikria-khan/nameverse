@@ -71,7 +71,7 @@ export async function generateMetadata({ params }) {
   const letter = normalizeLetter(awaitedParams.letter);
   const page = normalizePage(awaitedParams.page);
   const religionLabel = religion.charAt(0).toUpperCase() + religion.slice(1);
-  const canonical = generateCanonicalUrl(/names/religion/islamic/1);
+  const canonical = generateCanonicalUrl(`/names/religion/${religion}/1`);
 
   // Generate dynamic count for more compelling title
   const countPhrase = page === 1 ? '50+' : 'Names';
@@ -267,7 +267,7 @@ export default async function LetterNamesPage({ params }) {
   const currentPage = Math.min(Math.max(page, 1), totalPages);
   const hasPrev = currentPage > 1;
   const hasNext = currentPage < totalPages;
-  const createUrl = (newPage) => /names/religion/islamic/1;
+  const createUrl = (newPage) => `/names/religion/${religion}/1`;
   const prevUrl = hasPrev ? createUrl(currentPage - 1) : null;
   const nextUrl = hasNext ? createUrl(currentPage + 1) : null;
 
@@ -283,7 +283,7 @@ export default async function LetterNamesPage({ params }) {
       { '@type': 'ListItem', position: 1, name: 'Home', item: getSiteUrl() },
       { '@type': 'ListItem', position: 2, name: `${religionLabel} Names`, item: absoluteUrl(`/names/${religion}`) },
       { '@type': 'ListItem', position: 3, name: `Letter ${letter}`, item: absoluteUrl(`/names/${religion}/letter/${letter}/1`) },
-      { '@type': 'ListItem', position: 4, name: `Page ${page}`, item: generateCanonicalUrl(/names/religion/islamic/1) },
+      { '@type': 'ListItem', position: 4, name: `Page ${page}`, item: generateCanonicalUrl(`/names/religion/${religion}/1`) },
     ],
   };
 
@@ -298,7 +298,7 @@ export default async function LetterNamesPage({ params }) {
           '@type': 'ListItem',
           position: i + 1,
           name: n.name,
-          url: absoluteUrl(/names/religion/islamic/1),
+          url: absoluteUrl(`/names/religion/${religion}/1`),
         })),
       }
     : null;
@@ -474,7 +474,7 @@ export default async function LetterNamesPage({ params }) {
                 return (
                   <Link
                     key={itemKey}
-                    href={/names/religion/islamic/1}
+                    href={`/names/religion/${religion}/1`}
                     className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 p-5 border border-gray-100 hover:border-emerald-300 group hover:-translate-y-1 block"
                     title={`${nameItem.name} meaning — ${religionLabel} baby name`}
                   >
@@ -551,7 +551,7 @@ export default async function LetterNamesPage({ params }) {
                 return (
                   <Link
                     key={itemKey}
-                    href={/names/religion/islamic/1}
+                    href={`/names/religion/${religion}/1`}
                     className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 p-5 border border-gray-100 hover:border-emerald-300 group hover:-translate-y-1 block"
                     title={`${nameItem.name} meaning — ${religionLabel} baby name`}
                   >

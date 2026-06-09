@@ -92,7 +92,7 @@ const SearchWithSuggestions = () => {
     );
 
     if (exactMatch) {
-      router.push(/names/religion/islamic/1);
+      router.push('/names/religion/islamic/1');
       return;
     }
 
@@ -108,7 +108,7 @@ const SearchWithSuggestions = () => {
   const handleSelect = (item) => {
     setQuery(item.name);
     setSuggestions([]);
-    router.push(/names/religion/islamic/1);
+    router.push('/names/religion/islamic/1');
   };
 
   return (
