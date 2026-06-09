@@ -17,7 +17,7 @@ export default function CulturalNameAnalysisCard({ data, faqData = [], pageUrl }
       breadcrumbs={[
         { label: 'Home', href: '/' },
         { label: 'Cultural Name Research', href: '/names' },
-        { label: `${data.religion || 'Names'}`, href: `/names/religion/${religion}/1` },
+        { label: `${data.religion || 'Names'}`, href: null },
         { label: data.name },
       ]}
     >
