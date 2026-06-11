@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { Menu, X, Sparkles, Heart, BookOpen, ChevronDown, Search } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
