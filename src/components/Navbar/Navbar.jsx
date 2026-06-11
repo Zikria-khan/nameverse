@@ -1,3 +1,5 @@
+"use client";
+
 import { Menu, X, Sparkles, Heart, BookOpen, ChevronDown, Search } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
