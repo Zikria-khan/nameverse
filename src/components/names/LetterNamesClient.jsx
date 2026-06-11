@@ -133,13 +133,13 @@ export default function LetterNamesClient({ selectedReligion, letter, page }) {
           </li>
           <li className="text-gray-400">/</li>
           <li>
-            <Link href={`/names/${selectedReligion}/letter/A/1`} className="text-emerald-600 hover:text-emerald-800 font-medium">
+            <Link href={`/names/${selectedReligion}/letter/a/1`} className="text-emerald-600 hover:text-emerald-800 font-medium">
               All Names
             </Link>
           </li>
           <li className="text-gray-400">/</li>
           <li>
-            <Link href={`/names/${selectedReligion}/letter/A/1`} className="text-emerald-600 hover:text-emerald-800 font-medium">
+            <Link href={`/names/${selectedReligion}/letter/a/1`} className="text-emerald-600 hover:text-emerald-800 font-medium">
               {selectedReligion.charAt(0).toUpperCase() + selectedReligion.slice(1)}
             </Link>
           </li>
@@ -152,7 +152,7 @@ export default function LetterNamesClient({ selectedReligion, letter, page }) {
 
       <div className="max-w-7xl mx-auto px-4 mb-8">
         <div className="flex flex-wrap justify-center gap-2">
-          {'ABCDEFGHIJKLMNOPQRSTUVWXYZ#'.split('').map((l) => (
+          {'abcdefghijklmnopqrstuvwxyz#'.split('').map((l) => (
             <Link
               key={l}
               href={`/names/${selectedReligion}/letter/${l}/1`}

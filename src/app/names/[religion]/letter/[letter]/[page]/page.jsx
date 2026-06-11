@@ -10,7 +10,7 @@ import BlogSection from '@/components/Blog/BlogSection';
 import AdBanner from '@/components/Ads/AdBanner';
 
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
-const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ#'.split('');
+const ALPHABET = 'abcdefghijklmnopqrstuvwxyz#'.split('');
 const NAMES_PER_PAGE = 50;
 
 // ISR with 60-day cache to minimize writes
@@ -34,9 +34,9 @@ function normalizeReligion(religion) {
 }
 
 function normalizeLetter(letter) {
-   if (!letter || typeof letter !== 'string') return 'A';
-   const regex = /^[A-Z#]$/i;
-   return regex.test(letter) ? letter.toUpperCase() : 'A';
+   if (!letter || typeof letter !== 'string') return 'a';
+   const regex = /^[a-zA-Z#]$/;
+   return regex.test(letter) ? letter.toLowerCase() : 'a';
 }
 
 function normalizePage(page) {
@@ -71,7 +71,7 @@ export async function generateMetadata({ params }) {
   const letter = normalizeLetter(awaitedParams.letter);
   const page = normalizePage(awaitedParams.page);
   const religionLabel = religion.charAt(0).toUpperCase() + religion.slice(1);
-  const canonical = generateCanonicalUrl(`/names/religion/${religion}/1`);
+  const canonical = generateCanonicalUrl(`/names/${religion}/letter/${letter}/${page}`);
 
   // Generate dynamic count for more compelling title
   const countPhrase = page === 1 ? '50+' : 'Names';
@@ -267,7 +267,7 @@ export default async function LetterNamesPage({ params }) {
   const currentPage = Math.min(Math.max(page, 1), totalPages);
   const hasPrev = currentPage > 1;
   const hasNext = currentPage < totalPages;
-  const createUrl = (newPage) => `/names/religion/${religion}/1`;
+  const createUrl = (newPage) => `/names/${religion}/letter/${letter}/${newPage}`;
   const prevUrl = hasPrev ? createUrl(currentPage - 1) : null;
   const nextUrl = hasNext ? createUrl(currentPage + 1) : null;
 
@@ -395,7 +395,7 @@ export default async function LetterNamesPage({ params }) {
           </li>
           <li>/</li>
           <li>
-            <Link href={`/names/${religion}/letter/A/1`} className="text-emerald-600 hover:text-emerald-800 font-medium transition-colors">
+            <Link href={`/names/${religion}/letter/a/1`} className="text-emerald-600 hover:text-emerald-800 font-medium transition-colors">
               {religionLabel} Names
             </Link>
           </li>
@@ -460,7 +460,7 @@ export default async function LetterNamesPage({ params }) {
               No {religionLabel} names starting with &ldquo;{letter}&rdquo; were found. Try browsing another letter or religion.
             </p>
             <Link
-              href={`/names/${religion}/letter/A/1`}
+              href={`/names/${religion}/letter/a/1`}
               className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl hover:bg-emerald-700 transition-colors font-semibold"
             >
               Browse All {religionLabel} Names

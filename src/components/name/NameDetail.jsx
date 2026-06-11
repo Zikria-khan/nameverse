@@ -44,7 +44,7 @@ export default function CulturalNameAnalysisCard({ data, faqData = [], pageUrl }
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <Link
-              href={`/names/${religion}/letter/A/1`}
+              href={`/names/${religion}/letter/a/1`}
               className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all text-sm font-semibold text-slate-700 hover:text-indigo-700"
             >
               <Grid3X3 className="w-4 h-4" /> Browse by Letter

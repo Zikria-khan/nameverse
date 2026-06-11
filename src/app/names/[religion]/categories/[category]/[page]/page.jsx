@@ -341,7 +341,7 @@ export default async function CategoryNamesPage({ params }) {
         <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
           <h3 className="text-sm font-semibold text-slate-700 mb-3">Explore More Ways to Browse</h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <Link href={`/names/${religion}/letter/A/1`} className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all text-xs font-semibold text-slate-600 hover:text-indigo-700">
+            <Link href={`/names/${religion}/letter/a/1`} className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all text-xs font-semibold text-slate-600 hover:text-indigo-700">
               <Grid3X3 className="w-3.5 h-3.5" /> Browse by Letter
             </Link>
             <Link href={`/names/${religion}/origin/arabic/1`} className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all text-xs font-semibold text-slate-600 hover:text-indigo-700">

@@ -481,7 +481,7 @@ export default async function ReligionByPage({ params }) {
 
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             <Link
-              href={`/names/${religion}/letter/A/1`}
+              href={`/names/${religion}/letter/a/1`}
               className="nv-card-solid p-4 text-center transition hover:-translate-y-0.5"
             >
               <div className="nv-display text-2xl font-semibold text-slate-900">A–Z</div>

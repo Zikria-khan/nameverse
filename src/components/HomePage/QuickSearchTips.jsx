@@ -122,7 +122,7 @@ const QuickSearchTips = () => {
                 </p>
                 <div className="mt-3">
                   <Link
-                    href="/names/islamic/letter/A/1"
+                    href="/names/islamic/letter/a/1"
                     className="inline-flex items-center gap-1 text-orange-600 font-semibold text-sm hover:underline"
                   >
                     Browse A-Z Names

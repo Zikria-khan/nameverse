@@ -114,6 +114,14 @@ export function middleware(request) {
     return NextResponse.next();
   }
 
+  // ── CASE NORMALIZATION: Redirect uppercase URLs to lowercase ──
+  // This ensures crawlers always get 200 for valid lowercase URLs
+  if (pathname !== path) {
+    // Preserve query string when redirecting
+    const search = request.nextUrl.search || '';
+    return NextResponse.redirect(new URL(path + search, request.url), 301);
+  }
+
   // ── TRAILING SLASH: Redirect to non-slash version ──
   if (path.length > 1 && path.endsWith('/')) {
     const clean = path.slice(0, -1);

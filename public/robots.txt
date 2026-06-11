@@ -1,76 +1,25 @@
-# NameVerse Robots.txt — SEO Firewall
-# Strict allow/block rules for crawl budget optimization
-# Only legitimate, indexable pages are allowed
-
 User-agent: *
-# Default: Allow all legitimate content
 Allow: /
 
-# ── SITEMAP ──
 Sitemap: https://nameverse.vercel.app/sitemap.xml
 
-# ── ALLOW: Main content pages (canonical) ──
-Allow: /names/
-Allow: /blog/
-Allow: /guides/
-Allow: /search
-Allow: /about
-Allow: /privacy
-Allow: /terms
-Allow: /languages
-Allow: /popularity
-Allow: /name-meanings
-Allow: /names-by-meaning
-Allow: /unique-names
-Allow: /trending-names
-Allow: /advanced-search
-Allow: /my-names
-Allow: /popular-by-state
-Allow: /viral-names
-Allow: /islamic/
-Allow: /christian/
-Allow: /hindu/
-
-# ── ALLOW: Static assets ──
-Allow: /_next/static/
-Allow: /logo.png
-
-# ── BLOCK: Internal APIs — never index ──
+# Block only truly useless endpoints
 Disallow: /api/
 Disallow: /api/og/
 
-# ── BLOCK: Next.js internals ──
-Disallow: /_next/
-Disallow: /_next/data/
+# Block internal build files ONLY (NOT full _next)
+Disallow: /_next/static/webpack/
+Disallow: /_next/static/chunks/
 
-# ── BLOCK: System/icon routes — not content pages ──
-Disallow: /apple-icon
-Disallow: /icon
-Disallow: /opengraph-image
-Disallow: /feed.xml
+# Keep _next/data ALLOWED (IMPORTANT FOR SEO)
+Allow: /_next/data/
 
-# ── BLOCK: Non-content routes ──
+# Block admin/system pages
 Disallow: /performance
 Disallow: /install
 
-# ── BLOCK: Parameterized URLs — prevent duplicate crawling ──
-Disallow: /*?ref=
+# Block query spam only
 Disallow: /*?utm_
+Disallow: /*?ref=
 Disallow: /*?source=
-Disallow: /*?q=*
-Disallow: /*?query=*
 Disallow: /*?page=
-Disallow: /*?sort=
-Disallow: /*?filter=
-
-# ── BLOCK: Old/redirected URL patterns ──
-Disallow: /baby-names/
-Disallow: /baby-names
-Disallow: /name/
-Disallow: /article/
-
-# ── BLOCK: Religion URL variants (canonical is /names/[religion]/) ──
-Disallow: /names/islam/
-Disallow: /names/muslim/
-Disallow: /names/christianity/
-Disallow: /names/hinduism/

@@ -1,8 +1,3 @@
-'use client';
-
-import React, { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
 import { Menu, X, Sparkles, Heart, BookOpen, ChevronDown, Search } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
@@ -125,7 +120,7 @@ const Navbar = () => {
       { name: '🔱 Hindu Boy Names', href: '/hindu/boy-names' },
       { name: '🔱 Hindu Girl Names', href: '/hindu/girl-names' },
       { name: '📝 Name Meanings', href: '/name-meanings' },
-      { name: '🔤 Names by Letter', href: '/names/islamic/letter/A/1' },
+      { name: '🔤 Names by Letter', href: '/names/islamic/letter/a/1' },
       { name: '🌍 Names by Origin', href: '/names/islamic/origin/arabic/1' },
     ],
   };
@@ -143,7 +138,7 @@ const Navbar = () => {
     { name: '📖 Name Meanings', href: '/name-meanings' },
     { name: '🔍 Browse by Meaning', href: '/names-by-meaning' },
     { name: '🌍 Names by Language', href: '/languages' },
-    { name: '🔤 Names by Letter A–Z', href: '/names/islamic/letter/A/1' },
+    { name: '🔤 Names by Letter A–Z', href: '/names/islamic/letter/a/1' },
     { name: '🔎 Advanced Search', href: '/advanced-search' },
     { name: '🔎 Search Names', href: '/search' },
   ];
