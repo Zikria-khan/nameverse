@@ -1,5 +1,7 @@
 "use client";
 
+import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { Menu, X, Sparkles, Heart, BookOpen, ChevronDown, Search } from 'lucide-react';
 import { usePathname } from 'next/navigation';
