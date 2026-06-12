@@ -31,16 +31,38 @@ function isrFetchOptions(revalidate = ISR_TTL) {
 }
 
 /**
- * Generic fetch wrapper with error handling and ISR support
+ * Generic fetch wrapper with error handling and ISR support.
+ * IMPORTANT: Never cache non-200 responses — doing so poisons
+ * the ISR cache for 30 days and causes permanent 404s.
  */
 async function isrFetch(url, revalidate = ISR_TTL) {
   try {
     const res = await fetch(url, isrFetchOptions(revalidate));
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.error(`[isrFetch] ${res.status} for ${url}`);
+      return null;
+    }
     return await res.json();
-  } catch {
+  } catch (err) {
+    console.error(`[isrFetch] Network error for ${url}:`, err.message);
     return null;
   }
+}
+
+/**
+ * Fetch with retry — used for critical name detail lookups
+ * where a single transient failure should NOT cause a 404.
+ */
+async function isrFetchWithRetry(url, retries = 2, revalidate = ISR_TTL) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const result = await isrFetch(url, attempt === 0 ? revalidate : 0);
+    if (result) return result;
+    if (attempt < retries) {
+      // Brief delay before retry (exponential backoff)
+      await new Promise(r => setTimeout(r, 200 * (attempt + 1)));
+    }
+  }
+  return null;
 }
 
 /**
@@ -168,12 +190,21 @@ export async function serverFetchNameDetail(religion, slug) {
   const normalizedReligion = normalizeReligion(religion);
   const safeSlug = encodeURIComponent(String(slug).trim().toLowerCase());
 
-  // Try v1 endpoint first
-  let data = await isrFetch(`${API_BASE}/api/v1/names/${normalizedReligion}/${safeSlug}`);
+  // Use retry + shorter cache (1 hour) for name detail lookups.
+  // A single transient error must NOT cause a permanent 404.
+  let data = await isrFetchWithRetry(
+    `${API_BASE}/api/v1/names/${normalizedReligion}/${safeSlug}`,
+    2,  // 2 retries
+    3600 // 1-hour cache instead of 30 days
+  );
 
   // Fallback to legacy endpoint
   if (!data || data.success === false || !data.data) {
-    data = await isrFetch(`${API_BASE}/api/names/${normalizedReligion}/${safeSlug}`);
+    data = await isrFetchWithRetry(
+      `${API_BASE}/api/names/${normalizedReligion}/${safeSlug}`,
+      1,  // 1 retry
+      3600
+    );
   }
 
   if (data?.success && data.data) {

@@ -11,6 +11,12 @@ import path from 'path';
 
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
 
+// Allow dynamic slugs beyond generateStaticParams() — only 28 per religion are pre-rendered
+export const dynamicParams = true;
+
+// Revalidate name pages every 1 day (names change infrequently)
+export const revalidate = 86400;
+
 // Load local name data as fallback
 function loadLocalNameData(religion, slug) {
   try {

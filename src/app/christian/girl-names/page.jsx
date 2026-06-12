@@ -382,7 +382,7 @@ export default function ChristianGirlNamesPage() {
               <p className="text-emerald-100 text-sm">Find 100+ Muslim boy names</p>
             </Link>
             <Link 
-              href="/guides/christian-baby-names"
+              href="/guides/expert-naming-guide"
               className="bg-gradient-to-br from-purple-500 to-pink-600 text-white rounded-2xl p-6 hover:shadow-xl transition-all hover:-translate-y-1"
             >
               <h3 className="font-bold text-lg mb-2">Christian Guide</h3>
