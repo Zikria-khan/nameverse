@@ -321,6 +321,28 @@ export default async function LetterNamesPage({ params }) {
         hidden_personality_traits: ['Thoughtful', 'Creative']
       };
 
+  // Handle degraded state gracefully - show loading/error UI instead of 404
+  // NEVER return 404 for uncertain data
+  if (response.error) {
+    return (
+      <main className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-4">
+          <div className="text-6xl mb-4">⚠️</div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-3">Loading Names</h1>
+          <p className="text-gray-600 mb-6">
+            We're experiencing connectivity issues. Please refresh the page or try again later.
+          </p>
+          <Link
+            href={`/names/${religion}/letter/a/1`}
+            className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl hover:bg-emerald-700 transition-colors font-semibold"
+          >
+            Browse All {religionLabel} Names
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
   const { article: articleSchema, faq: faqSchema, faqData: generatedFaqData, breadcrumb: seoBreadcrumb } = generateNamePageSchemas(
     seoData, 
     religion, 

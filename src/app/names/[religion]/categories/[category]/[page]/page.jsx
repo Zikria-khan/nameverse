@@ -152,32 +152,38 @@ export default async function CategoryNamesPage({ params }) {
 
   let names = [];
   let pagination = { totalPages: 1, totalCount: 0 };
-  let success = false;
 
-  try {
-    const response = await serverFetchNamesWithAdvancedFilters({
-      religion,
-      category,
-      page,
-      limit: 50,
-      sort: 'asc',
-    });
-    names = response.data || [];
-    names = names.filter(item => item.name && typeof item.name === 'string');
-    pagination = response.pagination || { totalPages: 1, totalCount: 0 };
-    success = response.success || false;
-  } catch (error) {
-    success = false;
-  }
+  const response = await serverFetchNamesWithAdvancedFilters({
+    religion,
+    category,
+    page,
+    limit: 50,
+    sort: 'asc',
+  });
 
-  if (!success) {
+  names = response.data || [];
+  names = names.filter(item => item.name && typeof item.name === 'string');
+  pagination = response.pagination || { totalPages: 1, totalCount: 0 };
+
+  // If backend is in degraded state, show loading UI instead of error page
+  // NEVER return 404 for uncertain data
+  if (response.error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Error Loading Names</h1>
-          <p className="text-gray-600">Unable to load names at this time. Please try again later.</p>
+      <main className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-emerald-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-4">
+          <div className="text-6xl mb-4">⚠️</div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-3">Loading Category</h1>
+          <p className="text-gray-600 mb-6">
+            We're experiencing connectivity issues. Please refresh the page or try again later.
+          </p>
+          <Link
+            href={`/names/${religion}/letter/a/1`}
+            className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl hover:bg-emerald-700 transition-colors font-semibold"
+          >
+            Browse All Names
+          </Link>
         </div>
-      </div>
+      </main>
     );
   }
 

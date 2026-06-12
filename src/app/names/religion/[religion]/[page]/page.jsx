@@ -252,7 +252,23 @@ export default async function ReligionByPage({ params }) {
   const page = normalizePage(awaitedParams?.page);
 
   if (!religion) {
-    return notFound();
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 via-white to-gray-50">
+        <div className="text-center max-w-md mx-auto px-4">
+          <div className="text-6xl mb-4">🔍</div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-3">Invalid Religion</h1>
+          <p className="text-gray-600 mb-6">
+            The requested religion is not valid. Please select from Islamic, Hindu, or Christian names.
+          </p>
+          <Link
+            href="/names/islamic/letter/a/1"
+            className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl hover:bg-emerald-700 transition-colors font-semibold"
+          >
+            Browse Names
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   const response = await serverFetchNamesWithAdvancedFilters({
@@ -262,8 +278,30 @@ export default async function ReligionByPage({ params }) {
     sort: 'asc',
   });
 
-  // If backend fails, don't return 404 — show an empty 'No names found' state instead.
-  const names = Array.isArray(response.data) && response.success ? response.data : [];
+  // If backend is in degraded state, show loading UI instead of 404
+  // NEVER return 404 for uncertain data
+  if (response.error) {
+    return (
+      <main className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-4">
+          <div className="text-6xl mb-4">⚠️</div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-3">Loading Content</h1>
+          <p className="text-gray-600 mb-6">
+            We're experiencing connectivity issues. Please refresh the page or try again later.
+          </p>
+          <Link
+            href={`/names/${religion}/letter/a/1`}
+            className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl hover:bg-emerald-700 transition-colors font-semibold"
+          >
+            Browse All {RELIGION_LABELS[religion]} Names
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
+  // If backend fails, don't return 404 - show empty state
+  const names = Array.isArray(response.data) ? response.data : [];
   const pagination = response.pagination || { page: 1, limit: 50, totalCount: 0, totalPages: 1 };
   const { totalPages = 1, totalCount = 0 } = pagination;
   const hasPrev = page > 1;

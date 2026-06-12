@@ -9,6 +9,16 @@
  * NEVER use axios-based fetches (apiClient) in Server Components.
  */
 
+/**
+ * Safe Fetch Utility for ISR - SEO Resilient Implementation
+ *
+ * CRITICAL: This utility prevents false 404s for transient API failures.
+ * - NEVER returns 404 for uncertain data
+ * - Only 404 is returned when status is explicitly confirmed by backend
+ * - Implements retry logic for network errors and 5xx responses
+ * - Prevents caching of failed responses (no poisoned ISR cache)
+ */
+
 const API_BASE = (process.env.NEXT_PUBLIC_API_BASE || 'https://name-meaning-site-backend.vercel.app').replace(/\/+$/, '');
 const ISR_TTL = 2592000; // 30 days
 
@@ -24,49 +34,61 @@ function normalizeReligion(val) {
 }
 
 /**
- * Helper to build fetch options with ISR revalidation
+ * Safe fetch wrapper with explicit status tracking.
+ * Returns:
+ *   - { data: T, notFound: false, error: false } on success
+ *   - { data: null, notFound: true, error: false } ONLY on explicit 404
+ *   - { data: null, notFound: false, error: true } on network/5xx errors
+ *
+ * IMPORTANT: This function NEVER caches failed responses to prevent ISR poisoning.
  */
-function isrFetchOptions(revalidate = ISR_TTL) {
-  return { next: { revalidate } };
-}
+async function safeFetch(url, retries = 2, revalidate = ISR_TTL) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const res = await fetch(url, { next: { revalidate } });
 
-/**
- * Generic fetch wrapper with error handling and ISR support.
- * IMPORTANT: Never cache non-200 responses — doing so poisons
- * the ISR cache for 30 days and causes permanent 404s.
- */
-async function isrFetch(url, revalidate = ISR_TTL) {
-  try {
-    const res = await fetch(url, isrFetchOptions(revalidate));
-    if (!res.ok) {
-      console.error(`[isrFetch] ${res.status} for ${url}`);
-      return null;
+      // Explicit 404 - backend confirms resource doesn't exist
+      if (res.status === 404) {
+        return { data: null, notFound: true, error: false };
+      }
+
+      // Network/server error - retry these
+      if (!res.ok) {
+        if (res.status >= 500 && attempt < retries) {
+          await new Promise(r => setTimeout(r, 200 * (attempt + 1)));
+          continue;
+        }
+        return { data: null, notFound: false, error: true };
+      }
+
+      const json = await res.json();
+      return { data: json, notFound: false, error: false };
+    } catch (err) {
+      // Network error - retry
+      if (attempt < retries) {
+        await new Promise(r => setTimeout(r, 200 * (attempt + 1)));
+        continue;
+      }
+      return { data: null, notFound: false, error: true };
     }
-    return await res.json();
-  } catch (err) {
-    console.error(`[isrFetch] Network error for ${url}:`, err.message);
-    return null;
   }
+  return { data: null, notFound: false, error: true };
 }
 
 /**
- * Fetch with retry — used for critical name detail lookups.
+ * Fetch with retry - used for critical name detail lookups.
  * IMPORTANT: Never use revalidate: 0 as it causes "Dynamic server usage"
  * errors during static generation. Always use a positive revalidation time.
  */
 async function isrFetchWithRetry(url, retries = 2, revalidate = ISR_TTL) {
   for (let attempt = 0; attempt <= retries; attempt++) {
-    // Always use positive revalidation to allow static rendering.
-    // On retries, use a shorter cache to get fresh responses.
-    const attemptRevalidate = attempt === 0 ? revalidate : Math.min(revalidate, 60);
-    const result = await isrFetch(url, attemptRevalidate);
-    if (result) return result;
+    const result = await safeFetch(url, 0, attempt === 0 ? revalidate : Math.min(revalidate, 60));
+    if (result.data || result.notFound) return result;
     if (attempt < retries) {
-      // Brief delay before retry (exponential backoff)
       await new Promise(r => setTimeout(r, 200 * (attempt + 1)));
     }
   }
-  return null;
+  return { data: null, notFound: false, error: true };
 }
 
 /**
@@ -77,20 +99,20 @@ export async function serverFetchFilters(religion) {
   if (!religion) return { genders: [], origins: [], letters: [], categories: [], totalNames: 0 };
 
   const normalizedReligion = normalizeReligion(religion);
-  const data = await isrFetch(`${API_BASE}/api/v1/names/${normalizedReligion}/filters`);
+  const result = await safeFetch(`${API_BASE}/api/v1/names/${normalizedReligion}/filters`);
 
-  if (data?.success && data.data) {
+  if (result.data?.success && result.data.data) {
     return {
-      genders: data.data.genders || [],
-      origins: data.data.origins || [],
-      letters: data.data.letters || [],
-      categories: data.data.categories || [],
-      themes: data.data.themes || [],
-      languages: data.data.languages || [],
-      lucky_days: data.data.lucky_days || [],
-      lucky_colors: data.data.lucky_colors || [],
-      lucky_stones: data.data.lucky_stones || [],
-      totalNames: data.data.total_names || 0,
+      genders: result.data.data.genders || [],
+      origins: result.data.data.origins || [],
+      letters: result.data.data.letters || [],
+      categories: result.data.data.categories || [],
+      themes: result.data.data.themes || [],
+      languages: result.data.data.languages || [],
+      lucky_days: result.data.data.lucky_days || [],
+      lucky_colors: result.data.data.lucky_colors || [],
+      lucky_stones: result.data.data.lucky_stones || [],
+      totalNames: result.data.data.total_names || 0,
     };
   }
 
@@ -101,7 +123,7 @@ export async function serverFetchFilters(religion) {
  * Fetch names by letter with full ISR support
  */
 export async function serverFetchNamesByLetter(letter, options = {}) {
-  if (!letter) return { data: [], pagination: { totalPages: 1, totalCount: 0 }, success: false };
+  if (!letter) return { data: [], pagination: { totalPages: 1, totalCount: 0 }, success: true, error: false };
 
   const { religion = 'islamic', limit = 50, page = 1, sort = 'asc' } = options;
   const normalizedReligion = normalizeReligion(religion);
@@ -112,24 +134,30 @@ export async function serverFetchNamesByLetter(letter, options = {}) {
   params.set('page', String(page));
   params.set('sort', sort);
 
-  const data = await isrFetch(`${API_BASE}/api/v1/names/${normalizedReligion}?${params.toString()}`);
+  const result = await safeFetch(`${API_BASE}/api/v1/names/${normalizedReligion}?${params.toString()}`);
 
-  if (!data) {
-    return { data: [], pagination: { totalPages: 1, totalCount: 0 }, success: false };
+  // If explicit 404 or error, return empty state but successful (no 404 page)
+  if (result.error || result.notFound) {
+    return { data: [], pagination: { totalPages: 1, totalCount: 0 }, success: true, error: result.error };
   }
 
-  const names = data.data || data.names || [];
-  const pagination = data.pagination || {};
+  if (!result.data) {
+    return { data: [], pagination: { totalPages: 1, totalCount: 0 }, success: true, error: false };
+  }
+
+  const names = result.data.data || result.data.names || [];
+  const pagination = result.data.pagination || {};
 
   return {
     data: names,
     pagination: {
-      totalPages: pagination.pages || data.totalPages || Math.ceil((pagination.total || names.length) / limit),
-      totalCount: pagination.total || data.totalCount || names.length,
+      totalPages: pagination.pages || result.data.totalPages || Math.ceil((pagination.total || names.length) / limit),
+      totalCount: pagination.total || result.data.totalCount || names.length,
       page,
       limit,
     },
     success: true,
+    error: false,
   };
 }
 
@@ -150,7 +178,7 @@ export async function serverFetchNamesWithAdvancedFilters(options = {}) {
 
   const normalizedReligion = normalizeReligion(religion);
   if (!normalizedReligion) {
-    return { data: [], pagination: { totalPages: 1, totalCount: 0 }, success: false };
+    return { data: [], pagination: { totalPages: 1, totalCount: 0 }, success: true, error: false };
   }
 
   const params = new URLSearchParams();
@@ -162,24 +190,30 @@ export async function serverFetchNamesWithAdvancedFilters(options = {}) {
   if (category) params.set('category', category);
   if (alphabet) params.set('startsWith', String(alphabet).toLowerCase());
 
-  const data = await isrFetch(`${API_BASE}/api/v1/names/${normalizedReligion}?${params.toString()}`);
+  const result = await safeFetch(`${API_BASE}/api/v1/names/${normalizedReligion}?${params.toString()}`);
 
-  if (!data) {
-    return { data: [], pagination: { totalPages: 1, totalCount: 0 }, success: false };
+  // If explicit 404 or error, return empty state but successful (no 404 page)
+  if (result.error || result.notFound) {
+    return { data: [], pagination: { totalPages: 1, totalCount: 0 }, success: true, error: result.error };
   }
 
-  const names = data.data || data.names || [];
-  const pagination = data.pagination || {};
+  if (!result.data) {
+    return { data: [], pagination: { totalPages: 1, totalCount: 0 }, success: true, error: false };
+  }
+
+  const names = result.data.data || result.data.names || [];
+  const pagination = result.data.pagination || {};
 
   return {
     data: names,
     pagination: {
-      totalPages: pagination.pages || data.totalPages || Math.ceil((pagination.total || names.length) / limit),
-      totalCount: pagination.total || data.totalCount || names.length,
+      totalPages: pagination.pages || result.data.totalPages || Math.ceil((pagination.total || names.length) / limit),
+      totalCount: pagination.total || result.data.totalCount || names.length,
       page,
       limit,
     },
     success: true,
+    error: false,
   };
 }
 
@@ -187,9 +221,12 @@ export async function serverFetchNamesWithAdvancedFilters(options = {}) {
  * Fetch name detail by religion and slug
  * Backend: GET /api/v1/names/:religion/:slug
  * Used by generateMetadata() and the page component
+ * @returns {Promise<{ data: Object|null, notFound: boolean, error: boolean }>}
  */
 export async function serverFetchNameDetail(religion, slug) {
-  if (!religion || !slug) return null;
+  if (!religion || !slug) {
+    return { data: null, notFound: false, error: false };
+  }
 
   const normalizedReligion = normalizeReligion(religion);
   const safeSlug = encodeURIComponent(String(slug).trim().toLowerCase());
@@ -197,23 +234,41 @@ export async function serverFetchNameDetail(religion, slug) {
   // Use retry + 30-day cache for name detail lookups.
   // A single transient error must NOT cause a permanent 404.
   // 30-day cache is free-tier friendly: each function call is cached for 30 days.
-  let data = await isrFetchWithRetry(
+  let result = await isrFetchWithRetry(
     `${API_BASE}/api/v1/names/${normalizedReligion}/${safeSlug}`,
-    2,  // 2 retries (with fresh fetch on each retry)
-    ISR_TTL // 30-day cache
+    2,
+    ISR_TTL
   );
 
-  // Fallback to legacy endpoint
-  if (!data || data.success === false || !data.data) {
-    data = await isrFetchWithRetry(
-      `${API_BASE}/api/names/${normalizedReligion}/${safeSlug}`,
-      1,  // 1 retry
-      ISR_TTL
-    );
+  // If explicit 404 from primary endpoint, return confirmed 404 (content doesn't exist)
+  if (result.notFound) {
+    return { data: null, notFound: true, error: false };
   }
 
-  if (data?.success && data.data) {
-    const nameData = data.data;
+  // If no data but error, try fallback endpoint
+  if (result.error || (!result.data?.success && !result.data?.data)) {
+    const fallbackResult = await isrFetchWithRetry(
+      `${API_BASE}/api/names/${normalizedReligion}/${safeSlug}`,
+      1,
+      ISR_TTL
+    );
+
+    // If fallback also returns explicit 404, propagate it
+    if (fallbackResult.notFound) {
+      return { data: null, notFound: true, error: false };
+    }
+
+    // If fallback succeeded, use it
+    if (fallbackResult.data?.success && fallbackResult.data?.data) {
+      result = fallbackResult;
+    } else {
+      // Both endpoints failed - return degraded state (no error, no data, no 404)
+      return { data: null, notFound: false, error: false };
+    }
+  }
+
+  if (result.data?.success && result.data?.data) {
+    const nameData = result.data.data;
     // Normalize religion (handle "Islam", "Christian", "Hindu" as well)
     if (nameData.religion) {
       const r = String(nameData.religion).toLowerCase();
@@ -221,10 +276,11 @@ export async function serverFetchNameDetail(religion, slug) {
       else if (r === 'christianity' || r === 'christian') nameData.religion = 'christian';
       else if (r === 'hinduism' || r === 'hindu') nameData.religion = 'hindu';
     }
-    return nameData;
+    return { data: nameData, notFound: false, error: false };
   }
 
-  return null;
+  // Default: degraded state (no confirmed missing, don't return 404)
+  return { data: null, notFound: false, error: false };
 }
 
 /**
@@ -235,17 +291,23 @@ export async function serverFetchTrendingNames(options = {}) {
   const { religion = 'islamic', page = 1, limit = 20 } = options;
   const validReligion = VALID_RELIGIONS.includes(religion.toLowerCase()) ? religion.toLowerCase() : 'islamic';
 
-  const data = await isrFetch(`${API_BASE}/api/names?religion=${validReligion}&page=${page}&limit=${limit}`);
+  const result = await safeFetch(`${API_BASE}/api/names?religion=${validReligion}&page=${page}&limit=${limit}`);
 
-  if (!data) {
-    return { data: [], pagination: { page, limit, total: 0, totalPages: 0 }, success: false };
+  // If error, return empty but don't mark as failure (graceful degradation)
+  if (result.error) {
+    return { data: [], pagination: { page, limit, total: 0, totalPages: 0 }, religion: validReligion, success: true, error: true };
+  }
+
+  if (!result.data) {
+    return { data: [], pagination: { page, limit, total: 0, totalPages: 0 }, religion: validReligion, success: true, error: false };
   }
 
   return {
-    data: data.data || data.names || [],
-    pagination: data.pagination || { page, limit, total: 0, totalPages: 0 },
+    data: result.data.data || result.data.names || [],
+    pagination: result.data.pagination || { page, limit, total: 0, totalPages: 0 },
     religion: validReligion,
-    success: data.success !== false,
+    success: true,
+    error: false,
   };
 }
 
@@ -254,16 +316,23 @@ export async function serverFetchTrendingNames(options = {}) {
  * Backend: GET /api/names/:religion/:slug/related
  */
 export async function serverFetchRelatedNames(religion, slug) {
-  if (!religion || !slug) return { data: [], count: 0, success: false };
+  if (!religion || !slug) return { data: [], count: 0, success: true, error: false };
 
-  const data = await isrFetch(`${API_BASE}/api/names/religion/islamic/1/related`);
+  const result = await safeFetch(`${API_BASE}/api/names/religion/islamic/1/related`);
 
-  if (!data) return { data: [], count: 0, success: false };
+  if (result.error || result.notFound) {
+    return { data: [], count: 0, success: true, error: result.error };
+  }
+
+  if (!result.data) {
+    return { data: [], count: 0, success: true, error: false };
+  }
 
   return {
-    data: data.data || data.names || [],
-    count: data.count || data.total || (data.data ? data.data.length : 0),
-    success: data.success !== false,
+    data: result.data.data || result.data.names || [],
+    count: result.data.count || result.data.total || (result.data.data ? result.data.data.length : 0),
+    success: true,
+    error: false,
   };
 }
 
@@ -272,16 +341,23 @@ export async function serverFetchRelatedNames(religion, slug) {
  * Backend: GET /api/names/:religion/:slug/similar
  */
 export async function serverFetchSimilarNames(religion, slug) {
-  if (!religion || !slug) return { data: [], count: 0, success: false };
+  if (!religion || !slug) return { data: [], count: 0, success: true, error: false };
 
-  const data = await isrFetch(`${API_BASE}/api/names/religion/islamic/1/similar`);
+  const result = await safeFetch(`${API_BASE}/api/names/religion/islamic/1/similar`);
 
-  if (!data) return { data: [], count: 0, success: false };
+  if (result.error || result.notFound) {
+    return { data: [], count: 0, success: true, error: result.error };
+  }
+
+  if (!result.data) {
+    return { data: [], count: 0, success: true, error: false };
+  }
 
   return {
-    data: data.data || data.names || [],
-    count: data.count || data.total || (data.data ? data.data.length : 0),
-    success: data.success !== false,
+    data: result.data.data || result.data.names || [],
+    count: result.data.count || result.data.total || (result.data.data ? result.data.data.length : 0),
+    success: true,
+    error: false,
   };
 }
 
@@ -291,21 +367,26 @@ export async function serverFetchSimilarNames(religion, slug) {
  */
 export async function serverFetchNamesByCategory(religion, category, options = {}) {
   if (!religion || !category) {
-    return { data: [], pagination: { page: 1, perPage: 20, total: 0, totalPages: 0 }, success: false };
+    return { data: [], pagination: { page: 1, perPage: 20, total: 0, totalPages: 0 }, success: true, error: false };
   }
 
   const { page = 1, perPage = 20 } = options;
-  const data = await isrFetch(`${API_BASE}/api/v1/names?religion=${religion}&page=${page}&limit=${perPage}&category=${encodeURIComponent(category)}`);
+  const result = await safeFetch(`${API_BASE}/api/v1/names?religion=${religion}&page=${page}&limit=${perPage}&category=${encodeURIComponent(category)}`);
 
-  if (!data) {
-    return { data: [], pagination: { page, perPage, total: 0, totalPages: 0 }, success: false };
+  if (result.error || result.notFound) {
+    return { data: [], pagination: { page, perPage, total: 0, totalPages: 0 }, success: true, error: result.error };
+  }
+
+  if (!result.data) {
+    return { data: [], pagination: { page, perPage, total: 0, totalPages: 0 }, success: true, error: false };
   }
 
   return {
-    data: data.data || data.names || [],
-    pagination: data.pagination || { page, perPage, total: 0, totalPages: 0 },
+    data: result.data.data || result.data.names || [],
+    pagination: result.data.pagination || { page, perPage, total: 0, totalPages: 0 },
     category,
-    success: data.success !== false,
+    success: true,
+    error: false,
   };
 }
 
@@ -315,21 +396,26 @@ export async function serverFetchNamesByCategory(religion, category, options = {
  */
 export async function serverFetchNamesByOrigin(religion, origin, options = {}) {
   if (!religion || !origin) {
-    return { data: [], pagination: { page: 1, perPage: 50, total: 0, totalPages: 0 }, success: false };
+    return { data: [], pagination: { page: 1, perPage: 50, total: 0, totalPages: 0 }, success: true, error: false };
   }
 
   const { page = 1, perPage = 50 } = options;
-  const data = await isrFetch(`${API_BASE}/api/v1/names?religion=${religion}&page=${page}&limit=${perPage}&origin=${encodeURIComponent(origin)}`);
+  const result = await safeFetch(`${API_BASE}/api/v1/names?religion=${religion}&page=${page}&limit=${perPage}&origin=${encodeURIComponent(origin)}`);
 
-  if (!data) {
-    return { data: [], pagination: { page, perPage, total: 0, totalPages: 0 }, success: false };
+  if (result.error || result.notFound) {
+    return { data: [], pagination: { page, perPage, total: 0, totalPages: 0 }, success: true, error: result.error };
+  }
+
+  if (!result.data) {
+    return { data: [], pagination: { page, perPage, total: 0, totalPages: 0 }, success: true, error: false };
   }
 
   return {
-    data: data.data || data.names || [],
-    pagination: data.pagination || { page, perPage, total: 0, totalPages: 0 },
+    data: result.data.data || result.data.names || [],
+    pagination: result.data.pagination || { page, perPage, total: 0, totalPages: 0 },
     origin,
-    success: data.success !== false,
+    success: true,
+    error: false,
   };
 }
 
@@ -340,7 +426,7 @@ export async function serverFetchNamesByOrigin(religion, origin, options = {}) {
  */
 export async function serverSearchNames(query, options = {}) {
   if (!query || query.trim().length < 2) {
-    return { data: [], count: 0, success: false };
+    return { data: [], count: 0, success: true, error: false };
   }
 
   const { religion, limit = 8 } = options;
@@ -351,17 +437,21 @@ export async function serverSearchNames(query, options = {}) {
   params.set('limit', String(limit));
   if (religion) params.set('religion', religion);
 
-  // Search results use 1-hour cache since they change more frequently
-  const data = await isrFetch(`${API_BASE}/api/v1/names/search?${params.toString()}`, 3600);
+  const result = await safeFetch(`${API_BASE}/api/v1/names/search?${params.toString()}`, 3600);
 
-  if (!data) {
-    return { data: [], count: 0, success: false };
+  if (result.error || result.notFound) {
+    return { data: [], count: 0, success: true, error: result.error };
+  }
+
+  if (!result.data) {
+    return { data: [], count: 0, success: true, error: false };
   }
 
   return {
-    data: data.data || data.results || [],
-    count: data.count || data.total || data.data?.length || 0,
-    success: data.success !== false,
+    data: result.data.data || result.data.results || [],
+    count: result.data.count || result.data.total || result.data.data?.length || 0,
+    success: true,
+    error: false,
   };
 }
 

@@ -161,13 +161,25 @@ export async function generateMetadata({ params }) {
     };
   }
 
-  let nameData = await serverFetchNameDetail(religion, slug);
+  const fetchResult = await serverFetchNameDetail(religion, slug);
   
-  // Fallback to local data if API fails
+  // Explicit 404 from backend - content confirmed missing
+  if (fetchResult.notFound) {
+    return {
+      title: 'Name Not Found | NameVerse',
+      description: 'The requested name page does not exist on NameVerse.',
+      robots: { index: false, follow: false },
+    };
+  }
+  
+  let nameData = fetchResult.data;
+  
+  // Fallback to local data if API failed (degraded state)
   if (!nameData) {
     nameData = loadLocalNameData(religion, slug);
   }
 
+  // If no data found anywhere, return 404 - DB confirmed missing
   if (!nameData) {
     return {
       title: 'Name Not Found | NameVerse',
@@ -197,16 +209,42 @@ export default async function NameDetailPage({ params }) {
     return notFound();
   }
 
-  let nameData = await serverFetchNameDetail(religion, slug);
+  const fetchResult = await serverFetchNameDetail(religion, slug);
   
-  // Fallback to local data if API fails
+  // Explicit 404 from backend - content confirmed missing in DB
+  if (fetchResult.notFound) {
+    return notFound();
+  }
+  
+  let nameData = fetchResult.data;
+  
+  // Fallback to local data if API failed (degraded state)
   if (!nameData) {
     nameData = loadLocalNameData(religion, slug);
   }
 
-  // If no data found anywhere, return 404 — never serve fake/garbage content
+  // If still no data, check if this is a truly missing entry or degraded state
+  // Only DB-confirmed missing entries should return 404
   if (!nameData) {
-    return notFound();
+    // Degraded state: no data but no explicit 404
+    // Return error UI instead of 404 to prevent false positives to crawlers
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 via-white to-gray-50">
+        <div className="text-center max-w-md mx-auto px-4">
+          <div className="text-6xl mb-4">⚠️</div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-3">Loading Name Data</h1>
+          <p className="text-gray-600 mb-6">
+            We're experiencing connectivity issues. Please refresh the page or try again later.
+          </p>
+          <a 
+            href={`/names/${religion}/letter/a/1`} 
+            className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl hover:bg-emerald-700 transition-colors font-semibold"
+          >
+            Browse All {religion.charAt(0).toUpperCase() + religion.slice(1)} Names
+          </a>
+        </div>
+      </div>
+    );
   }
 
   nameData = sanitizeNameData(nameData);

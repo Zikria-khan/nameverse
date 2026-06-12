@@ -87,15 +87,18 @@ const SearchWithSuggestions = () => {
     const trimmed = query.trim();
     if (!trimmed) return;
 
+    // Find the best matching name
     const exactMatch = names.find(
       (item) => item.name.toLowerCase() === trimmed.toLowerCase()
     );
 
-    if (exactMatch) {
-      router.push('/names/religion/islamic/1');
+    if (exactMatch && exactMatch.slug) {
+      // Navigate directly to the name detail page
+      router.push(`/names/${exactMatch.religion || 'islamic'}/${exactMatch.slug}`);
       return;
     }
 
+    // No exact match — go to search results page
     router.push(`/search/${createSafeSlug(trimmed)}`);
   };
 
@@ -108,7 +111,12 @@ const SearchWithSuggestions = () => {
   const handleSelect = (item) => {
     setQuery(item.name);
     setSuggestions([]);
-    router.push('/names/religion/islamic/1');
+    // Navigate directly to the name detail page
+    if (item.slug) {
+      router.push(`/names/${item.religion || 'islamic'}/${item.slug}`);
+    } else {
+      router.push(`/search/${createSafeSlug(item.name)}`);
+    }
   };
 
   return (
