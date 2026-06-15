@@ -38,7 +38,6 @@ export async function generateStaticParams() {
   return params;
 }
 
-// Site URL (use public env var on client-safe code paths)
 function normalizeReligion(religion) {
   if (!religion || typeof religion !== 'string') return null;
   const normalized = religion.toLowerCase();
@@ -76,6 +75,16 @@ export async function generateMetadata({ params }) {
       robots: { index: false, follow: false },
     };
   }
+
+  // Fetch pagination data for prev/next
+  const response = await serverFetchNamesWithAdvancedFilters({ religion, page, limit: 50 });
+  const pagination = response.pagination || { totalPages: 1, totalCount: 0 };
+  const totalPages = pagination.totalPages || 1;
+
+  const hasPrev = page > 1;
+  const hasNext = page < totalPages;
+  const prevPageUrl = hasPrev ? generateCanonicalUrl(`/names/religion/${religion}/${page - 1}`) : null;
+  const nextPageUrl = hasNext ? generateCanonicalUrl(`/names/religion/${religion}/${page + 1}`) : null;
 
   // Religion-specific keywords with 30+ engaging terms
   const religionKeywords = {
@@ -243,6 +252,10 @@ export async function generateMetadata({ params }) {
       languages: { en: canonical, 'x-default': canonical },
     },
     robots: { index: true, follow: true },
+    other: {
+      ...(hasPrev ? { 'link-prev': `<${prevPageUrl}>; rel="prev"` } : {}),
+      ...(hasNext ? { 'link-next': `<${nextPageUrl}>; rel="next"` } : {}),
+    },
   };
 }
 
@@ -342,44 +355,44 @@ export default async function ReligionByPage({ params }) {
               <span>{RELIGION_LABELS[religion]} Names</span>
             </div>
             <h1 className="nv-display mt-5 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl md:text-5xl">
-            {religion === 'islamic' && 'Islamic Baby Names - Quranic & Arabic Names with Meanings'}
-            {religion === 'hindu' && 'Hindu Baby Names - Sanskrit & Vedic Names with Spiritual Significance'}
-            {religion === 'christian' && 'Christian Baby Names - Biblical Names with Faith & Heritage'}
+              {religion === 'islamic' && 'Islamic Baby Names - Quranic & Arabic Names with Meanings'}
+              {religion === 'hindu' && 'Hindu Baby Names - Sanskrit & Vedic Names with Spiritual Significance'}
+              {religion === 'christian' && 'Christian Baby Names - Biblical Names with Faith & Heritage'}
             </h1>
             <p className="mt-4 max-w-3xl text-base leading-relaxed text-slate-600 sm:text-lg">
-            {religion === 'islamic' && `Explore ${totalCount} authentic Islamic baby names from the Quran and Islamic tradition. Discover Quranic names with Arabic and Urdu meanings, perfect for Muslim families seeking spiritual baby names with deep cultural significance.`}
-            {religion === 'hindu' && `Browse ${totalCount} beautiful Hindu baby names rooted in Sanskrit and Vedic traditions. Find meaningful names with Hindi translations, connecting your child to Hindu heritage and spiritual wisdom.`}
-            {religion === 'christian' && `Discover ${totalCount} meaningful Christian baby names inspired by the Bible and Christian faith. Choose biblical names with spiritual depth, perfect for families seeking faith-based naming inspiration.`}
+              {religion === 'islamic' && `Explore ${totalCount} authentic Islamic baby names from the Quran and Islamic tradition. Discover Quranic names with Arabic and Urdu meanings, perfect for Muslim families seeking spiritual baby names with deep cultural significance.`}
+              {religion === 'hindu' && `Browse ${totalCount} beautiful Hindu baby names rooted in Sanskrit and Vedic traditions. Find meaningful names with Hindi translations, connecting your child to Hindu heritage and spiritual wisdom.`}
+              {religion === 'christian' && `Discover ${totalCount} meaningful Christian baby names inspired by the Bible and Christian faith. Choose biblical names with spiritual depth, perfect for families seeking faith-based naming inspiration.`}
             </p>
             <p className="mt-4 text-sm text-slate-500">
-            Page {page} of {totalPages} • Comprehensive {RELIGION_LABELS[religion]} Name Database
+              Page {page} of {totalPages} • Comprehensive {RELIGION_LABELS[religion]} Name Database
             </p>
 
           {/* Religion Navigation Buttons */}
             <div className="mt-7 flex flex-wrap items-center gap-2">
-            {[
-              { id: 'islamic', name: 'Islamic Names', icon: Globe, color: 'emerald' },
-              { id: 'hindu', name: 'Hindu Names', icon: Sparkles, color: 'orange' },
-              { id: 'christian', name: 'Christian Names', icon: BookOpen, color: 'blue' }
-            ].map((rel) => {
-              const Icon = rel.icon;
-              const isActive = rel.id === religion;
-              return (
-                <Link
-                  key={rel.id}
-                  href={`/names/religion/${rel.id}/1`}
-                  className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
-                    isActive
-                      ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
-                      : 'border-[rgba(15,23,42,0.14)] bg-white/60 text-slate-700 hover:bg-white hover:text-slate-900'
+              {[
+                { id: 'islamic', name: 'Islamic Names', icon: Globe, color: 'emerald' },
+                { id: 'hindu', name: 'Hindu Names', icon: Sparkles, color: 'orange' },
+                { id: 'christian', name: 'Christian Names', icon: BookOpen, color: 'blue' }
+              ].map((rel) => {
+                const Icon = rel.icon;
+                const isActive = rel.id === religion;
+                return (
+                  <Link
+                    key={rel.id}
+                    href={`/names/religion/${rel.id}/1`}
+                    className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
+                      isActive
+                        ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
+                        : 'border-[rgba(15,23,42,0.14)] bg-white/60 text-slate-700 hover:bg-white hover:text-slate-900'
                     }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  {rel.name}
-                  {isActive && <span className="text-xs">(Current)</span>}
-                </Link>
-              );
-            })}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {rel.name}
+                    {isActive && <span className="text-xs">(Current)</span>}
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -527,19 +540,19 @@ export default async function ReligionByPage({ params }) {
             </Link>
 
             <Link
-              href={`/islamic/boy-names`}
+              href={`/names/${religion}/categories/modern/1`}
               className="nv-card-solid p-4 text-center transition hover:-translate-y-0.5"
             >
-              <div className="nv-display text-2xl font-semibold text-slate-900">♂</div>
-              <div className="mt-1 text-sm text-slate-600">Boy Names</div>
+              <div className="nv-display text-2xl font-semibold text-slate-900">Categories</div>
+              <div className="mt-1 text-sm text-slate-600">Browse Categories</div>
             </Link>
 
             <Link
-              href={`/islamic/girl-names`}
+              href={`/names/${religion}/origin/arabic/1`}
               className="nv-card-solid p-4 text-center transition hover:-translate-y-0.5"
             >
-              <div className="nv-display text-2xl font-semibold text-slate-900">♀</div>
-              <div className="mt-1 text-sm text-slate-600">Girl Names</div>
+              <div className="nv-display text-2xl font-semibold text-slate-900">Origins</div>
+              <div className="mt-1 text-sm text-slate-600">Browse Origins</div>
             </Link>
 
             <Link
@@ -563,9 +576,9 @@ export default async function ReligionByPage({ params }) {
           <>
             <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {names.map((nameItem, index) => {
-const displayName = nameItem.name || nameItem.title || `Name ${index + 1}`;
-                 const displayMeaning = nameItem.short_meaning || nameItem.meaning || nameItem.long_meaning || 'Meaning not available';
-                 const slug = nameItem.slug || generateSlug(displayName) || createSafeSlug(displayName) || '';
+ const displayName = nameItem.name || nameItem.title || `Name ${index + 1}`;
+                  const displayMeaning = nameItem.short_meaning || nameItem.meaning || nameItem.long_meaning || 'Meaning not available';
+                  const slug = nameItem.slug || generateSlug(displayName) || createSafeSlug(displayName) || '';
 
                 return (
                   <Link
@@ -643,14 +656,14 @@ const displayName = nameItem.name || nameItem.title || `Name ${index + 1}`;
                 Learn More About {RELIGION_LABELS[religion]} Naming
             </h3>
             <div className="mt-5 space-y-3">
-                  {religion === 'islamic' && [
+                {religion === 'islamic' && [
                   { title: 'Islamic Naming Traditions', desc: 'Understanding the importance of names in Islamic culture' },
                   { title: 'Quranic Name Meanings', desc: 'Deep dive into names from the Holy Quran' },
                   { title: 'Prophet Names & Stories', desc: 'Learn about names of Islamic prophets and their significance' }
                 ].map((item, index) => (
                   <Link
                     key={index}
-                    href={`/blog/how-to-choose-a-baby-name-in-islam`}
+                    href={`/blog/best-islamic-baby-names-2026`}
                     className="nv-card-solid block p-4 transition hover:-translate-y-0.5"
                   >
                     <h4 className="font-semibold text-slate-900">{item.title}</h4>
@@ -665,7 +678,7 @@ const displayName = nameItem.name || nameItem.title || `Name ${index + 1}`;
                 ].map((item, index) => (
                   <Link
                     key={index}
-                    href={`/blog/how-to-choose-a-gender-neutral-baby-name`}
+                    href={`/blog/baby-names-that-mean-strength`}
                     className="nv-card-solid block p-4 transition hover:-translate-y-0.5"
                   >
                     <h4 className="font-semibold text-slate-900">{item.title}</h4>
@@ -680,7 +693,7 @@ const displayName = nameItem.name || nameItem.title || `Name ${index + 1}`;
                 ].map((item, index) => (
                   <Link
                     key={index}
-                    href={`/blog/how-to-choose-a-baby-name-with-meaning`}
+                    href={`/blog/baby-names-inspired-by-nature`}
                     className="nv-card-solid block p-4 transition hover:-translate-y-0.5"
                   >
                     <h4 className="font-semibold text-slate-900">{item.title}</h4>
@@ -703,97 +716,97 @@ const displayName = nameItem.name || nameItem.title || `Name ${index + 1}`;
                      { name: 'Ali', meaning: 'Exalted, noble' },
                      { name: 'Omar', meaning: 'Long-lived' },
                      { name: 'Zahra', meaning: 'Radiant, bright' }
-                   ].map((nameItem, index) => {
-                     const slug = createSafeSlug(nameItem.name);
-                     return (
-                       <div
-                         key={index}
-                         className="relative rounded-2xl bg-white/40 p-3 text-center transition hover:bg-white"
-                       >
-                         <div className="absolute top-2 right-2">
-                           <FavoriteButton
-                             nameData={{
-                               name: nameItem.name,
-                               slug: slug,
-                               religion: 'islamic',
-                               meaning: nameItem.meaning
-                             }}
-                             size="small"
-                           />
-                         </div>
+                  ].map((nameItem, index) => {
+                      const slug = createSafeSlug(nameItem.name);
+                      return (
+                        <div
+                          key={index}
+                          className="relative rounded-2xl bg-white/40 p-3 text-center transition hover:bg-white"
+                        >
+                          <div className="absolute top-2 right-2">
+                            <FavoriteButton
+                              nameData={{
+                                name: nameItem.name,
+                                slug: slug,
+                                religion: 'islamic',
+                                meaning: nameItem.meaning
+                              }}
+                              size="small"
+                            />
+                          </div>
                           <Link href={`/names/islamic/${slug}`}>
                             <div className="font-semibold text-slate-900">{nameItem.name}</div>
                             <div className="mt-1 text-xs text-slate-600">{nameItem.meaning}</div>
                           </Link>
-                       </div>
-                     );
-                   })}
+                        </div>
+                      );
+                    })}
 
-                   {religion === 'hindu' && [
-                     { name: 'Aarav', meaning: 'Peaceful' },
-                     { name: 'Saanvi', meaning: 'Goddess Lakshmi' },
-                     { name: 'Vihaan', meaning: 'Dawn' },
-                     { name: 'Ananya', meaning: 'Unique' },
-                     { name: 'Arjun', meaning: 'White, clear' },
-                     { name: 'Diya', meaning: 'Light' }
-                   ].map((nameItem, index) => {
-                     const slug = createSafeSlug(nameItem.name);
-                     return (
-                       <div
-                         key={index}
-                         className="relative rounded-2xl bg-white/40 p-3 text-center transition hover:bg-white"
-                       >
-                         <div className="absolute top-2 right-2">
-                           <FavoriteButton
-                             nameData={{
-                               name: nameItem.name,
-                               slug: slug,
-                               religion: 'hindu',
-                               meaning: nameItem.meaning
-                             }}
-                             size="small"
-                           />
-                         </div>
+                    {religion === 'hindu' && [
+                      { name: 'Aarav', meaning: 'Peaceful' },
+                      { name: 'Saanvi', meaning: 'Goddess Lakshmi' },
+                      { name: 'Vihaan', meaning: 'Dawn' },
+                      { name: 'Ananya', meaning: 'Unique' },
+                      { name: 'Arjun', meaning: 'White, clear' },
+                      { name: 'Diya', meaning: 'Light' }
+                    ].map((nameItem, index) => {
+                      const slug = createSafeSlug(nameItem.name);
+                      return (
+                        <div
+                          key={index}
+                          className="relative rounded-2xl bg-white/40 p-3 text-center transition hover:bg-white"
+                        >
+                          <div className="absolute top-2 right-2">
+                            <FavoriteButton
+                              nameData={{
+                                name: nameItem.name,
+                                slug: slug,
+                                religion: 'hindu',
+                                meaning: nameItem.meaning
+                              }}
+                              size="small"
+                            />
+                          </div>
                           <Link href={`/names/hindu/${slug}`}>
                             <div className="font-semibold text-slate-900">{nameItem.name}</div>
                             <div className="mt-1 text-xs text-slate-600">{nameItem.meaning}</div>
                           </Link>
-                       </div>
-                     );
-                   })}
+                        </div>
+                      );
+                    })}
 
-                   {religion === 'christian' && [
-                     { name: 'Noah', meaning: 'Rest, comfort' },
-                     { name: 'Sophia', meaning: 'Wisdom' },
-                     { name: 'James', meaning: 'Supplanter' },
-                     { name: 'Mary', meaning: 'Beloved' },
-                     { name: 'David', meaning: 'Beloved' },
-                     { name: 'Sarah', meaning: 'Princess' }
-                   ].map((nameItem, index) => {
-                     const slug = createSafeSlug(nameItem.name);
-                     return (
-                       <div
-                         key={index}
-                         className="relative rounded-2xl bg-white/40 p-3 text-center transition hover:bg-white"
-                       >
-                         <div className="absolute top-2 right-2">
-                           <FavoriteButton
-                             nameData={{
-                               name: nameItem.name,
-                               slug: slug,
-                               religion: 'christian',
-                               meaning: nameItem.meaning
-                             }}
-                             size="small"
-                           />
-                         </div>
+                    {religion === 'christian' && [
+                      { name: 'Noah', meaning: 'Rest, comfort' },
+                      { name: 'Sophia', meaning: 'Wisdom' },
+                      { name: 'James', meaning: 'Supplanter' },
+                      { name: 'Mary', meaning: 'Beloved' },
+                      { name: 'David', meaning: 'Beloved' },
+                      { name: 'Sarah', meaning: 'Princess' }
+                    ].map((nameItem, index) => {
+                      const slug = createSafeSlug(nameItem.name);
+                      return (
+                        <div
+                          key={index}
+                          className="relative rounded-2xl bg-white/40 p-3 text-center transition hover:bg-white"
+                        >
+                          <div className="absolute top-2 right-2">
+                            <FavoriteButton
+                              nameData={{
+                                name: nameItem.name,
+                                slug: slug,
+                                religion: 'christian',
+                                meaning: nameItem.meaning
+                              }}
+                              size="small"
+                            />
+                          </div>
                           <Link href={`/names/christian/${slug}`}>
                             <div className="font-semibold text-slate-900">{nameItem.name}</div>
                             <div className="mt-1 text-xs text-slate-600">{nameItem.meaning}</div>
                           </Link>
-                       </div>
-                     );
-                   })}
+                        </div>
+                      );
+                    })}
                 </div>
               </div>
             </div>

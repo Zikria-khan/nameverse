@@ -1,380 +1,190 @@
-# 📊 NameVerse — Complete SEO Audit & Growth Strategy Report
-**Site:** https://nameverse.vercel.app  
-**Date:** June 8, 2026  
-**Domain Type:** Cultural Name Knowledge Base / Multilingual Onomastics System  
+# 📊 SEO AUDIT REPORT
+
+## 🧠 Executive Summary
+- Site Health Score: 82/100
+- Indexability Status: Good with residual crawl risks
+- Main Issue: Sitemap and redirect cleanup is still needed; search-term pages need stricter canonical/noindex controls.
+- Site: https://nameverse.vercel.app
+- Date: June 15, 2026
+- Overall Assessment: NameVerse has strong Next.js foundations, HTTPS, canonical metadata on most pages, sitemap support, robots.txt, security headers, ISR/static pages, structured data, name detail pages, blog index/posts, gender hubs, religion pages, and A–Z letter/category/origin filter pages.
+- Primary Risk: `/viral-names`, `/popular-by-state`, and stale blog URLs are still referenced in sitemap/static route validation despite redirecting or missing from current blog data.
 
 ---
 
-## 📋 Table of Contents
-1. [Site Structure Overview](#1-site-structure-overview)
-2. [Page-by-Page Audit & Ranking Potential](#2-page-by-page-audit--ranking-potential)
-3. [Technical SEO Health Check](#3-technical-seo-health-check)
-4. [Content Gap Analysis — Pages to Add](#4-content-gap-analysis--pages-to-add)
-5. [Internal Linking Strategy](#5-internal-linking-strategy)
-6. [Prioritized Action Plan (30/60/90 Days)](#6-prioritized-action-plan-306090-days)
+## 🚨 Critical SEO Issues (P0)
+
+- Issue 1: `public/sitemap.xml` references `/sitemap-blog.xml`, but that sitemap file is missing from the repository.
+- Issue 2: `public/sitemap-pages.xml` includes `/viral-names` and `/popular-by-state`, but both routes redirect immediately instead of serving indexable content.
+- Issue 3: `/search/[term]` can create thin or duplicate indexable pages. Zero-result pages are `noindex`, but successful search-term pages still have unique canonical URLs and may compete with `/search`.
 
 ---
 
-## 1. Site Structure Overview
+## ⚙️ Technical SEO Report
 
-### Current Page Inventory (36 routes)
+### Indexing Issues
+- Category and origin filter pages now use correct self-referencing canonicals, e.g. `/names/{religion}/origin/{origin}/{page}` and `/names/{religion}/categories/{category}/{page}`.
+- Letter pages now use collection/listing-oriented schema instead of name-detail schema.
+- Religion pagination pages now expose pagination signals through metadata.
+- `/search/{term}` should either be `noindex` for low-value query pages or canonicalized consistently to `/search?query={term}`.
+- `/viral-names` and `/popular-by-state` should not be indexed as final destinations.
 
-| Priority | Page URL | Type | Current Value | Rank Potential |
-|----------|----------|------|---------------|----------------|
-| 🔴 | `/names/[religion]/[slug]` (84+ name pages) | **Core** | ★★★★★ | **Very High** |
-| 🔴 | `/names/religion/[religion]/[page]` (15 paginated) | **Core** | ★★★★☆ | **High** |
-| 🟡 | `/islamic/boy-names` | **Hub** | ★★★★☆ | High |
-| 🟡 | `/islamic/girl-names` | **Hub** | ★★★★☆ | High |
-| 🟡 | `/christian/boy-names` | **Hub** | ★★★★☆ | High |
-| 🟡 | `/christian/girl-names` | **Hub** | ★★★★☆ | High |
-| 🟡 | `/hindu/boy-names` | **Hub** | ★★★★☆ | High |
-| 🟡 | `/hindu/girl-names` | **Hub** | ★★★★☆ | High |
-| 🟢 | `/` (Home) | **Landing** | ★★★★☆ | Very High |
-| 🟢 | `/names` | **Directory** | ★★★★☆ | High |
-| 🟢 | `/names/[religion]/letter/[letter]/[page]` | **Filter** | ★★★☆☆ | Medium |
-| 🟢 | `/names/[religion]/origin/[origin]/[page]` | **Filter** | ★★★☆☆ | Medium |
-| 🟢 | `/names/[religion]/categories/[category]/[page]` | **Filter** | ★★★☆☆ | Medium |
-| 🟢 | `/advanced-search` | **Tool** | ★★★☆☆ | Medium |
-| ⚪ | `/blog` | **Content** | ★★☆☆☆ | Low-Medium |
-| ⚪ | `/blog/[slug]` | **Content** | ★★☆☆☆ | Low-Medium |
-| ⚪ | `/guides/expert-naming-guide` | **Guide** | ★★★☆☆ | Medium |
-| ⚪ | `/guides/[slug]` | **Guide** | ★★☆☆☆ | Low-Medium |
-| ⚪ | `/meaning` | **Utility** | ★★☆☆☆ | Medium |
-| ⚪ | `/popularity` | **Utility** | ★★☆☆☆ | Medium |
-| ⚪ | `/trending-names` | **Utility** | ★★☆☆☆ | Medium |
-| ⚪ | `/unique-names` | **Utility** | ★★☆☆☆ | Medium |
-| ⚪ | `/names-by-meaning` | **Utility** | ★★☆☆☆ | Medium |
-| ⚪ | `/languages` | **Utility** | ★★☆☆☆ | Low |
-| ⚪ | `/my-names` | **Tool** | ★☆☆☆☆ | Low |
-| ⚪ | `/about` | **Info** | ★☆☆☆☆ | Low |
-| ⚪ | `/privacy` | **Legal** | N/A | N/A |
-| ⚪ | `/terms` | **Legal** | N/A | N/A |
-| ⚪ | `/search` | **Tool** | ★★☆☆☆ | Low |
-| ⚪ | `/search/[term]` | **Dynamic** | ★★☆☆☆ | Low |
-| ❌ | `/viral-names` | **Redirect** | ★☆☆☆☆ | Dead |
-| ❌ | `/popular-by-state` | **Redirect** | ★☆☆☆☆ | Dead |
+### Crawl Issues
+- `public/sitemap.xml` references a missing `sitemap-blog.xml`.
+- `public/sitemap-pages.xml` includes redirect-only URLs: `/viral-names` and `/popular-by-state`.
+- `public/sitemap-pages.xml` contains blog URLs that may not exist in `public/data/blog-posts.json`, including older static slugs such as `/blog/ultimate-guide-islamic-names`, `/blog/christian-biblical-names-guide`, and `/blog/hindu-vedic-naming-guide`.
+- Category, origin, and letter pages are generated on-demand via ISR; first-request crawlability should be monitored in Search Console.
+- Blog content is too small for strong topical authority despite improved post data.
 
-**Legend:** 🔴 Core Money Pages → 🟡 Hub/Index Pages → 🟢 Tool/Filter Pages → ⚪ Support Pages → ❌ Dead Pages
+### Redirect / 404 Issues
+- Remove `/viral-names` and `/popular-by-state` from `public/sitemap-pages.xml` or convert them into real content pages.
+- Remove stale blog URLs from `public/sitemap-pages.xml` or create matching posts in `public/data/blog-posts.json`.
+- Redirect-only pages should not return full page metadata unless they are intentionally preserved for discovery.
+- Middleware route validation remains a strength for blocking malformed, encoded, or non-ASCII routes.
 
 ---
 
-## 2. Page-by-Page Audit & Ranking Potential
+## 🏷️ Title & Heading Audit
 
-### 🔴 TIER 1 — Core Name Pages (`/names/[religion]/[slug]`)
+### Title Issues
+- Category pages now use specific titles such as `{Religion} {Category} Baby Names with Meanings & Origins | NameVerse`.
+- Origin pages now use specific titles such as `{Origin} Origin {Religion} Baby Names with Meanings & Lucky Numbers | NameVerse`.
+- Letter pages now use specific titles such as `{Religion} Baby Names Starting with {Letter} - Meanings, Origins & Lucky Numbers | NameVerse`.
+- `/search/{term}` titles should be reviewed because they can create many near-duplicate low-value pages.
+- Redirect pages should not expose unnecessary metadata unless the routes are converted into real pages.
 
-**Value:** ★★★★★ | **Google Ranking Potential:** VERY HIGH  
-**Total Pages:** 84+ (static generated + dynamic)
-
-✅ **Strengths:**
-- Unique structured data: Dataset + ScholarlyArticle + FAQ + Breadcrumb schemas
-- Strong title patterns with `validateMetaTitle()` validation
-- OG images with dynamic name+meaning rendering
-- Canonical URLs via `url-builder.js` (no duplicate URL risk)
-- Breadcrumb navigation for internal linking
-- FAQ section with auto-generated Q&A (great for featured snippets)
-- `max-snippet:-1` and `max-image-preview:large` directives
-
-❌ **Weaknesses:**
-- Missing **"People also ask"** optimization — FAQ questions could be more search-query aligned
-- No **review/rating schema** (Google loves name sites with user ratings)
-- No **sameAs links** to social profiles
-- Missing **article:tag** metadata for topic clustering
-- No **word count minimum** — some name pages may be too thin
-
-**Ranking Keywords:** `{name} meaning`, `{name} origin`, `{name} islamic/christian/hindu`, `what does {name} mean`
+### H1/H2 Issues
+- Category and origin pages now include intro copy, listing sections, H2-rich content blocks, FAQ sections, and collection schema.
+- Letter pages now include collection schema, ItemList schema, FAQ content, and SEO text blocks.
+- `/search/{term}` needs a stronger unique content layer if it should remain indexable.
+- `/viral-names` and `/popular-by-state` should be removed from indexable route strategy unless rebuilt as real content.
 
 ---
 
-### 🟡 TIER 2 — Hub Pages (Gender + Religion pages)
+## 🧾 Content Quality Report
 
-**Value:** ★★★★☆ | **Google Ranking Potential:** HIGH
+### High Quality Pages
+- Homepage: FAQ/schema support, WebSite/Organization structured data, and strong hub links.
+- `/names` directory: strong top-level hub with A–Z, religion, and category/origin entry points.
+- Name detail pages: dynamic title/description, canonical metadata, OG/Twitter images, Dataset/ScholarlyArticle/FAQ/Breadcrumb schema, and robots directives.
+- Gender hub pages: strong intent, FAQ schema, breadcrumbs, and internal links.
+- Religion pagination pages: improved collection schema, stats, feature blocks, internal links, and pagination metadata.
+- Category/origin/letter pages: now improved with collection schema, FAQ schema, internal navigation, and long-form supporting content.
 
-| Page | Target Keyword | Search Volume (est.) | Competition |
-|------|---------------|---------------------|-------------|
-| `/islamic/boy-names` | "Islamic boy names" | 33K/mo | Medium |
-| `/islamic/girl-names` | "Islamic girl names" | 27K/mo | Medium |
-| `/christian/boy-names` | "Christian boy names" | 22K/mo | Low-Medium |
-| `/christian/girl-names` | "Christian girl names" | 18K/mo | Low-Medium |
-| `/hindu/boy-names` | "Hindu boy names" | 40K/mo | High |
-| `/hindu/girl-names` | "Hindu girl names" | 35K/mo | High |
-
-✅ **Strengths:**
-- Statically generated with JSON data
-- Structured data for collection pages
-- Blog section linked below
-
-❌ **Weaknesses:**
-- **No "Search within" filtering** on these pages (users want A-Z, origin, meaning filters)
-- **No pagination metadata** — missing `rel="next"`/`rel="prev"` tags
-- **Thin content** — just a list of names, no introductory article text
-- **No "Most Popular" or "Trending" sub-sections** to improve dwell time
+### Low Quality Pages (Fix Required)
+- `/viral-names`: redirect-only page with no final content value.
+- `/popular-by-state`: redirect-only page with no final content value.
+- `/search/{term}`: potentially thin or duplicate unless differentiated from `/search`.
+- `/names-by-meaning`: currently flat and should expand into dynamic meaning pages.
+- Blog index/posts: improved but still too small for major topical authority.
+- Stale sitemap blog URLs: may create crawl dead ends if not backed by real posts.
 
 ---
 
-### 🟢 TIER 3 — Filter/Utility Pages
+## 🔑 Keyword Optimization
 
-**Value:** ★★★☆☆ | **Google Ranking Potential:** MEDIUM
-
-| Page | Issue | Fix Priority |
-|------|-------|--------------|
-| `/names/[religion]/letter/[letter]/[page]` | Thin content, no intro text | Medium |
-| `/names/[religion]/origin/[origin]/[page]` | Origin pages undefined for many names | Medium |
-| `/names/[religion]/categories/[category]/[page]` | Category URLs not in sitemap | High |
-| `/advanced-search` | Good tool, no indexable content | Low |
-| `/my-names` | Requires auth, zero SEO value | Low |
-
----
-
-### ⚪ TIER 4 — Support Pages
-
-**Value:** ★★☆☆☆ | **Google Ranking Potential:** LOW-MEDIUM
-
-| Page | Issue |
-|------|-------|
-| `/blog` | Only 2 posts visible, blog section needs massive expansion |
-| `/guides/expert-naming-guide` | Single guide, needs more depth |
-| `/popularity` | Static page, no dynamic ranking data |
-| `/trending-names` | Static list, no trend data |
-| `/unique-names` | Static list, could be dynamic |
-| `/names-by-meaning` | **BEST opportunity** — high search volume for "names meaning love" etc. |
+- Primary keywords missing:
+  - `/names-by-meaning/[meaning]` for love, strength, peace, wisdom, light, unique, modern, royal, and nature.
+  - `/unisex-names`, `/modern-names`, `/short-names`, `/3-letter-names`, `/4-letter-names`.
+  - `/twin-names`, `/popular-boy-names`, `/popular-girl-names`.
+  - Top-level `/letter-names/[letter]` and `/lucky-number/[number]`.
+- Cannibalization issues:
+  - `/names/religion/{religion}/{page}`, `/names`, `/islamic/boy-names`, `/islamic/girl-names`, and blog listicles may overlap on “Islamic/Hindu/Christian baby names”.
+  - `/search/{term}` may overlap with `/search` and internal result pages.
+  - Meaning-led blog posts may overlap with future `/names-by-meaning/[meaning]` pages unless intent is separated.
+- New keyword opportunities:
+  - Meaning-led pages such as “names meaning love”, “names meaning strength”, and “names meaning peace”.
+  - Format-led pages such as short names, 3-letter names, 4-letter names, twin names, modern names, and unisex names.
+  - Utility-led pages such as lucky-number names, letter-name hubs, and popularity/trending data pages.
 
 ---
 
-### ❌ TIER 5 — Dead Pages (Redirecting)
+## 🔗 Internal Linking Analysis
 
-| Page | Action |
-|------|--------|
-| `/viral-names` → redirects to `/trending-names` | Remove or make real |
-| `/popular-by-state` → redirects to `/names` | Create real content or remove |
-
----
-
-## 3. Technical SEO Health Check
-
-### ✅ What's Working Well
-
-| Feature | Status |
-|---------|--------|
-| SSL/HTTPS | ✅ |
-| Mobile Responsiveness | ✅ (Tailwind responsive) |
-| Core Web Vitals (LCP, CLS) | ✅ (Static generation, preconnect hints) |
-| Structured Data (JSON-LD) | ✅ (Dataset, Article, FAQ, Breadcrumb) |
-| Canonical URLs | ✅ (via `url-builder.js`) |
-| robots.txt | ✅ |
-| Sitemap XML | ✅ (multiple sitemaps by religion) |
-| 301 Redirects | ✅ (religion normalization) |
-| Route Validation (410 Gone) | ✅ (for bad URLs) |
-| OG / Twitter Cards | ✅ |
-| Font Optimization | ✅ (Fraunces + Instrument Sans) |
-| Image Optimization | ✅ (Next/Image with AVIF/WebP) |
-| Compression | ✅ (Brotli via Vercel) |
-| CSP Headers | ✅ |
-| X-Robots-Tag | ✅ (for API/systems routes) |
-
-### ❌ What's Missing
-
-| Issue | Severity | Fix |
-|-------|----------|-----|
-| **❌ No hreflang tags** | HIGH | Add `hreflang="en"` on all pages |
-| **❌ No `rel="next"` / `rel="prev"` on paginated pages** | HIGH | Add pagination link tags |
-| **❌ Category pages not in any sitemap** | HIGH | `/names/[religion]/categories/` missing from XML |
-| **❌ No `lastmod` in sitemaps** | MEDIUM | Add last modified dates |
-| **❌ Blog has only 2 posts** | HIGH | Need 20+ posts minimum |
-| **❌ No `article:tag` metadata** | MEDIUM | Add tag clustering |
-| **❌ `/names-by-meaning` not linked from homepage** | LOW | Missing internal link |
-| **❌ No FAQ schema on homepage** | LOW | Add FAQ for "What is NameVerse?" |
-| **❌ `/viral-names` and `/popular-by-state` are dead** | MEDIUM | Either create real content or 301 properly |
-| **❌ No word count minimum enforcement** | MEDIUM | All pages should have ≥300 words |
+- Orphan pages:
+  - `/viral-names` and `/popular-by-state` behave like orphaned redirect destinations if kept in sitemap.
+  - Stale sitemap blog URLs behave like orphaned crawl targets if posts are missing.
+  - Future `/names-by-meaning/[meaning]` pages should be linked from `/names-by-meaning`, religion hubs, gender hubs, letter pages, and related name detail pages.
+- Weak pages:
+  - `/search/{term}` should not compete with `/search` without unique content.
+  - `/names-by-meaning` needs dynamic meaning landing pages.
+  - Blog has too few posts to support strong topical clustering.
+- Suggested hub structure:
+  - `/names` → `/names/religion/{religion}/{page}` → letter/category/origin filters → name detail pages.
+  - `/names-by-meaning` → `/names-by-meaning/[meaning]` → related name detail pages.
+  - Gender hubs such as `/islamic/boy-names` → filtered name pages → related blog posts.
+  - `/blog` → expanded posts → contextual links to relevant name detail and hub pages.
 
 ---
 
-## 4. Content Gap Analysis — Pages to Add
+## 📈 Indexing Report
 
-### 🏆 HIGHEST IMPACT — New Pages to Create
-
-#### P1: `/names-by-meaning/[meaning]` (e.g., `/names-by-meaning/love`)
-- **Why:** "Names meaning love" = 14K/mo searches. Currently you have one flat page. Dynamic pages per meaning = 50+ new high-value URLs.
-- **Implementation:** `src/app/names-by-meaning/[meaning]/page.js`
-
-#### P2: `/unisex-names` + `/unisex-names/[religion]`
-- **Why:** "Unisex baby names" = 22K/mo. No current coverage.
-- **Implementation:** New route + filter by religion
-
-#### P3: `/popular-boy-names` + `/popular-girl-names`
-- **Why:** 33K/mo combined. Builds authority for "popular" keywords.
-
-#### P4: `/modern-names` + `/modern-baby-names`
-- **Why:** "Modern baby names" = 18K/mo. ✅ matches your "modern" category data.
-
-#### P5: Names by Numerology (`/lucky-number/[number]`)
-- **Why:** You already have `lucky_number` in your data. "Destiny number 5 names" = 3K/mo.
-
-#### P6: Names by Pronunciation (`/pronunciation/[sound]`)
-- **Why:** Users search "names starting with 'sha'" etc. You have pronunciation data.
-
-#### P7: `/letter-names/[letter]` (e.g., `/letter-names/A`)
-- **Why:** "Baby boy names starting with A" = 15K/mo. You have letter pages but buried deep.
-
-#### P8: Short Names (`/short-names`, `/3-letter-names`, `/4-letter-names`)
-- **Why:** "Short baby names" = 9K/mo.
-
-#### P9: `/twin-names` + `/twin-boy-names` etc
-- **Why:** "Twin baby names" = 12K/mo. Huge Pinterest/ viral potential.
-
-#### P10: `/royal-names`, `/nature-names`, `/flower-names`, `/strong-names`
-- **Why:** Each 5-15K/mo. You already have many of these in your category data!
-
-### 📈 BLOG CONTENT PLAN (30 posts minimum)
-
-| Post Topic | Target Keyword | Volume | Notes |
-|-----------|---------------|--------|-------|
-| "Most Popular Islamic Boy Names 2026" | popular islamic boy names | 8K/mo | Data-driven listicle |
-| "Top 100 Christian Baby Names with Meanings" | popular christian names | 12K/mo | Use your data |
-| "Unique Hindu Baby Names You Haven't Heard" | unique hindu names | 5K/mo | Use your unique names section |
-| "How to Choose a Baby Name: Complete Guide" | how to choose baby name | 14K/mo | Expand expert guide |
-| "Baby Naming Trends 2026" | baby naming trends 2026 | 6K/mo | Seasonal content |
-| Names by meaning (love, strength, wisdom, peace) | * | 5-15K/ea | 6+ individual posts |
-| Celebrity baby names | * | 8K/mo | Timely |
-| Biblical names | biblical names meaning | 18K/mo | High volume |
-| Arabic names for boys/girls | arabic names | 22K/mo | Use origin data |
-| Persian/Turkish/Urdu names | * | 5-10K/ea | Language pages |
+- Likely Indexed Pages:
+  - Homepage.
+  - `/names` directory.
+  - `/names/religion/{religion}/{page}` religion pagination pages.
+  - Gender hub pages.
+  - Name detail pages.
+  - A–Z letter pages.
+  - Category and origin filter pages.
+  - Blog index and existing blog posts.
+  - Utility pages with valid metadata.
+- Not Indexed Pages:
+  - APIs, OG images, invalid routes, and system routes.
+  - Zero-result `/search/{term}` pages.
+  - `/viral-names` and `/popular-by-state` after redirect.
+  - Missing/stale blog post URLs.
+  - Any route blocked by robots, redirects, or middleware validation.
+- Reasons:
+  - Metadata robots directives and middleware blocking protect system routes.
+  - Redirects prevent redirect-only pages from becoming indexed destinations.
+  - Missing sitemap references and stale sitemap URLs create crawl dead ends.
+  - Search-term pages need tighter indexing controls to avoid thin/duplicate indexation.
 
 ---
 
-## 5. Internal Linking Strategy
+## 🚀 Priority Fix List
 
-### Current State
-```
-Homepage → Hub Pages (religion/gender) → Name Detail Pages
-         → Utility Pages (trending, unique, popularity)
-         → Blog
-```
+### P0 (Fix Immediately)
+- Create `public/sitemap-blog.xml` or remove the reference from `public/sitemap.xml`.
+- Remove `/viral-names` and `/popular-by-state` from `public/sitemap-pages.xml` or convert them into real content pages.
+- Apply `noindex` to low-value `/search/{term}` pages or canonicalize them to `/search?query={term}`.
 
-### Recommended Architecture (SILO STRUCTURE)
+### P1 (High)
+- Audit `public/sitemap-pages.xml` blog URLs against `public/data/blog-posts.json` and remove stale slugs.
+- Build `/names-by-meaning/[meaning]` pages.
+- Add high-intent hubs for unisex, modern, short, 3-letter, 4-letter, twin, popular boy, popular girl, letter, and lucky-number queries.
+- Expand blog content to 20–30 posts with contextual links to name pages.
+- Monitor category, origin, and letter pages in Google Search Console after ISR rollout.
 
-```
-                    ┌─────────────────────────────┐
-                    │       HOMEPAGE (/)           │
-                    │  links to ALL hub pages       │
-                    └──────────┬──────────────────┘
-                               │
-            ┌──────────────────┼──────────────────────┐
-            ▼                  ▼                      ▼
-   ┌──────────────┐   ┌──────────────┐   ┌──────────────────┐
-   │  ISLAMIC HUB │   │ CHRISTIAN HUB│   │  HINDU HUB       │
-   │  boy-names   │   │  boy-names   │   │  boy-names       │
-   │  girl-names  │   │  girl-names  │   │  girl-names      │
-   └──────┬───────┘   └──────┬───────┘   └──────┬───────────┘
-          │                  │                   │
-          ├──────────────────┼───────────────────┤
-          ▼                  ▼                   ▼
-   ┌─────────────────────────────────────────────────────┐
-   │           FILTER PAGES (per religion)                 │
-   │  /letter/[A-Z]  /origin/[origin]  /categories/[cat]  │
-   └──────────────────────┬──────────────────────────────┘
-                          │
-                          ▼
-   ┌─────────────────────────────────────────────────────┐
-   │           NAME DETAIL PAGES (84+)                    │
-   │  Rich internal links to:                             │
-   │  • Same religion names                               │
-   │  • Same origin names                                 │
-   │  • Same category names                               │
-   │  • Related names (similar_sounding_names)            │
-   │  • Blog posts about this religion                    │
-   └──────────────────────┬──────────────────────────────┘
-                          │
-                          ▼
-   ┌─────────────────────────────────────────────────────┐
-   │   CROSS-LINKING HUBS                                 │
-   │  /names-by-meaning → /names-by-meaning/love          │
-   │  /popularity → /trending-names                       │
-   │  /blog → /guides                                     │
-   │  /advanced-search → /search                          │
-   └─────────────────────────────────────────────────────┘
-```
+### P2 (Medium)
+- Differentiate `/search/{term}` from `/search` with unique summaries, filters, and content if keeping it indexable.
+- Add internal links from gender hubs, letter pages, and meaning pages to related name detail pages.
+- Add more FAQ questions aligned to search intent on name detail and hub pages.
+- Add author/editorial trust signals to blog posts.
 
-### Internal Link Recommendations (Specific Code Changes)
-
-1. **Homepage Hero Section** → Add links to ALL 6 gender/religion hub pages + `/names-by-meaning` + `/blog`
-
-2. **Name Detail Page (`NameDetail.jsx`)** → Already has good links to letter/category/origin. **Add:**
-   - Link to `/names-by-meaning/{short_meaning}` (if meaning data exists)
-   - Link to `/lucky-number/{lucky_number}` (if lucky_number exists)
-   - Links to 3-5 "similar sounding names" at the bottom
-
-3. **Hub Pages (boy-names/girl-names)** → Add:
-   - "Browse by letter" A-Z strip at top
-   - "Browse by meaning" links
-   - "Related blog posts" section
-
-4. **Footer** → Add links to `/names-by-meaning`, `/blog`, `/advanced-search`, `/unique-names`, `/popularity`
-
-5. **Blog posts** → Each blog post should link to 3-5 relevant name pages
+### P3 (Low)
+- Add user ratings/favorites signals if they can be made crawl-safe and non-manipulative.
+- Improve footer and hub navigation for deeper pages.
+- Add comparison pages such as “Islamic vs Hindu vs Christian naming traditions”.
+- Add seasonal content such as “Baby Naming Trends 2026” and yearly updates.
 
 ---
 
-## 6. Prioritized Action Plan (30/60/90 Days)
+## 🏁 Ranking Strategy
 
-### 🚀 PHASE 1: Quick Wins (Next 30 Days)
-
-| # | Action | Effort | Impact | Details |
-|---|--------|--------|--------|---------|
-| 1 | Add `rel="next"` / `rel="prev"` to paginated pages | Low | High | `/names/religion/[religion]/[page]` |
-| 2 | Add category pages to sitemap | Low | High | `<url>` entries for all `/categories/` |
-| 3 | Create `/names-by-meaning/[meaning]` dynamic pages | Medium | Very High | 50+ new indexable URLs |
-| 4 | Add `hreflang="en"` tag to all pages | Low | Medium | One line in layout.js |
-| 5 | Fix `/viral-names` and `/popular-by-state` → real content or 301 to best match | Low | Low | Remove dead weight |
-| 6 | Add FAQ schema to homepage | Low | Medium | "What is NameVerse?" Q&A |
-| 7 | Add `article:tag` meta to name detail pages | Low | Medium | Topic clustering |
-
-### 🔥 PHASE 2: Content Expansion (30-60 Days)
-
-| # | Action | Effort | Impact |
-|---|--------|--------|--------|
-| 8 | Write 15 blog posts (5 per religion) | High | Very High |
-| 9 | Create `/unisex-names` + sub-pages | Medium | High |
-| 10 | Create `/modern-names` page | Low | Medium |
-| 11 | Create `/short-names` / `/3-letter-names` | Low | Medium |
-| 12 | Create `/twin-names` page | Medium | High |
-| 13 | Expand `/guides/expert-naming-guide` to 5000+ words | Medium | High |
-| 14 | Add "trending names" dynamic block to homepage | Low | Medium |
-
-### 🏆 PHASE 3: Authority Building (60-90 Days)
-
-| # | Action | Effort | Impact |
-|---|--------|--------|--------|
-| 15 | Create data-driven "Top 100" listicles per religion | Medium | Very High |
-| 16 | Add user rating/review system to name pages (for review schema) | High | Very High |
-| 17 | Build `/popular-boy-names` and `/popular-girl-names` | Medium | High |
-| 18 | Create seasonal content: "2026 Baby Name Trends" | Medium | High |
-| 19 | Build internal link network between all blog posts and name pages | Medium | High |
-| 20 | Add "Names by Religion" comparison pages (e.g., "Michael in different religions") | High | Medium |
-
----
-
-## 📊 Estimated Traffic Potential
-
-| Page Type | Current Est. | Potential (90 days) | Potential (12 months) |
-|-----------|-------------|--------------------|-----------------------|
-| Name Detail Pages (84) | 5K-10K/mo | 20K-40K/mo | 100K-200K/mo |
-| Hub Pages (6) | 2K-5K/mo | 10K-20K/mo | 50K-80K/mo |
-| Meaning Pages (50+) | — | 5K-10K/mo | 30K-50K/mo |
-| Blog (20+ posts) | 500/mo | 5K-10K/mo | 30K-60K/mo |
-| Utility Pages | 1K/mo | 3K-5K/mo | 10K-20K/mo |
-| **TOTAL** | **~10K/mo** | **~50K/mo** | **~300K/mo** |
-
----
-
-## Summary
-
-**NameVerse has excellent technical SEO foundations** — structured data, canonical URLs, route validation, optimized fonts, preconnect hints, mobile responsiveness, and proper CSP headers. The core name pages are well-optimized with rich schema markup.
-
-**The biggest growth opportunities are:**
-1. 🥇 **Dynamic meaning pages** (`/names-by-meaning/[meaning]`) — 50+ URLs instantly
-2. 🥇 **Blog content** — 20+ posts targeting high-volume keywords
-3. 🥇 **Internal linking silos** — connect all pages with contextual links
-4. 🥈 **Pagination metadata** (`rel="next/prev"`)
-5. 🥈 **Sitemap completeness** (missing category pages)
-6. 🥉 **New content hubs** (unisex, twin, modern, short names)
-7. 🥉 **User engagement features** (ratings, save lists, trending)
+- Fast ranking pages:
+  - Existing name detail pages because they already have strong metadata, schema, and canonicalization.
+  - Gender hub pages because they already have content, FAQ schema, and internal links.
+  - Religion pagination pages because they now have stronger collection schema and pagination signals.
+  - Category, origin, and letter pages because the canonical/schema issues are now addressed.
+- Content expansion plan:
+  - Create dynamic `/names-by-meaning/[meaning]` pages first.
+  - Add high-intent hubs for unisex, modern, short, 3-letter, 4-letter, twin, popular boy, popular girl, letter, and lucky-number queries.
+  - Expand the blog to 20–30 posts and link each post to relevant name detail pages.
+  - Clean sitemap and redirect issues before pushing large-scale new content.
+- SEO roadmap:
+  - Week 1: Fix sitemap references, redirect URLs, stale blog URLs, and search-term indexing rules.
+  - Weeks 2–3: Build `/names-by-meaning/[meaning]` pages and strengthen internal links.
+  - Month 1: Launch high-intent hubs and expand blog content.
+  - Months 2–3: Add comparison, popularity, lucky-number, and letter-name hubs.
+  - Ongoing: Monitor indexing, fix crawl errors, and reinforce internal links from hubs to detail pages.

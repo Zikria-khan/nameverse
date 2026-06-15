@@ -1,8 +1,7 @@
-// src/app/names/categories/[category]/[page]/page.jsx
 import Link from 'next/link';
 import { serverFetchNamesWithAdvancedFilters } from '@/lib/api/server-fetch';
 import { validateMetaTitle, validateMetaDescription, generateCanonicalUrl } from '@/lib/seo/meta-helpers';
-import { getSiteUrl } from '@/lib/seo/site';
+import { getSiteUrl, absoluteUrl } from '@/lib/seo/site';
 import { Sparkles, Moon, ChevronLeft, ChevronRight, Search, Grid3X3, BookOpen } from 'lucide-react';
 import FavoriteButton from '@/components/FavoriteButton';
 import { createSafeSlug } from '@/lib/utils/createSafeSlug';
@@ -71,8 +70,18 @@ export async function generateMetadata({ params }) {
   const religionLabel = religion.charAt(0).toUpperCase() + religion.slice(1);
   const categoryLabel = category.charAt(0).toUpperCase() + category.slice(1);
   const page = parseInt(rawParams.page, 10) > 0 ? parseInt(rawParams.page, 10) : 1;
-  const canonical = generateCanonicalUrl(`/names/religion/${religion}/1`);
-  const pageSuffix = page > 1 ? ` - Page ${page}` : '';
+
+  // Fetch pagination data for prev/next
+  const response = await serverFetchNamesWithAdvancedFilters({ religion, category, page, limit: 50 });
+  const pagination = response.pagination || { totalPages: 1, totalCount: 0 };
+  const totalPages = pagination.totalPages || 1;
+
+  const hasPrev = page > 1;
+  const hasNext = page < totalPages;
+  const prevPageUrl = hasPrev ? absoluteUrl(`/names/${religion}/categories/${category}/${page - 1}`) : null;
+  const nextPageUrl = hasNext ? absoluteUrl(`/names/${religion}/categories/${category}/${page + 1}`) : null;
+
+  const canonical = generateCanonicalUrl(`/names/${religion}/categories/${category}/${page}`);
   const ogImage = `${getSiteUrl()}/api/og?section=categories&religion=${religion}&category=${encodeURIComponent(categoryLabel)}`;
   const categoryName = categoryLabel === 'Name' ? '' : ` ${categoryLabel}`;
 
@@ -142,6 +151,10 @@ export async function generateMetadata({ params }) {
         'max-video-preview': -1,
       },
     },
+    other: {
+      ...(hasPrev ? { 'link-prev': `<${prevPageUrl}>; rel="prev"` } : {}),
+      ...(hasNext ? { 'link-next': `<${nextPageUrl}>; rel="next"` } : {}),
+    },
   };
 }
 
@@ -149,6 +162,7 @@ export default async function CategoryNamesPage({ params }) {
   const rawParams = await params;
   const availableCategories = STATIC_CATEGORIES;
   const { religion, category, page } = validateAndSanitizeParams(rawParams, availableCategories);
+  const categoryLabel = category.charAt(0).toUpperCase() + category.slice(1);
 
   let names = [];
   let pagination = { totalPages: 1, totalCount: 0 };
@@ -191,16 +205,85 @@ export default async function CategoryNamesPage({ params }) {
   const hasPrev = page > 1;
   const hasNext = page < totalPages;
 
-  const prevUrl = hasPrev ? `/names/religion/${religion}/1` : null;
-  const nextUrl = hasNext ? `/names/religion/${religion}/1` : null;
+  const prevUrl = hasPrev ? `/names/${religion}/categories/${category}/${page - 1}` : null;
+  const nextUrl = hasNext ? `/names/${religion}/categories/${category}/${page + 1}` : null;
 
-  function generateSlug(name) {
-    if (!name || typeof name !== 'string') return '';
-    return createSafeSlug(name);
-  }
+  const canonical = generateCanonicalUrl(`/names/${religion}/categories/${category}/${page}`);
+
+  // Breadcrumb schema
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: getSiteUrl() },
+      { '@type': 'ListItem', position: 2, name: `${religionLabel} Names`, item: absoluteUrl(`/names/${religion}`) },
+      { '@type': 'ListItem', position: 3, name: 'Categories', item: absoluteUrl(`/names/${religion}/categories/modern/1`) },
+      { '@type': 'ListItem', position: 4, name: `${categoryLabel} Names`, item: absoluteUrl(`/names/${religion}/categories/${category}/1`) },
+      ...(page > 1 ? [{ '@type': 'ListItem', position: 5, name: `Page ${page}`, item: absoluteUrl(`/names/${religion}/categories/${category}/${page}`) }] : [])
+    ],
+  };
+
+  // Collection page schema
+  const collectionPageSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: `${religionLabel} ${categoryLabel} Baby Names`,
+    description: `A curated collection of ${religionLabel} baby names in the ${categoryLabel.toLowerCase()} category, each with authentic meanings, origins, and cultural significance.`,
+    url: canonical,
+  };
+
+  // FAQ items for collection page
+  const faqItems = [
+    {
+      question: `What are the most popular ${religionLabel} ${categoryLabel.toLowerCase()} baby names?`,
+      answer: `Our collection features ${totalCount}+ ${religionLabel} ${categoryLabel.toLowerCase()} baby names, each carefully curated for authentic meaning and cultural relevance. These names represent traditional and modern choices within the ${categoryLabel.toLowerCase()} category.`,
+    },
+    {
+      question: `What makes a ${religionLabel} name ${categoryLabel.toLowerCase()}?`,
+      answer: `${religionLabel} ${categoryLabel.toLowerCase()} names are characterized by their distinctive qualities, whether modern appeal, traditional roots, nature-inspired meanings, religious significance, classical elegance, or unique characteristics. Each name reflects the values and preferences associated with its category.`,
+    },
+    {
+      question: `How do I choose the perfect ${categoryLabel.toLowerCase()} ${religionLabel} name?`,
+      answer: `Consider the name's meaning, pronunciation ease, family traditions, cultural heritage, and long-term suitability. Browse our collection to discover names that resonate with your values and preferences, then verify the meaning and origin before making your final choice.`,
+    },
+    {
+      question: `Are ${categoryLabel.toLowerCase()} ${religionLabel} names suitable for both boys and girls?`,
+      answer: `Many ${categoryLabel.toLowerCase()} ${religionLabel} names work beautifully for any gender. Gender-specific variations exist within each category. Use our filters to browse names by gender, or explore the full collection to find unisex options.`,
+    },
+    {
+      question: `What cultural significance do ${categoryLabel.toLowerCase()} ${religionLabel} names hold?`,
+      answer: `${categoryLabel.toLowerCase().charAt(0).toUpperCase() + categoryLabel.toLowerCase().slice(1)} names in ${religionLabel} tradition carry deep cultural and often spiritual meanings. They connect your child to heritage and reflect values important to your family.`,
+    },
+  ];
+
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqItems.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  };
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-emerald-50">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionPageSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+
       {/* Hero Section */}
       <section className="relative py-16 px-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 text-white overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.3)_1px,transparent_0)] bg-[length:20px_20px]" />
@@ -217,19 +300,18 @@ export default async function CategoryNamesPage({ params }) {
           </p>
         </div>
       </section>
-      
-         {/* Breadcrumb */}
+
+      {/* Breadcrumb */}
       <nav className="max-w-7xl mx-auto px-4 py-5" aria-label="Breadcrumb">
         <ol className="flex items-center gap-2 text-sm">
           <li><Link href="/" className="text-emerald-600 hover:text-emerald-800 font-medium">Home</Link></li>
           <li className="text-gray-400">/</li>
-          <li><Link href={`/names/religion/${religion}/1`} className="text-emerald-600 hover:text-emerald-800 font-medium">All Names</Link></li>
+          <li><Link href={`/names/${religion}/letter/a/1`} className="text-emerald-600 hover:text-emerald-800 font-medium">All Names</Link></li>
           <li className="text-gray-400">/</li>
-          <li className="text-emerald-700 font-semibold">Categories</li>
+          <li><Link href={`/names/${religion}/categories/modern/1`} className="text-emerald-600 hover:text-emerald-800 font-medium">Categories</Link></li>
           <li className="text-gray-400">/</li>
-          <li><Link href={`/names/religion/${religion}/${category}/1`} className="text-emerald-600 hover:text-emerald-800 font-medium">{category.charAt(0).toUpperCase() + category.slice(1)}</Link></li>
-          <li className="text-gray-400">/</li>
-          <li className="text-emerald-700 font-semibold">Page {page}</li>
+          <li><Link href={`/names/${religion}/categories/${category}/1`} className="text-emerald-600 hover:text-emerald-800 font-medium">{categoryLabel} Names</Link></li>
+          {page > 1 && <><li className="text-gray-400">/</li><li className="text-emerald-700 font-semibold">Page {page}</li></>}
         </ol>
       </nav>
 
@@ -340,6 +422,73 @@ export default async function CategoryNamesPage({ params }) {
         </div>
 
         <AdBanner />
+      </section>
+
+      {/* Rich Content Section - Category Specific */}
+      <section className="max-w-4xl mx-auto px-4 pb-12">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            Understanding {religionLabel} {categoryLabel} Baby Names
+          </h2>
+          <p className="text-gray-600 mb-4">
+            The {categoryLabel.toLowerCase()} category in {religionLabel} naming tradition represents names that are carefully selected for their distinctive qualities and characteristics. Choosing a {categoryLabel.toLowerCase()} name for your baby means selecting a name that carries specific cultural, spiritual, or aesthetic significance within the rich heritage of {religionLabel} naming customs. Each generation of parents within the {religionLabel} community has contributed to shaping which names are considered {categoryLabel.toLowerCase()}, with preferences evolving while maintaining deep respect for tradition.
+          </p>
+          <p className="text-gray-600 mb-4">
+            {categoryLabel} names often reflect particular values or preferences that parents seek for their children. Whether you are drawn to modern interpretations, traditional choices, nature-inspired meanings, religious significance, classical elegance, or unique qualities, our collection of {totalCount}+ {religionLabel} {categoryLabel.toLowerCase()} names offers something special for every family seeking meaningful naming options. Parents today increasingly look for names that balance individuality with cultural connection, and {categoryLabel.toLowerCase()} names within {religionLabel} tradition excel at both.
+          </p>
+          <p className="text-gray-600 mb-4">
+            When exploring {religionLabel} names in the {categoryLabel.toLowerCase()} category, consider how the name aligns with your family's values and the message you wish to convey about your child's identity. Many {categoryLabel.toLowerCase()} names carry meanings rooted in virtues such as strength, wisdom, compassion, and faith — qualities that transcend cultural boundaries while remaining deeply meaningful within {religionLabel} communities worldwide.
+          </p>
+          <p className="text-gray-600 mb-4">
+            The popularity of {categoryLabel.toLowerCase()} names often varies across regions and communities. Some {religionLabel} {categoryLabel.toLowerCase()} names have gained international recognition for their elegant simplicity, while others remain cherished within specific cultural or linguistic subgroups. Our curated database includes verified meanings, pronunciation guides, and origin details for every name, ensuring you have access to authentic information when making this important decision.
+          </p>
+          <p className="text-gray-600">
+            Each name in this collection comes with verified meaning, origin details, and cultural context. We encourage parents to research thoroughly before making their final selection, considering how the name will be perceived throughout their child's life journey — at home, in school, in professional settings, and across different cultural contexts. A well-chosen {categoryLabel.toLowerCase()} name becomes a source of pride and identity that your child carries with them always.
+          </p>
+        </div>
+      </section>
+
+      {/* Naming Tips Section */}
+      <section className="max-w-4xl mx-auto px-4 pb-12">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            Choosing the Perfect {categoryLabel} {religionLabel} Name
+          </h2>
+          <p className="text-gray-600 mb-4">
+            When selecting a {categoryLabel.toLowerCase()} name, consider these essential factors: the authentic meaning behind the name, its cultural and linguistic origin, ease of pronunciation for your family and community, spelling simplicity, potential nickname variations, and how it pairs with your surname. The best {religionLabel} {categoryLabel.toLowerCase()} names balance all of these considerations harmoniously.
+          </p>
+          <p className="text-gray-600 mb-4">
+            Many parents appreciate {categoryLabel.toLowerCase()} names for their distinctive style and memorable qualities. These names often stand out in positive ways, offering children names that feel both special and meaningful. Consider whether the name's meaning aligns with the qualities you hope to instill in your child — whether that's courage, kindness, wisdom, or devotion. The {religionLabel} naming tradition offers thousands of {categoryLabel.toLowerCase()} options, each with its own story and significance.
+          </p>
+          <p className="text-gray-600 mb-4">
+            Family naming traditions play an important role in {religionLabel} culture. Many families choose to honor ancestors, religious figures, or cultural heroes by selecting {categoryLabel.toLowerCase()} names with historical significance. Others prefer names that reflect contemporary values while maintaining a respectful connection to {religionLabel} heritage. Whatever your preference, our database provides the context and meaning you need to make an informed choice.
+          </p>
+          <p className="text-gray-600 mb-4">
+            We also recommend saying candidate names aloud, considering how they sound with your last name and with potential middle names. Test the name's flow in both formal and informal settings — you will be using it millions of times over your child's lifetime. Use our lucky number feature and explore sibling name combinations to create a harmonious family naming theme.
+          </p>
+          <p className="text-gray-600">
+            Browse our complete collection of {religionLabel} {categoryLabel.toLowerCase()} names and use our tools to save favorites, compare meanings, and explore related names across different categories and origins. Our community of parents and naming enthusiasts has helped verify and refine the meanings of every name in our database, ensuring accuracy and cultural sensitivity.
+          </p>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="max-w-4xl mx-auto px-4 pb-20">
+        <div className="space-y-4">
+          {faqItems.map((faq, i) => (
+            <details key={i} className="group bg-white rounded-2xl shadow-sm border border-emerald-100 overflow-hidden">
+              <summary className="flex items-center justify-between cursor-pointer px-6 py-5 text-left font-semibold text-gray-900 hover:text-emerald-700 transition-colors list-none">
+                <span className="pr-4">{faq.question}</span>
+                <span className="flex-shrink-0 w-7 h-7 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600 group-open:rotate-180 transition-transform text-lg font-light">
+                  ⌄
+                </span>
+              </summary>
+              <div className="px-6 pb-5 text-gray-600 leading-relaxed text-sm border-t border-emerald-50 pt-4">
+                {faq.answer}
+              </div>
+            </details>
+          ))}
+        </div>
       </section>
 
       {/* Cross-page internal links */}

@@ -5,14 +5,14 @@ import { getSiteUrl } from '@/lib/seo/site';
 export default function Head({ params }) {
   const religion = params?.religion || 'islamic';
   const page = parseInt(params?.page || '1', 10) || 1;
+  const totalPages = parseInt(params?.totalPages || '99', 10) || 99;
   const base = getSiteUrl();
 
-  // Canonical: always include the actual page number
   const canonicalPath = `/names/religion/${religion}/${page}`;
   const canonical = generateCanonicalUrl(canonicalPath, base);
 
   const prevHref = page > 1 ? generateCanonicalUrl(`/names/religion/${religion}/${page - 1}`, base) : null;
-  const nextHref = generateCanonicalUrl(`/names/religion/${religion}/${page + 1}`, base);
+  const nextHref = page < totalPages ? generateCanonicalUrl(`/names/religion/${religion}/${page + 1}`, base) : null;
 
   const ogImage = `${base}/api/og?section=${encodeURIComponent(religion)}&page=${page}`;
 
@@ -20,7 +20,7 @@ export default function Head({ params }) {
     <>
       <link rel="canonical" href={canonical} />
       {prevHref && <link rel="prev" href={prevHref} />}
-      <link rel="next" href={nextHref} />
+      {nextHref && <link rel="next" href={nextHref} />}
 
       <meta name="robots" content="index, follow" />
 

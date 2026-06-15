@@ -135,10 +135,10 @@ function FeaturedNameLink({ name, religion: blogReligion = 'islamic' }) {
   // If the blog's category maps to a specific religion (e.g. "Hindu Names" -> "hindu"),
   // use that. Otherwise (generic category like "Baby Naming Tips"), use per-name detection.
   const finalReligion = blogReligion !== 'islamic' ? blogReligion : detectedReligion;
-  
+
   return (
     <Link
-      href={`/names/religion/islamic/1`}
+      href={`/names/${finalReligion}/${nameSlug}`}
       className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-medium hover:bg-blue-100 transition-colors border border-blue-200"
     >
       {displayName}

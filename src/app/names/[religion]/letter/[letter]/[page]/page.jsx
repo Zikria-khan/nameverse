@@ -1,5 +1,4 @@
 import { generateCanonicalUrl, validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
-import { generateOptimizedTitle, generateOptimizedDescription, generateOptimizedKeywords, generateNamePageSchemas } from '@/lib/seo/name-page-seo';
 import { serverFetchNamesByLetter } from '@/lib/api/server-fetch';
 import { getSiteUrl, absoluteUrl } from '@/lib/seo/site';
 import { Sparkles, Moon, ChevronLeft, ChevronRight, Search, Star, BookOpen, Heart, Grid3X3 } from 'lucide-react';
@@ -66,6 +65,72 @@ function getReligionGradient(religion) {
   return 'from-emerald-600 via-teal-500 to-emerald-700';
 }
 
+// Collection page + FAQ schema
+function FAQSection({ religion, letter, totalCount }) {
+  const religionLabel = religion.charAt(0).toUpperCase() + religion.slice(1);
+
+  const faqs = [
+    {
+      question: `What are the most popular ${religionLabel} baby names starting with "${letter}"?`,
+      answer: `NameVerse features ${totalCount}+ ${religionLabel} baby names beginning with "${letter}". Each name comes with its authentic meaning, cultural origin, gender classification, and lucky number. Browse our complete list to discover traditional and modern ${religionLabel} names for your baby.`,
+    },
+    {
+      question: `What do ${religionLabel} names starting with "${letter}" mean?`,
+      answer: `${religionLabel} names beginning with "${letter}" carry rich cultural and spiritual meanings rooted in ${
+        religion === 'islamic'
+          ? 'Arabic, Quranic, and Islamic heritage'
+          : religion === 'hindu'
+          ? 'Sanskrit, Vedic, and Hindu traditions'
+          : 'Biblical, Latin, and Christian traditions'
+      }. Each name on NameVerse includes a detailed meaning explanation, helping parents choose a name with a beautiful and significant meaning.`,
+    },
+    {
+      question: `Are ${religionLabel} names starting with "${letter}" suitable for boys or girls?`,
+      answer: `${religionLabel} names starting with "${letter}" include both boy names, girl names, and some unisex options. On each name card, you can find the gender classification. Use our filters to browse exclusively ${religionLabel} boy names or ${religionLabel} girl names beginning with "${letter}".`,
+    },
+    {
+      question: `How do I find the origin of a ${religionLabel} name starting with "${letter}"?`,
+      answer: `Every name on NameVerse includes its origin — whether Arabic, Persian, Urdu, Sanskrit, Hebrew, Latin, or Greek. Simply click on any ${religionLabel} name starting with "${letter}" to access its full profile, including origin, meaning, pronunciation, lucky number, and lucky stone.`,
+    },
+    {
+      question: `Can I save my favourite ${religionLabel} baby names starting with "${letter}"?`,
+      answer: `Yes! NameVerse allows you to save favourite baby names using the heart icon on each name card. Create a personalised shortlist of your top ${religionLabel} names beginning with "${letter}" to compare and share with family.`,
+    },
+  ];
+
+  return (
+    <section className="max-w-4xl mx-auto px-4 pb-20" aria-labelledby="faq-heading">
+      <div className="text-center mb-10">
+        <span className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 text-sm font-semibold px-4 py-2 rounded-full mb-4">
+          <BookOpen className="w-4 h-4" />
+          Frequently Asked Questions
+        </span>
+        <h2 id="faq-heading" className="text-2xl md:text-3xl font-bold text-gray-900">
+          About {religionLabel} Names Starting with &ldquo;{letter}&rdquo;
+        </h2>
+      </div>
+      <div className="space-y-4">
+        {faqs.map((faq, i) => (
+          <details
+            key={i}
+            className="group bg-white rounded-2xl shadow-sm border border-emerald-100 overflow-hidden"
+          >
+            <summary className="flex items-center justify-between cursor-pointer px-6 py-5 text-left font-semibold text-gray-900 hover:text-emerald-700 transition-colors list-none">
+              <span className="pr-4">{faq.question}</span>
+              <span className="flex-shrink-0 w-7 h-7 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600 group-open:rotate-180 transition-transform text-lg font-light">
+                ⌄
+              </span>
+            </summary>
+            <div className="px-6 pb-5 text-gray-600 leading-relaxed text-sm border-t border-emerald-50 pt-4">
+              {faq.answer}
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export async function generateMetadata({ params }) {
   const awaitedParams = await params;
   const religion = normalizeReligion(awaitedParams.religion) || 'islamic';
@@ -76,7 +141,6 @@ export async function generateMetadata({ params }) {
 
   // Generate dynamic count for more compelling title
   const countPhrase = page === 1 ? '50+' : 'Names';
-  
   const ogImage = `${getSiteUrl()}/api/og?section=letter&religion=${religion}&letter=${letter}`;
 
   const titleRaw =
@@ -88,6 +152,17 @@ export async function generateMetadata({ params }) {
     page === 1
       ? `Discover authentic ${religionLabel} baby names beginning with "${letter}". Each name includes meaning, origin, gender, and lucky number. Explore ${countPhrase} curated ${religionLabel} names on NameVerse - trusted by parents worldwide.`
       : `Browse page ${page} of ${religionLabel} baby names starting with "${letter}". Find detailed name meanings, cultural origins, and lucky numbers. Continue your search for the perfect ${religionLabel} name.`;
+
+  // Fetch totalCount for prev/next determination
+  const response = await serverFetchNamesByLetter(letter, { religion, page, limit: NAMES_PER_PAGE });
+  const pagination = response.pagination || { totalPages: 1, totalCount: 0 };
+  const totalPages = pagination.totalPages || 1;
+  const currentPage = Math.min(Math.max(page, 1), totalPages);
+
+  const hasPrev = currentPage > 1;
+  const hasNext = currentPage < totalPages;
+  const prevPageUrl = hasPrev ? absoluteUrl(`/names/${religion}/letter/${letter}/${currentPage - 1}`) : null;
+  const nextPageUrl = hasNext ? absoluteUrl(`/names/${religion}/letter/${letter}/${currentPage + 1}`) : null;
 
   return {
     title: validateMetaTitle(titleRaw),
@@ -142,108 +217,13 @@ export async function generateMetadata({ params }) {
         'max-video-preview': -1,
       },
     },
+    other: {
+      ...(hasPrev ? { 'link-prev': `<${prevPageUrl}>; rel="prev"` } : {}),
+      ...(hasNext ? { 'link-next': `<${nextPageUrl}>; rel="next"` } : {}),
+    },
   };
 }
 
-function FAQSection({ religion, letter, totalCount, faqData }) {
-  const religionLabel = religion.charAt(0).toUpperCase() + religion.slice(1);
-
-  // Use provided faqData or fallback to default
-  const faqs = faqData && faqData.length > 0 
-    ? faqData.map((faq, index) => ({
-        question: faq.q,
-        answer: faq.a,
-      }))
-    : [
-        {
-          question: `What are the most popular ${religionLabel} baby names starting with "${letter}"?`,
-          answer: `NameVerse features ${totalCount}+ ${religionLabel} baby names beginning with "${letter}". Each name comes with its authentic meaning, cultural origin, gender classification, and lucky number. Browse our complete list to discover traditional and modern ${religionLabel} names for your baby.`,
-        },
-        {
-          question: `What do ${religionLabel} names starting with "${letter}" mean?`,
-          answer: `${religionLabel} names beginning with "${letter}" carry rich cultural and spiritual meanings rooted in ${
-            religion === 'islamic'
-              ? 'Arabic, Quranic, and Islamic heritage'
-              : religion === 'hindu'
-              ? 'Sanskrit, Vedic, and Hindu traditions'
-              : 'Biblical, Latin, and Christian traditions'
-          }. Each name on NameVerse includes a detailed meaning explanation, helping parents choose a name with a beautiful and significant meaning.`,
-        },
-        {
-          question: `Are ${religionLabel} names starting with "${letter}" suitable for boys or girls?`,
-          answer: `${religionLabel} names starting with "${letter}" include both boy names, girl names, and some unisex options. On each name card, you can find the gender classification. Use our filters to browse exclusively ${religionLabel} boy names or ${religionLabel} girl names beginning with "${letter}".`,
-        },
-        {
-          question: `How do I find the origin of a ${religionLabel} name starting with "${letter}"?`,
-          answer: `Every name on NameVerse includes its origin — whether Arabic, Persian, Urdu, Sanskrit, Hebrew, Latin, or Greek. Simply click on any ${religionLabel} name starting with "${letter}" to access its full profile, including origin, meaning, pronunciation, lucky number, and lucky stone.`,
-        },
-        {
-          question: `Can I save my favourite ${religionLabel} baby names starting with "${letter}"?`,
-          answer: `Yes! NameVerse allows you to save favourite baby names using the heart icon on each name card. Create a personalised shortlist of your top ${religionLabel} names beginning with "${letter}" to compare and share with family.`,
-        },
-      ];
-
-  const publishedDate = new Date().toISOString().split('T')[0];
-  const faqSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: faqs.map((faq) => ({
-      '@type': 'Question',
-      name: faq.question,
-      datePublished: publishedDate,
-      author: { '@type': 'Organization', 'name': 'NameVerse' },
-      answerCount: 1,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: faq.answer,
-        datePublished: publishedDate,
-        upvoteCount: 0,
-        author: { '@type': 'Organization', 'name': 'NameVerse' },
-      },
-    })),
-  };
-
-  return (
-    <>
-      <Script
-        id="faq-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
-      <section className="max-w-4xl mx-auto px-4 pb-20" aria-labelledby="faq-heading">
-        <div className="text-center mb-10">
-          <span className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 text-sm font-semibold px-4 py-2 rounded-full mb-4">
-            <BookOpen className="w-4 h-4" />
-            Frequently Asked Questions
-          </span>
-          <h2 id="faq-heading" className="text-2xl md:text-3xl font-bold text-gray-900">
-            About {religionLabel} Names Starting with &ldquo;{letter}&rdquo;
-          </h2>
-        </div>
-        <div className="space-y-4">
-          {faqs.map((faq, i) => (
-            <details
-              key={i}
-              className="group bg-white rounded-2xl shadow-sm border border-emerald-100 overflow-hidden"
-            >
-              <summary className="flex items-center justify-between cursor-pointer px-6 py-5 text-left font-semibold text-gray-900 hover:text-emerald-700 transition-colors list-none">
-                <span className="pr-4">{faq.question}</span>
-                <span className="flex-shrink-0 w-7 h-7 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600 group-open:rotate-180 transition-transform text-lg font-light">
-                  ⌄
-                </span>
-              </summary>
-              <div className="px-6 pb-5 text-gray-600 leading-relaxed text-sm border-t border-emerald-50 pt-4">
-                {faq.answer}
-              </div>
-            </details>
-          ))}
-        </div>
-      </section>
-    </>
-  );
-}
-
-// FAQ Section
 export default async function LetterNamesPage({ params }) {
   const rawParams = await params;
   const religion = normalizeReligion(rawParams?.religion) || 'islamic';
@@ -272,11 +252,8 @@ export default async function LetterNamesPage({ params }) {
   const prevUrl = hasPrev ? createUrl(currentPage - 1) : null;
   const nextUrl = hasNext ? createUrl(currentPage + 1) : null;
 
-  // Generate name for SEO (using first name as example, or a representative name)
-  const exampleName = names.length > 0 ? names[0].name : `${letter}Name`;
-  const exampleSlug = generateSlug(exampleName);
-
-  // Breadcrumb schema
+  // Collection page + Breadcrumb + ItemList schema
+  const canonical = generateCanonicalUrl(`/names/${religion}/letter/${letter}/${page}`);
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -284,11 +261,10 @@ export default async function LetterNamesPage({ params }) {
       { '@type': 'ListItem', position: 1, name: 'Home', item: getSiteUrl() },
       { '@type': 'ListItem', position: 2, name: `${religionLabel} Names`, item: absoluteUrl(`/names/${religion}`) },
       { '@type': 'ListItem', position: 3, name: `Letter ${letter}`, item: absoluteUrl(`/names/${religion}/letter/${letter}/1`) },
-      { '@type': 'ListItem', position: 4, name: `Page ${page}`, item: generateCanonicalUrl(`/names/religion/${religion}/1`) },
+      ...(page > 1 ? [{ '@type': 'ListItem', position: 4, name: `Page ${page}`, item: absoluteUrl(`/names/${religion}/letter/${letter}/${page}`) }] : [])
     ],
   };
 
-  // ItemList schema for names
   const itemListSchema = names.length > 0
     ? {
         '@context': 'https://schema.org',
@@ -299,27 +275,18 @@ export default async function LetterNamesPage({ params }) {
           '@type': 'ListItem',
           position: i + 1,
           name: n.name,
-          url: absoluteUrl(`/names/religion/${religion}/1`),
+          url: absoluteUrl(`/names/${religion}/${n.slug || createSafeSlug(n.name || '')}`),
         })),
       }
     : null;
 
-  // Generate SEO metadata using the first name as representative
-  const seoData = names.length > 0 
-    ? names[0] 
-    : { 
-        name: exampleName, 
-        origin: 'Various', 
-        gender: 'Unisex',
-        religion: religion,
-        short_meaning: `A beautiful ${religionLabel} name starting with ${letter}`,
-        meaning: `A beautiful ${religionLabel} name starting with ${letter} with deep cultural significance`,
-        lucky_number: Math.floor(Math.random() * 9) + 1,
-        lucky_colors: ['Blue', 'Green', 'White'],
-        languages: ['Arabic', 'English', 'Urdu'],
-        emotional_traits: ['Compassionate', 'Wise'],
-        hidden_personality_traits: ['Thoughtful', 'Creative']
-      };
+  const collectionPageSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: `${religionLabel} Baby Names Starting with "${letter}"`,
+    description: `A curated collection of ${religionLabel} baby names beginning with "${letter}", each with authentic meanings, origins, and cultural significance.`,
+    url: canonical,
+  };
 
   // Handle degraded state gracefully - show loading/error UI instead of 404
   // NEVER return 404 for uncertain data
@@ -343,33 +310,18 @@ export default async function LetterNamesPage({ params }) {
     );
   }
 
-  const { article: articleSchema, faq: faqSchema, faqData: generatedFaqData, breadcrumb: seoBreadcrumb } = generateNamePageSchemas(
-    seoData, 
-    religion, 
-    exampleSlug
-  );
-
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50">
       <Script
+        id="collectionpage-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionPageSchema) }}
+      />
+      <Script
         id="breadcrumb-schema"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(seoBreadcrumb) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      {articleSchema && (
-        <Script
-          id="article-schema"
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
-        />
-      )}
-      {faqSchema && (
-        <Script
-          id="faq-schema"
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-        />
-      )}
       {itemListSchema && (
         <Script
           id="itemlist-schema"
@@ -492,156 +444,156 @@ export default async function LetterNamesPage({ params }) {
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-12">
-            {names.slice(0, Math.ceil(names.length / 2)).map((nameItem, index) => {
-                const itemKey = getCanonicalSlug(nameItem) || nameItem._id || index;
-                return (
-                  <Link
-                    key={itemKey}
-                    href={`/names/${religion}/${itemKey}`}
-                    className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 p-5 border border-gray-100 hover:border-emerald-300 group hover:-translate-y-1 block"
-                    title={`${nameItem.name} meaning — ${religionLabel} baby name`}
-                  >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-xl font-bold text-gray-900 group-hover:text-emerald-600 transition-colors truncate">
-                          {nameItem.name || 'Unknown'}
-                        </h3>
-                        <div className="flex flex-wrap gap-1.5 mt-1.5">
-                          {nameItem.quranicReference && (
-                            <span className="inline-block bg-emerald-100 text-emerald-700 text-xs px-2 py-0.5 rounded-full font-medium">
-                              Quranic
-                            </span>
-                          )}
-                          {nameItem.gender && (
-                            <span className={`inline-block text-xs px-2 py-0.5 rounded-full font-medium ${
-                              nameItem.gender.toLowerCase() === 'boy' || nameItem.gender.toLowerCase() === 'male'
-                                ? 'bg-blue-50 text-blue-600'
-                                : 'bg-pink-50 text-pink-600'
-                            }`}>
-                              {nameItem.gender}
-                            </span>
-                          )}
+              {names.slice(0, Math.ceil(names.length / 2)).map((nameItem, index) => {
+                  const itemKey = getCanonicalSlug(nameItem) || nameItem._id || index;
+                  return (
+                    <Link
+                      key={itemKey}
+                      href={`/names/${religion}/${itemKey}`}
+                      className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 p-5 border border-gray-100 hover:border-emerald-300 group hover:-translate-y-1 block"
+                      title={`${nameItem.name} meaning — ${religionLabel} baby name`}
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-xl font-bold text-gray-900 group-hover:text-emerald-600 transition-colors truncate">
+                            {nameItem.name || 'Unknown'}
+                          </h3>
+                          <div className="flex flex-wrap gap-1.5 mt-1.5">
+                            {nameItem.quranicReference && (
+                              <span className="inline-block bg-emerald-100 text-emerald-700 text-xs px-2 py-0.5 rounded-full font-medium">
+                                Quranic
+                              </span>
+                            )}
+                            {nameItem.gender && (
+                              <span className={`inline-block text-xs px-2 py-0.5 rounded-full font-medium ${
+                                nameItem.gender.toLowerCase() === 'boy' || nameItem.gender.toLowerCase() === 'male'
+                                  ? 'bg-blue-50 text-blue-600'
+                                  : 'bg-pink-50 text-pink-600'
+                              }`}>
+                                {nameItem.gender}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1.5 flex-shrink-0 ml-2">
+                          <FavoriteButton
+                            nameData={{
+                              name: nameItem.name,
+                              slug: generateSlug(nameItem.name),
+                              religion,
+                              meaning: nameItem.short_meaning || nameItem.meaning,
+                              origin: nameItem.origin,
+                            }}
+                            size="small"
+                          />
+                          <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
+                            <Moon className="w-5 h-5 text-emerald-600" />
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1.5 flex-shrink-0 ml-2">
-                        <FavoriteButton
-                          nameData={{
-                            name: nameItem.name,
-                            slug: generateSlug(nameItem.name),
-                            religion,
-                            meaning: nameItem.short_meaning || nameItem.meaning,
-                            origin: nameItem.origin,
-                          }}
-                          size="small"
-                        />
-                        <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
-                          <Moon className="w-5 h-5 text-emerald-600" />
-                        </div>
-                      </div>
-                    </div>
 
-                    <p className="text-emerald-700 font-semibold text-sm mb-3 line-clamp-2 leading-snug">
-                      &ldquo;{nameItem.short_meaning || nameItem.meaning || 'No meaning available'}&rdquo;
-                    </p>
+                      <p className="text-emerald-700 font-semibold text-sm mb-3 line-clamp-2 leading-snug">
+                        &ldquo;{nameItem.short_meaning || nameItem.meaning || 'No meaning available'}&rdquo;
+                      </p>
 
-                    <div className="space-y-1.5 text-xs text-gray-500 border-t border-gray-50 pt-3">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium text-gray-600">Origin</span>
-                        <span className="text-right">
-                          {Array.isArray(nameItem.origin)
-                            ? nameItem.origin.join(', ')
-                            : nameItem.origin || 'Unknown'}
-                        </span>
-                      </div>
-                      {nameItem.luckyNumber && (
+                      <div className="space-y-1.5 text-xs text-gray-500 border-t border-gray-50 pt-3">
                         <div className="flex items-center justify-between">
-                          <span className="font-medium text-gray-600">Lucky No.</span>
-                          <span className="inline-flex items-center justify-center w-7 h-7 bg-amber-50 text-amber-700 rounded-full font-bold text-xs border border-amber-100">
-                            {nameItem.luckyNumber}
+                          <span className="font-medium text-gray-600">Origin</span>
+                          <span className="text-right">
+                            {Array.isArray(nameItem.origin)
+                              ? nameItem.origin.join(', ')
+                              : nameItem.origin || 'Unknown'}
                           </span>
                         </div>
-                      )}
-                    </div>
-                  </Link>
-                );
-              })}
+                        {nameItem.luckyNumber && (
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium text-gray-600">Lucky No.</span>
+                            <span className="inline-flex items-center justify-center w-7 h-7 bg-amber-50 text-amber-700 rounded-full font-bold text-xs border border-amber-100">
+                              {nameItem.luckyNumber}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </Link>
+                  );
+                })}
             </div>
 
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-12">
               {names.slice(Math.ceil(names.length / 2)).map((nameItem, index) => {
-                const itemKey = getCanonicalSlug(nameItem) || nameItem._id || index;
-                return (
-                  <Link
-                    key={itemKey}
-                    href={`/names/${religion}/${itemKey}`}
-                    className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 p-5 border border-gray-100 hover:border-emerald-300 group hover:-translate-y-1 block"
-                    title={`${nameItem.name} meaning — ${religionLabel} baby name`}
-                  >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-xl font-bold text-gray-900 group-hover:text-emerald-600 transition-colors truncate">
-                          {nameItem.name || 'Unknown'}
-                        </h3>
-                        <div className="flex flex-wrap gap-1.5 mt-1.5">
-                          {nameItem.quranicReference && (
-                            <span className="inline-block bg-emerald-100 text-emerald-700 text-xs px-2 py-0.5 rounded-full font-medium">
-                              Quranic
-                            </span>
-                          )}
-                          {nameItem.gender && (
-                            <span className={`inline-block text-xs px-2 py-0.5 rounded-full font-medium ${
-                              nameItem.gender.toLowerCase() === 'boy' || nameItem.gender.toLowerCase() === 'male'
-                                ? 'bg-blue-50 text-blue-600'
-                                : 'bg-pink-50 text-pink-600'
-                            }`}>
-                              {nameItem.gender}
-                            </span>
-                          )}
+                  const itemKey = getCanonicalSlug(nameItem) || nameItem._id || index;
+                  return (
+                    <Link
+                      key={itemKey}
+                      href={`/names/${religion}/${itemKey}`}
+                      className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 p-5 border border-gray-100 hover:border-emerald-300 group hover:-translate-y-1 block"
+                      title={`${nameItem.name} meaning — ${religionLabel} baby name`}
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-xl font-bold text-gray-900 group-hover:text-emerald-600 transition-colors truncate">
+                            {nameItem.name || 'Unknown'}
+                          </h3>
+                          <div className="flex flex-wrap gap-1.5 mt-1.5">
+                            {nameItem.quranicReference && (
+                              <span className="inline-block bg-emerald-100 text-emerald-700 text-xs px-2 py-0.5 rounded-full font-medium">
+                                Quranic
+                              </span>
+                            )}
+                            {nameItem.gender && (
+                              <span className={`inline-block text-xs px-2 py-0.5 rounded-full font-medium ${
+                                nameItem.gender.toLowerCase() === 'boy' || nameItem.gender.toLowerCase() === 'male'
+                                  ? 'bg-blue-50 text-blue-600'
+                                  : 'bg-pink-50 text-pink-600'
+                              }`}>
+                                {nameItem.gender}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1.5 flex-shrink-0 ml-2">
+                          <FavoriteButton
+                            nameData={{
+                              name: nameItem.name,
+                              slug: generateSlug(nameItem.name),
+                              religion,
+                              meaning: nameItem.short_meaning || nameItem.meaning,
+                              origin: nameItem.origin,
+                            }}
+                            size="small"
+                          />
+                          <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
+                            <Moon className="w-5 h-5 text-emerald-600" />
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1.5 flex-shrink-0 ml-2">
-                        <FavoriteButton
-                          nameData={{
-                            name: nameItem.name,
-                            slug: generateSlug(nameItem.name),
-                            religion,
-                            meaning: nameItem.short_meaning || nameItem.meaning,
-                            origin: nameItem.origin,
-                          }}
-                          size="small"
-                        />
-                        <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
-                          <Moon className="w-5 h-5 text-emerald-600" />
-                        </div>
-                      </div>
-                    </div>
 
-                    <p className="text-emerald-700 font-semibold text-sm mb-3 line-clamp-2 leading-snug">
-                      &ldquo;{nameItem.short_meaning || nameItem.meaning || 'No meaning available'}&rdquo;
-                    </p>
+                      <p className="text-emerald-700 font-semibold text-sm mb-3 line-clamp-2 leading-snug">
+                        &ldquo;{nameItem.short_meaning || nameItem.meaning || 'No meaning available'}&rdquo;
+                      </p>
 
-                    <div className="space-y-1.5 text-xs text-gray-500 border-t border-gray-50 pt-3">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium text-gray-600">Origin</span>
-                        <span className="text-right">
-                          {Array.isArray(nameItem.origin)
-                            ? nameItem.origin.join(', ')
-                            : nameItem.origin || 'Unknown'}
-                        </span>
-                      </div>
-                      {nameItem.luckyNumber && (
+                      <div className="space-y-1.5 text-xs text-gray-500 border-t border-gray-50 pt-3">
                         <div className="flex items-center justify-between">
-                          <span className="font-medium text-gray-600">Lucky No.</span>
-                          <span className="inline-flex items-center justify-center w-7 h-7 bg-amber-50 text-amber-700 rounded-full font-bold text-xs border border-amber-100">
-                            {nameItem.luckyNumber}
+                          <span className="font-medium text-gray-600">Origin</span>
+                          <span className="text-right">
+                            {Array.isArray(nameItem.origin)
+                              ? nameItem.origin.join(', ')
+                              : nameItem.origin || 'Unknown'}
                           </span>
                         </div>
-                      )}
-                    </div>
-                  </Link>
-                );
-              })}
+                        {nameItem.luckyNumber && (
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium text-gray-600">Lucky No.</span>
+                            <span className="inline-flex items-center justify-center w-7 h-7 bg-amber-50 text-amber-700 rounded-full font-bold text-xs border border-amber-100">
+                              {nameItem.luckyNumber}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </Link>
+                  );
+                })}
             </div>
 
             {/* Pagination */}
@@ -701,7 +653,6 @@ export default async function LetterNamesPage({ params }) {
         religion={religion} 
         letter={letter} 
         totalCount={totalCount} 
-        faqData={generatedFaqData} 
       />
 
       {/* SEO Text Block */}
