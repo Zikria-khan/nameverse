@@ -60,6 +60,7 @@ export function sanitizeNameData(data) {
 
   // Handle language translations
   const langKeys = ['in_english', 'in_urdu', 'in_arabic', 'in_hindi', 'in_sanskrit', 
+                   'in_hebrew', 'in_greek', 'in_latin',
                    'in_pashto', 'in_tamil', 'in_telugu', 'in_marathi', 'in_bengali',
                    'in_punjabi', 'in_turkish', 'in_persian', 'in_malay', 'in_indonesian',
                    'in_french', 'in_spanish', 'in_german', 'in_italian', 'in_chinese',

@@ -1,8 +1,7 @@
 import { notFound } from 'next/navigation';
-import { getSiteUrl } from '@/lib/seo/site';
-import { createSlug } from '@/lib/seo/url-builder';
+import { createSlug, nameAbsoluteUrl } from '@/lib/seo/url-builder';
 import { generateNamePageMetadata, generateNamePageSchemas } from '@/lib/seo/name-page-seo';
-import { serverFetchNameDetail } from '@/lib/api/server-fetch';
+import { serverFetchNameDetail, serverFetchTrendingNames } from '@/lib/api/server-fetch';
 import { sanitizeNameData } from '@/lib/utils/sanitizeNameData';
 import CulturalNameAnalysisCard from '@/components/name/NameDetail';
 import Script from 'next/script';
@@ -52,6 +51,38 @@ function loadLocalNameData(religion, slug) {
     }
   } catch { /* continue */ }
   return null;
+}
+
+function loadLocalNameList(religion, limit = 8, excludeSlug = '') {
+  try {
+    const namesDataDir = path.join(process.cwd(), 'public', 'data');
+    const files = [
+      'islamic-boy-names.json',
+      'islamic-girl-names.json',
+      'christian-boy-names.json',
+      'christian-girl-names.json',
+      'hindu-boy-names.json',
+      'hindu-girl-names.json',
+    ].filter(file => file.startsWith(`${religion}-`));
+
+    const seen = new Set();
+    const names = [];
+    for (const file of files) {
+      const raw = fs.readFileSync(path.join(namesDataDir, file), 'utf8');
+      const parsed = JSON.parse(raw);
+      for (const item of parsed) {
+        if (!item.name) continue;
+        const slug = createSlug(item.name);
+        if (!slug || slug === excludeSlug || seen.has(slug)) continue;
+        seen.add(slug);
+        names.push({ name: item.name, slug });
+        if (names.length >= limit) return names;
+      }
+    }
+    return names;
+  } catch {
+    return [];
+  }
 }
 
 export async function generateStaticParams() {
@@ -249,9 +280,23 @@ export default async function NameDetailPage({ params }) {
 
   nameData = sanitizeNameData(nameData);
 
-  const pageUrl = `${getSiteUrl()}/names/${religion}/${slug}`;
+  const pageUrl = nameAbsoluteUrl(religion, slug);
   const schemas = generateNamePageSchemas(nameData, religion, slug);
   const faqData = schemas.faqData || [];
+
+  const trendingResult = await serverFetchTrendingNames({ religion, limit: 8 });
+  const apiTrendingNames = (trendingResult.data || [])
+    .map((item) => {
+      const name = typeof item === 'object' ? item.name : item;
+      const slugValue = typeof item === 'object' ? item.slug : '';
+      const safeSlug = slugValue || createSlug(name);
+      return { name, slug: safeSlug };
+    })
+    .filter((item) => item.name && item.slug && item.slug.length >= 2);
+  const fallbackTrendingNames = apiTrendingNames.length > 0
+    ? apiTrendingNames
+    : loadLocalNameList(religion, 8, slug);
+  const trendingNamesSource = apiTrendingNames.length > 0 && !trendingResult.error ? 'trending' : 'suggested';
 
   return (
     <>
@@ -260,6 +305,30 @@ export default async function NameDetailPage({ params }) {
           id="dataset-schema"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas.dataset) }}
+        />
+      )}
+
+      {schemas.webPage && (
+        <Script
+          id="webpage-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas.webPage) }}
+        />
+      )}
+
+      {schemas.article && (
+        <Script
+          id="article-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas.article) }}
+        />
+      )}
+
+      {schemas.definedTerm && (
+        <Script
+          id="definedterm-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas.definedTerm) }}
         />
       )}
 
@@ -287,7 +356,13 @@ export default async function NameDetailPage({ params }) {
         />
       )}
 
-      <CulturalNameAnalysisCard data={nameData} faqData={faqData} pageUrl={pageUrl} />
+      <CulturalNameAnalysisCard
+        data={nameData}
+        faqData={faqData}
+        pageUrl={pageUrl}
+        trendingNames={fallbackTrendingNames}
+        trendingNamesSource={trendingNamesSource}
+      />
     </>
   );
 }
