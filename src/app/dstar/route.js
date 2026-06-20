@@ -7,7 +7,12 @@ export async function GET(request) {
   const monetagUrl = `https://quge5.com${path}`;
 
   try {
-    const response = await fetch(monetagUrl, { next: { revalidate: 0 } });
+    const response = await fetch(monetagUrl, {
+      next: { revalidate: 0 },
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      },
+    });
 
     const headers = new Headers();
     headers.set('Content-Type', 'application/javascript; charset=utf-8');
@@ -16,14 +21,18 @@ export async function GET(request) {
     headers.set('Access-Control-Allow-Headers', '*');
     headers.set('Cache-Control', 'public, max-age=0, must-revalidate');
 
-    return new NextResponse(response.body, {
+    const body = await response.arrayBuffer();
+    return new NextResponse(body, {
       status: response.status,
       headers,
     });
   } catch (error) {
-    return new NextResponse('// Monetag script unavailable', {
-      status: 500,
-      headers: { 'Content-Type': 'application/javascript' },
+    return new NextResponse(`// Monetag script unavailable - ${error.message}`, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/javascript',
+        'Access-Control-Allow-Origin': '*',
+      },
     });
   }
 }

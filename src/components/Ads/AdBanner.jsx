@@ -43,9 +43,9 @@ export default function AdBanner({ className = '', variant = 'inline' }) {
     loaded.current = true;
 
     // Ensure monetag script exists
-    if (!document.querySelector('script[src*="/dstar"]')) {
+    if (!document.querySelector('script[src*="quge5.com"]')) {
       const monetagScript = document.createElement('script');
-      monetagScript.src = '/dstar/88/tag.min.js';
+      monetagScript.src = 'https://quge5.com/88/tag.min.js';
       monetagScript.async = true;
       monetagScript.setAttribute('data-cfasync', 'false');
       monetagScript.setAttribute('data-zone', '251738');
@@ -58,9 +58,12 @@ export default function AdBanner({ className = '', variant = 'inline' }) {
     wrapper.style.minHeight = '50px';
 
     const adScript = document.createElement('script');
-    adScript.src = '/dstar/88/tag.min.js';
+    adScript.src = 'https://quge5.com/88/tag.min.js';
     adScript.async = true;
     adScript.setAttribute('data-cfasync', 'false');
+    adScript.onerror = () => {
+      console.warn('Monetag ad script failed to load');
+    };
 
     wrapper.appendChild(adScript);
     containerRef.current.appendChild(wrapper);

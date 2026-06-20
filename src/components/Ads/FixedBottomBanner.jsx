@@ -68,10 +68,13 @@ export default function FixedBottomBanner() {
     wrapper.style.overflow = 'hidden';
 
     const monetagScript = document.createElement('script');
-    monetagScript.src = '/dstar/88/tag.min.js';
+    monetagScript.src = 'https://quge5.com/88/tag.min.js';
     monetagScript.async = true;
     monetagScript.setAttribute('data-cfasync', 'false');
     monetagScript.setAttribute('data-zone', '251738');
+    monetagScript.onerror = () => {
+      console.warn('Monetag bottom ad script failed to load');
+    };
     wrapper.appendChild(monetagScript);
 
     if (containerRef.current) {

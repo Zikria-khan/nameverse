@@ -49,7 +49,6 @@ export default function ResourceHints() {
       {/* Prefetch critical routes for instant navigation */}
       <link rel="prefetch" href="/names/religion/islamic/1" as="document" />
       <link rel="prefetch" href="/blog" as="document" />
-      <link rel="prefetch" href="/dstar/88/tag.min.js" as="script" />
       </>
    );
 }

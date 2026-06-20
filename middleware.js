@@ -307,5 +307,8 @@ export function middleware(request) {
 }
 
 export const config = {
-  matcher: '/((?!_next/static|_next/image|favicon.ico).*)',
+  matcher: [
+    '/dstar/:path*',
+    '/((?!_next/static|_next/image|favicon.ico).*)',
+  ],
 };
