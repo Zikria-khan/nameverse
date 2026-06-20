@@ -159,10 +159,13 @@ export default function RootLayout({ children }) {
           strategy="afterInteractive"
         />
 
-        {/* Popunder Ad Script */}
+        {/* Monetag Ad Script */}
         <Script
-          id="popunder-ad"
-          src="https://revolthem.com/15/fc/e7/15fce756a2be02e450ad8ee3543b0575.js"
+          id="monetag-ad"
+          src="https://quge5.com/88/tag.min.js"
+          data-zone="251738"
+          async
+          data-cfasync="false"
           strategy="afterInteractive"
         />
 

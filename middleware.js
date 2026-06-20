@@ -101,6 +101,7 @@ function isSystemRoute(pathname) {
     pathname === '/manifest.json' ||
     pathname === '/ads.txt' ||
     pathname === '/robots.txt' ||
+    pathname.startsWith('/dstar') ||
     /\.(png|jpg|jpeg|gif|svg|ico|webp|css|js|json|xml|txt|woff|woff2|ttf|eot)$/i.test(pathname)
   );
 }

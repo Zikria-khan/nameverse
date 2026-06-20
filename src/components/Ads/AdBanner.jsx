@@ -3,9 +3,9 @@
 import { useEffect, useRef, useState } from 'react';
 
 /**
- * Ad Banner Component — Revolthem Ad Network
+ * Ad Banner Component — Monetag Ad Network
  * 
- * In-content ad placement. Uses Revolthem atOptions + invoke.js system.
+ * In-content ad placement. Uses Monetag atOptions + invoke.js system.
  * 
  * ⚡ Performance features:
  * - IntersectionObserver: only loads ad when visible in viewport
@@ -18,7 +18,7 @@ export default function AdBanner({ className = '', variant = 'inline' }) {
   const containerRef = useRef(null);
   const loaded = useRef(false);
   const [inView, setInView] = useState(false);
-  const mountId = useRef(`revolthem-ad-${Date.now()}`);
+  const mountId = useRef(`monetag-ad-${Date.now()}`);
 
   // Track visibility with IntersectionObserver
   useEffect(() => {
@@ -39,22 +39,23 @@ export default function AdBanner({ className = '', variant = 'inline' }) {
     return () => observer.disconnect();
   }, []);
 
-  // Load ad only when in view
-  useEffect(() => {
-    if (!inView || loaded.current || !containerRef.current) return;
-    loaded.current = true;
+// Load ad only when in view
+   useEffect(() => {
+     if (!inView || loaded.current || !containerRef.current) return;
+     loaded.current = true;
 
-    // Ensure config script exists (loaded in layout.js head as fallback)
-    if (!document.querySelector('script[src*="1b543736c10a38ea4ca3f6f7bc8a7a9b"]')) {
-      const configScript = document.createElement('script');
-      configScript.src = 'https://revolthem.com/1b/54/37/1b543736c10a38ea4ca3f6f7bc8a7a9b.js';
-      configScript.async = true;
-      configScript.setAttribute('data-cfasync', 'false');
-      document.head.appendChild(configScript);
-    }
+     // Ensure config script exists (loaded in layout.js head as fallback)
+     if (!document.querySelector('script[src*="quge5.com"]')) {
+       const configScript = document.createElement('script');
+       configScript.src = 'https://quge5.com/88/tag.min.js';
+       configScript.async = true;
+       configScript.setAttribute('data-cfasync', 'false');
+       configScript.setAttribute('data-zone', '251738');
+       document.head.appendChild(configScript);
+     }
 
-    const wrapper = document.createElement('div');
-    wrapper.id = mountId.current;
+     const wrapper = document.createElement('div');
+     wrapper.id = mountId.current;
     wrapper.style.width = '100%';
     wrapper.style.overflow = 'hidden';
 
@@ -62,7 +63,7 @@ export default function AdBanner({ className = '', variant = 'inline' }) {
     atOptionsScript.type = 'text/javascript';
     atOptionsScript.text = `
       atOptions = {
-        'key' : 'f0e3fe0e0c4dc5a8ddc1d06d28e8997e',
+        'key' : '251738',
         'format' : 'iframe',
         'height' : ${variant === 'banner' ? 90 : 50},
         'width' : ${variant === 'banner' ? 728 : 320},
@@ -71,7 +72,7 @@ export default function AdBanner({ className = '', variant = 'inline' }) {
     `;
 
     const invokeScript = document.createElement('script');
-    invokeScript.src = 'https://revolthem.com/f0e3fe0e0c4dc5a8ddc1d06d28e8997e/invoke.js';
+    invokeScript.src = 'https://quge5.com/88/tag.min.js';
     invokeScript.async = true;
     invokeScript.setAttribute('data-cfasync', 'false');
     invokeScript.setAttribute('type', 'text/javascript');

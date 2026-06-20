@@ -6,7 +6,7 @@ import { X } from 'lucide-react';
 /**
  * Fixed Bottom Banner — Sticky ad bar at bottom of viewport
  * 
- * - Shows a 320x50 Revolthem ad
+ * - Shows a 320x50 Monetag ad
  * - Sticky to bottom, appears after scrolling past first fold
  * - Dismissible with X button (stored in sessionStorage)
  * - Slides up animation on entry
@@ -62,17 +62,18 @@ export default function FixedBottomBanner() {
     loaded.current = true;
 
     // Config script (fallback — preconnect already in head)
-    if (!document.querySelector('script[src*="1b543736c10a38ea4ca3f6f7bc8a7a9b"]')) {
+    if (!document.querySelector('script[src*="quge5.com"]')) {
       const configScript = document.createElement('script');
-      configScript.src = 'https://revolthem.com/1b/54/37/1b543736c10a38ea4ca3f6f7bc8a7a9b.js';
+      configScript.src = 'https://quge5.com/88/tag.min.js';
       configScript.async = true;
       configScript.setAttribute('data-cfasync', 'false');
+      configScript.setAttribute('data-zone', '251738');
       document.head.appendChild(configScript);
     }
 
     const wrapper = document.createElement('div');
     wrapperRef.current = wrapper;
-    wrapper.id = `revolthem-bottom-ad`;
+    wrapper.id = `monetag-bottom-ad`;
     wrapper.style.width = '320px';
     wrapper.style.overflow = 'hidden';
 
@@ -80,7 +81,7 @@ export default function FixedBottomBanner() {
     atOptionsScript.type = 'text/javascript';
     atOptionsScript.text = `
       atOptions = {
-        'key' : 'f0e3fe0e0c4dc5a8ddc1d06d28e8997e',
+        'key' : '251738',
         'format' : 'iframe',
         'height' : 50,
         'width' : 320,
@@ -89,7 +90,7 @@ export default function FixedBottomBanner() {
     `;
 
     const invokeScript = document.createElement('script');
-    invokeScript.src = 'https://revolthem.com/f0e3fe0e0c4dc5a8ddc1d06d28e8997e/invoke.js';
+    invokeScript.src = 'https://quge5.com/88/tag.min.js';
     invokeScript.async = true;
     invokeScript.setAttribute('data-cfasync', 'false');
     invokeScript.setAttribute('type', 'text/javascript');
@@ -118,7 +119,7 @@ export default function FixedBottomBanner() {
               window.dataLayer.push({
                 event: 'ad_impression',
                 adType: 'fixed_bottom_banner',
-                adNetwork: 'revolthem',
+                adNetwork: 'monetag',
                 timestamp: Date.now()
               });
             } catch (e) {}
