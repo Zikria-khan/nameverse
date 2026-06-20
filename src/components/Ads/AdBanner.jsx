@@ -5,12 +5,11 @@ import { useEffect, useRef, useState } from 'react';
 /**
  * Ad Banner Component — Monetag Ad Network
  * 
- * In-content ad placement. Uses Monetag atOptions + invoke.js system.
+ * In-content ad placement. Uses Monetag zone script.
  * 
  * ⚡ Performance features:
  * - IntersectionObserver: only loads ad when visible in viewport
  * - Impression tracking: reports when ad becomes visible
- * - Config script loaded once globally (from layout.js head)
  * - Delayed load: waits for idle/scroll before activating
  * - No duplicate script injection
  */
@@ -18,7 +17,6 @@ export default function AdBanner({ className = '', variant = 'inline' }) {
   const containerRef = useRef(null);
   const loaded = useRef(false);
   const [inView, setInView] = useState(false);
-  const mountId = useRef(`monetag-ad-${Date.now()}`);
 
   // Track visibility with IntersectionObserver
   useEffect(() => {
@@ -39,46 +37,32 @@ export default function AdBanner({ className = '', variant = 'inline' }) {
     return () => observer.disconnect();
   }, []);
 
-// Load ad only when in view
-   useEffect(() => {
-     if (!inView || loaded.current || !containerRef.current) return;
-     loaded.current = true;
+  // Load ad only when in view
+  useEffect(() => {
+    if (!inView || loaded.current || !containerRef.current) return;
+    loaded.current = true;
 
-     // Ensure config script exists (loaded in layout.js head as fallback)
-     if (!document.querySelector('script[src*="quge5.com"]')) {
-       const configScript = document.createElement('script');
-       configScript.src = 'https://quge5.com/88/tag.min.js';
-       configScript.async = true;
-       configScript.setAttribute('data-cfasync', 'false');
-       configScript.setAttribute('data-zone', '251738');
-       document.head.appendChild(configScript);
-     }
+    // Ensure monetag script exists
+    if (!document.querySelector('script[src*="/dstar"]')) {
+      const monetagScript = document.createElement('script');
+      monetagScript.src = '/dstar/88/tag.min.js';
+      monetagScript.async = true;
+      monetagScript.setAttribute('data-cfasync', 'false');
+      monetagScript.setAttribute('data-zone', '251738');
+      document.head.appendChild(monetagScript);
+    }
 
-     const wrapper = document.createElement('div');
-     wrapper.id = mountId.current;
+    const wrapper = document.createElement('div');
     wrapper.style.width = '100%';
     wrapper.style.overflow = 'hidden';
+    wrapper.style.minHeight = '50px';
 
-    const atOptionsScript = document.createElement('script');
-    atOptionsScript.type = 'text/javascript';
-    atOptionsScript.text = `
-      atOptions = {
-        'key' : '251738',
-        'format' : 'iframe',
-        'height' : ${variant === 'banner' ? 90 : 50},
-        'width' : ${variant === 'banner' ? 728 : 320},
-        'params' : {}
-      };
-    `;
+    const adScript = document.createElement('script');
+    adScript.src = '/dstar/88/tag.min.js';
+    adScript.async = true;
+    adScript.setAttribute('data-cfasync', 'false');
 
-    const invokeScript = document.createElement('script');
-    invokeScript.src = 'https://quge5.com/88/tag.min.js';
-    invokeScript.async = true;
-    invokeScript.setAttribute('data-cfasync', 'false');
-    invokeScript.setAttribute('type', 'text/javascript');
-
-    wrapper.appendChild(atOptionsScript);
-    wrapper.appendChild(invokeScript);
+    wrapper.appendChild(adScript);
     containerRef.current.appendChild(wrapper);
   }, [inView, variant]);
 

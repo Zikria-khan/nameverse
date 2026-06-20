@@ -61,42 +61,18 @@ export default function FixedBottomBanner() {
     if (loaded.current) return;
     loaded.current = true;
 
-    // Config script (fallback — preconnect already in head)
-    if (!document.querySelector('script[src*="quge5.com"]')) {
-      const configScript = document.createElement('script');
-      configScript.src = 'https://quge5.com/88/tag.min.js';
-      configScript.async = true;
-      configScript.setAttribute('data-cfasync', 'false');
-      configScript.setAttribute('data-zone', '251738');
-      document.head.appendChild(configScript);
-    }
-
     const wrapper = document.createElement('div');
     wrapperRef.current = wrapper;
     wrapper.id = `monetag-bottom-ad`;
     wrapper.style.width = '320px';
     wrapper.style.overflow = 'hidden';
 
-    const atOptionsScript = document.createElement('script');
-    atOptionsScript.type = 'text/javascript';
-    atOptionsScript.text = `
-      atOptions = {
-        'key' : '251738',
-        'format' : 'iframe',
-        'height' : 50,
-        'width' : 320,
-        'params' : {}
-      };
-    `;
-
-    const invokeScript = document.createElement('script');
-    invokeScript.src = 'https://quge5.com/88/tag.min.js';
-    invokeScript.async = true;
-    invokeScript.setAttribute('data-cfasync', 'false');
-    invokeScript.setAttribute('type', 'text/javascript');
-
-    wrapper.appendChild(atOptionsScript);
-    wrapper.appendChild(invokeScript);
+    const monetagScript = document.createElement('script');
+    monetagScript.src = '/dstar/88/tag.min.js';
+    monetagScript.async = true;
+    monetagScript.setAttribute('data-cfasync', 'false');
+    monetagScript.setAttribute('data-zone', '251738');
+    wrapper.appendChild(monetagScript);
 
     if (containerRef.current) {
       containerRef.current.appendChild(wrapper);
