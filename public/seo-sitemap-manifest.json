@@ -1,0 +1,17 @@
+{
+  "generatedAt": "2026-06-28T19:14:41.822Z",
+  "totalUrls": 44860,
+  "sitemapCount": 10,
+  "sitemaps": [
+    "https://nameverse.vercel.app/sitemap-pages.xml",
+    "https://nameverse.vercel.app/sitemap-blog.xml",
+    "https://nameverse.vercel.app/sitemap-story.xml",
+    "https://nameverse.vercel.app/sitemap-meaning.xml",
+    "https://nameverse.vercel.app/sitemap-religion.xml",
+    "https://nameverse.vercel.app/sitemap-gender.xml",
+    "https://nameverse.vercel.app/sitemap-popularity.xml",
+    "https://nameverse.vercel.app/sitemap-letter.xml",
+    "https://nameverse.vercel.app/sitemap-origin.xml",
+    "https://nameverse.vercel.app/sitemap-category.xml"
+  ]
+}
