@@ -4,10 +4,10 @@ export async function GET(request) {
   const url = new URL(request.url);
   const path = url.pathname.replace('/dstar', '') || '/88/tag.min.js';
 
-  const monetagUrl = `https://quge5.com${path}`;
+  const adUrl = `https://revolthem.com${path}`;
 
   try {
-    const response = await fetch(monetagUrl, {
+    const response = await fetch(adUrl, {
       next: { revalidate: 0 },
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
@@ -27,7 +27,7 @@ export async function GET(request) {
       headers,
     });
   } catch (error) {
-    return new NextResponse(`// Monetag script unavailable - ${error.message}`, {
+    return new NextResponse(`// Ad script unavailable - ${error.message}`, {
       status: 200,
       headers: {
         'Content-Type': 'application/javascript',

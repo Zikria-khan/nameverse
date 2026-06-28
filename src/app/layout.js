@@ -14,9 +14,11 @@ import { AppProvider } from "@/contexts/AppContext";
 import LoadingWrapper from "@/components/LoadingAnimation/LoadingWrapper";
 import { Suspense } from 'react';
 import RouteChrome from "@/components/Layout/RouteChrome";
-import FixedBottomBanner from "@/components/Ads/FixedBottomBanner";
+import RevolthemAds from "@/components/Ads/RevolthemAds";
+
 
 import { getSiteUrl } from '@/lib/seo/site';
+// Use environment variable or default - will be overridden client-side if needed
 const siteUrl = getSiteUrl();
 
 const displayFont = Fraunces({
@@ -31,37 +33,37 @@ const bodyFont = Instrument_Sans({
   weight: ['400', '500', '600', '700'],
 });
 
-// ✅ Global SEO Metadata — Cultural Name Knowledge Base
+// ✅ Global SEO Metadata
 export const metadata = {
   title: {
-    default: validateMetaTitle("NameVerse — Cultural Name Knowledge Base | Linguistic Origin Analysis"),
+    default: validateMetaTitle("NameVerse — 65,000+ Verified Baby Names with Meanings"),
     template: "%s | NameVerse"
   },
   description: validateMetaDescription(
-    "NameVerse is a Cultural Name Knowledge Base and Multilingual Onomastics System. Explore linguistic origin analysis, cultural semantic interpretation, and historical naming evolution of personal names across civilizations."
+    "Discover 65,000+ baby names across Islamic, Hindu & Christian traditions. Verified meanings, lucky numbers, origins & 2026 trending data. Trusted by 500,000+ parents."
   ),
   keywords:
-    "cultural name knowledge base, linguistic origin analysis, multilingual onomastics system, cultural semantic interpretation, historical naming evolution, cross-cultural onomastic study, linguistic intelligence database, cultural naming research platform",
+    "baby names, baby names 2026, islamic baby names, hindu baby names, christian baby names, quranic names, biblical names, sanskrit names, muslim baby names, baby name meanings, lucky numbers, baby name generator, name suggestions, trending baby names 2026",
   robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
-  authors: [{ name: "NameVerse — Cultural Name Knowledge Base", url: siteUrl }],
-  creator: "NameVerse — Cultural Name Knowledge Base",
-  publisher: "NameVerse — Cultural Name Knowledge Base",
+  authors: [{ name: "NameVerse", url: siteUrl }],
+  creator: "NameVerse",
+  publisher: "NameVerse",
   metadataBase: new URL(siteUrl),
   alternates: { canonical: siteUrl, languages: { en: siteUrl, 'x-default': siteUrl } },
   openGraph: {
-    title: validateMetaTitle("NameVerse — Cultural Name Knowledge Base | Multilingual Onomastics"),
+    title: validateMetaTitle("NameVerse — 65,000+ Verified Baby Names | Islamic, Hindu, Christian"),
     description: validateMetaDescription(
-      "NameVerse is a structured cultural and linguistic knowledge base for personal names across civilizations. Linguistic origin analysis, cultural semantic interpretation, and historical naming evolution data."
+      "65,000+ baby names with verified meanings, lucky numbers & origins. Islamic Quranic, Hindu Vedic, Christian Biblical. 98% verified accuracy. Trusted by parents worldwide."
     ),
     url: siteUrl,
-    siteName: "NameVerse — Cultural Name Knowledge Base",
+    siteName: "NameVerse",
     images: [
       { 
         url: `/logo.png`, 
         width: 512, 
         height: 512, 
         type: "image/png", 
-        alt: "NameVerse — Cultural Name Knowledge Base | Linguistic Origin Analysis" 
+        alt: "NameVerse — 65,000+ Baby Names with Meanings" 
       },
     ],
     locale: "en_US",
@@ -69,9 +71,9 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: validateMetaTitle("NameVerse — Cultural Name Knowledge Base | Onomastics Research"),
+    title: validateMetaTitle("Baby Names 2026 — 65,000+ Islamic, Hindu, Christian Names"),
     description: validateMetaDescription(
-      "A structured cultural and linguistic knowledge graph for human names. Multilingual onomastics system for cross-cultural name research, linguistic origin analysis, and cultural semantic interpretation."
+      "65,000+ verified baby names with meanings, lucky numbers & numerology. Islamic, Hindu, Christian. 98% accuracy. Start exploring now!"
     ),
     images: [`/logo.png`],
     creator: "@NameVerseOfficial",
@@ -96,17 +98,17 @@ export const metadata = {
       },
     ],
   },
-  manifest: `/manifest.json`,
-  category: "Cultural Onomastics, Linguistics, Anthropology",
+  manifest: `/manifest.json`, // Use relative path to avoid CORS issues
+  category: "Baby Names, Culture, Religion",
 };
 
-// Viewport configuration
+// Viewport configuration (Next.js App Router)
 export const viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
   viewportFit: "cover",
-  themeColor: "#2563EB",
+  themeColor: "#1E40AF",
 };
 
 export default function RootLayout({ children }) {
@@ -114,96 +116,80 @@ export default function RootLayout({ children }) {
     <html lang="en" dir="ltr">
       <head>
         <meta name="color-scheme" content="light dark" />
-        <meta name="application-name" content="NameVerse — Cultural Name Knowledge Base" />
-        <meta property="og:site_name" content="NameVerse — Cultural Name Knowledge Base" />
+        <meta name="application-name" content="NameVerse" />
+        <meta property="og:site_name" content="NameVerse" />
         <meta name="content-language" content="en" />
-        <meta name="theme-color" content="#2563EB" />
+        <meta name="theme-color" content="#4F46E5" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="google-site-verification" content="iPU1wdP26kg58gDN3U4H39YuS20alsLvjfXRM-QtKLw" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-title" content="NameVerse" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="msapplication-TileColor" content="#2563EB" />
+        <meta name="msapplication-TileColor" content="#4F46E5" />
         <meta name="msapplication-TileImage" content="/logo.png" />
         <link rel="apple-touch-icon" href="/logo.png" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="ahrefs-site-verification" content="650afaf6635223ff618a281883a22b69b937a121e933b19907debeca67754cd4" />
 
-        {/* Performance: Resource Hints */}
+        {/* ✅ Performance: Resource Hints */}
         <ResourceHints />
 
-        {/* Icons - use relative paths */}
+        {/* ✅ Icons - use relative paths */}
         <link rel="icon" type="image/png" href="/logo.png" />
         <link rel="shortcut icon" type="image/png" href="/logo.png" />
 
-        {/* Microsoft Clarity Analytics */}
-        <Script
-          id="microsoft-clarity"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function(c,l,a,r,i,t,y){
-                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-              })(window, document, "clarity", "script", "wse9v19xfh");
-            `
-          }}
-        />
-
-        {/* Ahrefs Analytics Script */}
+        {/* ✅ Ahrefs Analytics Script */}
         <Script
           src="https://analytics.ahrefs.com/analytics.js"
           data-key="Xu6eED27Kx1ZuJhBcJDJsA"
           async
           strategy="afterInteractive"
         />
-
-        {/* Monetag Ad Script */}
+        {/* ✅ Google AdSense Script */}
         <Script
-          id="monetag-ad"
-          src="https://quge5.com/88/tag.min.js"
-          data-zone="251738"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1510675468129183"
           async
-          data-cfasync="false"
+          crossorigin="anonymous"
           strategy="afterInteractive"
         />
 
-        {/* Enhanced crawl hints */}
+        {/* ✅ Enhanced crawl hints */}
         <GoogleBotMeta siteUrl={siteUrl} />
 
-        {/* ✅ Enhanced Structured Data — Cultural & Linguistic Knowledge Graph */}
+        {/* ✅ Enhanced Structured Data — single source of truth for all JSON-LD schemas */}
         <StructuredData
           organization={true}
           website={true}
           breadcrumbs={[
             { name: "Home", url: siteUrl },
-            { name: "Cultural Name Research", url: `/names` },
+            { name: "Baby Names", url: `/names` },
           ]}
           collectionPage={{
-            name: "Cross-Cultural Onomastics Research Collection",
-            description: "Structured linguistic origin analysis and cultural semantic interpretation of personal names across civilizations — Islamic, Christian, and Hindu naming traditions.",
+            name: "Popular Baby Names by Religion",
+            description: "Browse top baby names from different faiths — Muslim, Hindu, and Christian — with meanings and translations.",
             url: `/names`,
             items: [],
           }}
         />
       </head>
 
-      <body className={`${bodyFont.variable} ${displayFont.variable} antialiased nv-body nv-page pb-16 lg:pb-0`}>
-        <AppProvider>
-          <PerformanceInit />
-          <Suspense fallback={<div>Loading Navbar...</div>}>
-            <Navbar />
-          </Suspense>
+      <body className={`${bodyFont.variable} ${displayFont.variable} antialiased nv-body nv-page`}>
+        <div id="temp-wrapper">
+          <AppProvider>
+            <PerformanceInit />
+            <Suspense fallback={<div>Loading Navbar...</div>}>
+              <Navbar />
+            </Suspense>
+            <RouteChrome>{children}</RouteChrome>
+            <Footer />
+            <AppInstallPopup />
 
-          <RouteChrome>{children}</RouteChrome>
-          <Footer />
-          <AppInstallPopup />
+          </AppProvider>
+        </div>
 
-          {/* Fixed bottom ad banner (sticky) — visible on mobile/tablet */}
-          <FixedBottomBanner />
-
-        </AppProvider>
+        {/* Revolthem Ads — loaded globally on every page */}
+        {/* This ensures ads don't block rendering and don't affect LCP/CLS */}
+        <RevolthemAds />
       </body>
     </html>
   );

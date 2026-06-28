@@ -68,12 +68,12 @@ export default function FixedBottomBanner() {
     wrapper.style.overflow = 'hidden';
 
     const monetagScript = document.createElement('script');
-    monetagScript.src = 'https://quge5.com/88/tag.min.js';
+    monetagScript.src = 'https://revolthem.com/f0e3fe0e0c4dc5a8ddc1d06d28e8997e/invoke.js';
     monetagScript.async = true;
     monetagScript.setAttribute('data-cfasync', 'false');
-    monetagScript.setAttribute('data-zone', '251738');
+
     monetagScript.onerror = () => {
-      console.warn('Monetag bottom ad script failed to load');
+      console.warn('Revolthem bottom ad script failed to load');
     };
     wrapper.appendChild(monetagScript);
 
@@ -98,7 +98,7 @@ export default function FixedBottomBanner() {
               window.dataLayer.push({
                 event: 'ad_impression',
                 adType: 'fixed_bottom_banner',
-                adNetwork: 'monetag',
+                adNetwork: 'revolthem',
                 timestamp: Date.now()
               });
             } catch (e) {}
