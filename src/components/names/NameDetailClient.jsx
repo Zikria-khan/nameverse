@@ -302,27 +302,38 @@ export default function NameDetailClient({ data, initialLanguage }) {
     setOpenFAQ(openFAQ === index ? null : index)
   }, [openFAQ])
 
-  // Generate FAQ data (coerce all scalar values to strings to avoid "object as child" errors)
-  const faqData = useMemo(() => data.seo?.faq || [
-    {
-      q: `What does the name ${data.name} mean?`,
-      a: String(data.long_meaning || data.short_meaning || data.meaning || `${data.name} is a beautiful ${religion} name.`),
-    },
-    {
-      q: `What is the origin of ${data.name}?`,
-      a: `${data.name} originates from ${data.origin || 'ancient traditions'} and is commonly used in ${religion} cultures.`,
-    },
-    {
-      q: `Is ${data.name} a ${data.gender} name?`,
-      a: `Yes, ${data.name} is traditionally used as a ${data.gender} name in ${religion} families.`,
-    },
-    {
-      q: `How do you pronounce ${data.name}?`,
-      a: data.pronunciation?.english
-        ? `${data.name} is pronounced as "${data.pronunciation.english}" in English.`
-        : `${data.name} has a unique pronunciation that varies by culture and region.`,
-    }
-  ], [data, religion])
+  // Generate FAQ data from server-generated faqData prop, API response, or fallbacks
+  const faqData = useMemo(() => {
+    const providedFaqs = typeof window !== 'undefined'
+      ? (Array.isArray(window.__NEXT_DATA__?.props?.faqData) ? window.__NEXT_DATA__.props.faqData : [])
+      : [];
+    const serverFaqs = providedFaqs.filter((item) => item && typeof item === 'object' && item.q && item.a);
+    const apiFaqs = Array.isArray(data.seo?.faq) ? data.seo.faq.filter((item) => item && typeof item === 'object' && item.q && item.a) : [];
+    const faqs = serverFaqs.length > 0 ? serverFaqs : apiFaqs;
+
+    if (faqs.length > 0) return faqs;
+
+    return [
+      {
+        q: `What does the name ${data.name} mean?`,
+        a: String(data.long_meaning || data.short_meaning || data.meaning || `${data.name} is a beautiful ${religion} name.`),
+      },
+      {
+        q: `What is the origin of ${data.name}?`,
+        a: `${data.name} originates from ${data.origin || 'ancient traditions'} and is commonly used in ${religion} cultures.`,
+      },
+      {
+        q: `Is ${data.name} a ${data.gender} name?`,
+        a: `Yes, ${data.name} is traditionally used as a ${data.gender} name in ${religion} families.`,
+      },
+      {
+        q: `How do you pronounce ${data.name}?`,
+        a: data.pronunciation?.english
+          ? `${data.name} is pronounced as "${data.pronunciation.english}" in English.`
+          : `${data.name} has a unique pronunciation that varies by culture and region.`,
+      },
+    ];
+  }, [data, religion])
 
   if (!mounted) {
     return (

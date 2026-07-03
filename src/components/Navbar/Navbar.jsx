@@ -23,25 +23,37 @@ import {
 
 const categoryLinks = [
   { name: 'All Baby Names', href: '/names', icon: List, description: 'Browse the full name directory' },
-  { name: 'Islamic Names', href: '/names/religion/islamic/1', icon: BookOpen, description: 'Quranic, Arabic and Urdu names' },
-  { name: 'Christian Names', href: '/names/religion/christian/1', icon: BookOpen, description: 'Biblical and modern names' },
-  { name: 'Hindu Names', href: '/names/religion/hindu/1', icon: Sparkles, description: 'Sanskrit and Vedic names' },
-  { name: 'Names by Origin', href: '/names/islamic/origin/arabic/1', icon: Globe, description: 'Arabic, Urdu, Persian and more' },
-  { name: 'Names by Letter', href: '/names/islamic/letter/a/1', icon: Hash, description: 'A–Z name browsing' }
+  { name: 'Islamic Names', href: '/islamic/boy-names', icon: BookOpen, description: 'Quranic, Arabic and Urdu names', badge: 'Popular' },
+  { name: 'Islamic Boy Names', href: '/islamic/boy-names', icon: BookOpen, description: 'Male Islamic names' },
+  { name: 'Islamic Girl Names', href: '/islamic/girl-names', icon: BookOpen, description: 'Female Islamic names' },
+  { name: 'Christian Names', href: '/christian/boy-names', icon: BookOpen, description: 'Biblical and modern names', badge: 'Popular' },
+  { name: 'Christian Boy Names', href: '/christian/boy-names', icon: BookOpen, description: 'Male Christian names' },
+  { name: 'Christian Girl Names', href: '/christian/girl-names', icon: BookOpen, description: 'Female Christian names' },
+  { name: 'Hindu Names', href: '/hindu/boy-names', icon: Sparkles, description: 'Sanskrit and Vedic names', badge: 'Popular' },
+  { name: 'Hindu Boy Names', href: '/hindu/boy-names', icon: Sparkles, description: 'Male Hindu names' },
+  { name: 'Hindu Girl Names', href: '/hindu/girl-names', icon: Sparkles, description: 'Female Hindu names' },
+  { name: 'Biblical Names', href: '/names/christian/categories/biblical/1', icon: BookOpen, description: 'Names from the Bible' },
+  { name: 'Quranic Names', href: '/names/islamic/categories/quranic/1', icon: BookOpen, description: 'Names from the Quran' },
 ];
 
 const exploreLinks = [
-  { name: 'Trending Names', href: '/trending-names', icon: TrendingUp, description: 'Names gaining search interest' },
+  { name: 'By Meaning', href: '/names-by-meaning', icon: Heart, description: 'Browse names by their meanings' },
+  { name: 'By Origin', href: '/names-by-origin', icon: Globe, description: 'Names by linguistic origin' },
+  { name: 'By Letter', href: '/names/islamic/letter/a/1', icon: Hash, description: 'A–Z name browsing' },
+  { name: 'Trending Names', href: '/trending-names', icon: TrendingUp, description: 'Names gaining search interest', badge: 'Hot' },
   { name: 'Unique Names', href: '/unique-names', icon: Sparkles, description: 'Distinctive naming ideas' },
   { name: 'Popular Names', href: '/popularity', icon: Heart, description: 'Popularity and discovery tools' },
   { name: 'Name Meanings', href: '/name-meanings', icon: BookOpen, description: 'Meaning-led research' },
-  { name: 'Advanced Search', href: '/advanced-search', icon: Search, description: 'Filter by meaning and origin' }
+  { name: 'Advanced Search', href: '/advanced-search', icon: Search, description: 'Filter by meaning and origin' },
+  { name: 'Knowledge Graph', href: '/names-by-meaning', icon: Sparkles, description: 'Entity relationships and connections' },
 ];
 
 const resourceLinks = [
   { name: 'Blog', href: '/blog', icon: BookOpen, description: 'Expert naming guides' },
   { name: 'Expert Naming Guide', href: '/guides/expert-naming-guide', icon: Sparkles, description: 'Decision framework' },
-  { name: 'Saved Names', href: '/my-names', icon: Heart, description: 'Your personal shortlist' }
+  { name: 'Popular by State', href: '/popular-by-state', icon: Globe, description: 'US state popularity' },
+  { name: 'Saved Names', href: '/my-names', icon: Heart, description: 'Your personal shortlist' },
+  { name: 'About NameVerse', href: '/about', icon: BookOpen, description: 'Our mission and team' },
 ];
 
 const directLinks = [

@@ -43,8 +43,10 @@ const RESERVED_SLUGS = new Set([
 const STATIC_ROUTES = [
   '/', '/names', '/search', '/blog', '/about', '/privacy', '/terms',
   '/languages', '/popularity', '/name-meanings', '/names-by-meaning', 
-  '/unique-names', '/trending-names', '/advanced-search', '/my-names',
-  '/guides/expert-naming-guide',
+  '/names-by-origin', '/unique-names', '/trending-names', '/advanced-search', '/my-names',
+  '/guides/expert-naming-guide', '/viral-names', '/popular-baby-names',
+  '/names-by-letter', '/stories', '/religions',
+  '/top-islamic-names', '/top-christian-names', '/top-hindu-names',
 ];
 
 function readJson(file, fallback) {

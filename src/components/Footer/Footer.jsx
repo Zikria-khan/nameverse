@@ -1,39 +1,62 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Globe, Link2, Share2, User } from 'lucide-react';
+import { Globe, Link2, Share2, User, BookOpen, Sparkles, Heart, TrendingUp, Search, Grid3X3, Network, LayoutDashboard } from 'lucide-react';
 
 const footerLinks = {
-  Names: [
-    { label: 'All Names', href: '/names' },
-    { label: 'Islamic Names', href: '/names/religion/islamic/1' },
-    { label: 'Christian Names', href: '/names/religion/christian/1' },
-    { label: 'Hindu Names', href: '/names/religion/hindu/1' },
-    { label: 'Arabic Names', href: '/names/islamic/origin/arabic/1' },
-    { label: 'Urdu Names', href: '/names/islamic/origin/urdu/1' },
-    { label: 'Sanskrit Names', href: '/names/hindu/origin/sanskrit/1' }
+  'By Religion': [
+    { label: 'Islamic Names', href: '/islamic/boy-names', desc: 'Arabic, Urdu & Quranic' },
+    { label: 'Islamic Boy Names', href: '/islamic/boy-names', desc: 'Male Islamic names' },
+    { label: 'Islamic Girl Names', href: '/islamic/girl-names', desc: 'Female Islamic names' },
+    { label: 'Christian Names', href: '/christian/boy-names', desc: 'Biblical & saint names' },
+    { label: 'Christian Boy Names', href: '/christian/boy-names', desc: 'Male Christian names' },
+    { label: 'Christian Girl Names', href: '/christian/girl-names', desc: 'Female Christian names' },
+    { label: 'Hindu Names', href: '/hindu/boy-names', desc: 'Sanskrit & Vedic names' },
+    { label: 'Hindu Boy Names', href: '/hindu/boy-names', desc: 'Male Hindu names' },
+    { label: 'Hindu Girl Names', href: '/hindu/girl-names', desc: 'Female Hindu names' },
+    { label: 'Biblical Names', href: '/names/christian/categories/biblical/1', desc: 'Names from the Bible' },
+    { label: 'Quranic Names', href: '/names/islamic/categories/quranic/1', desc: 'Names from the Quran' },
   ],
-  Tools: [
-    { label: 'Name Search', href: '/search' },
-    { label: 'Advanced Search', href: '/advanced-search' },
-    { label: 'Name Meanings', href: '/name-meanings' },
-    { label: 'Names by Meaning', href: '/names-by-meaning' },
-    { label: 'Trending Names', href: '/trending-names' },
-    { label: 'Unique Names', href: '/unique-names' },
-    { label: 'Saved Names', href: '/my-names' }
+  'By Origin': [
+    { label: 'Arabic Names', href: '/names/islamic/origin/arabic/1', desc: 'Arabic origin names' },
+    { label: 'Hebrew Names', href: '/names/christian/origin/hebrew/1', desc: 'Hebrew origin names' },
+    { label: 'Sanskrit Names', href: '/names/hindu/origin/sanskrit/1', desc: 'Sanskrit origin names' },
+    { label: 'Persian Names', href: '/names/islamic/origin/persian/1', desc: 'Persian origin names' },
+    { label: 'Turkish Names', href: '/names/islamic/origin/turkish/1', desc: 'Turkish origin names' },
+    { label: 'Urdu Names', href: '/names/islamic/origin/urdu/1', desc: 'Urdu origin names' },
+    { label: 'English Names', href: '/names/christian/origin/english/1', desc: 'English origin names' },
+    { label: 'Greek Names', href: '/names/christian/origin/greek/1', desc: 'Greek origin names' },
+    { label: 'Latin Names', href: '/names/christian/origin/latin/1', desc: 'Latin origin names' },
+    { label: 'African Names', href: '/names/christian/origin/african/1', desc: 'African origin names' },
   ],
-  Resources: [
-    { label: 'Blog', href: '/blog' },
-    { label: 'Expert Naming Guide', href: '/guides/expert-naming-guide' },
-    { label: 'Popularity', href: '/popularity' },
-    { label: 'Languages', href: '/languages' },
-    { label: 'Popular by State', href: '/popular-by-state' }
+  'By Theme': [
+    { label: 'Nature Names', href: '/names/islamic/categories/nature/1', desc: 'Nature-inspired names' },
+    { label: 'Virtue Names', href: '/names-by-meaning', desc: 'Names meaning virtues' },
+    { label: 'Royal Names', href: '/names/islamic/categories/royal/1', desc: 'Regal and royal names' },
+    { label: 'Modern Names', href: '/names/islamic/categories/modern/1', desc: 'Contemporary names' },
+    { label: 'Unique Names', href: '/unique-names', desc: 'Distinctive name ideas' },
+    { label: 'Trending Names', href: '/trending-names', desc: 'Rising in popularity' },
+    { label: 'Popular Names', href: '/popularity', desc: 'Most chosen names' },
+    { label: 'Short Names', href: '/names/islamic/letter/a/1', desc: 'Short and sweet' },
+    { label: 'Strong Names', href: '/names-by-meaning', desc: 'Names meaning strength' },
+    { label: 'Beautiful Names', href: '/names-by-meaning', desc: 'Names meaning beauty' },
   ],
-  Company: [
-    { label: 'About', href: '/about' },
+  'Resources': [
+    { label: 'All Names', href: '/names', desc: 'Complete name directory' },
+    { label: 'Name Search', href: '/search', desc: 'Search all names' },
+    { label: 'Advanced Search', href: '/advanced-search', desc: 'Filter by meaning & origin' },
+    { label: 'Name Meanings', href: '/name-meanings', desc: 'Meaning-led research' },
+    { label: 'Names by Meaning', href: '/names-by-meaning', desc: 'Browse by meaning' },
+    { label: 'Names by Origin', href: '/names-by-origin', desc: 'Browse by origin' },
+    { label: 'Knowledge Graph', href: '/names-by-meaning', desc: 'Entity relationships' },
+    { label: 'Blog', href: '/blog', desc: 'Expert naming guides' },
+    { label: 'Naming Guide', href: '/guides/expert-naming-guide', desc: 'Decision framework' },
+    { label: 'Popular by State', href: '/popular-by-state', desc: 'US state popularity' },
+    { label: 'Saved Names', href: '/my-names', desc: 'Your shortlist' },
+    { label: 'About', href: '/about', desc: 'Our mission' },
     { label: 'Privacy Policy', href: '/privacy' },
     { label: 'Terms of Service', href: '/terms' },
-    { label: 'Sitemap', href: '/sitemap.xml' }
-  ]
+    { label: 'Sitemap', href: '/sitemap.xml' },
+  ],
 };
 
 const socialLinks = [

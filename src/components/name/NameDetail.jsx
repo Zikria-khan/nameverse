@@ -2,10 +2,12 @@ import NameHero from './NameHero';
 import LinguisticOriginPanel from './Meaning';
 import FAQ from './FAQ';
 import RelatedNames from './RelatedNames';
+import KnowledgeGraph from './KnowledgeGraph';
+import TopicClusterNav from './TopicClusterNav';
 import SitePage from '@/components/Layout/SitePage';
 import BlogSection from '@/components/Blog/BlogSection';
 import Link from 'next/link';
-import { ArrowRight, Search, Grid3X3, Sparkles, TrendingUp } from 'lucide-react';
+import { ArrowRight, Search, Grid3X3, Sparkles, TrendingUp, Network, LayoutDashboard } from 'lucide-react';
 import { createSafeSlug } from '@/lib/utils/createSafeSlug';
 
 function cleanText(text = '') {
@@ -43,6 +45,9 @@ function normalizeTrendingName(name, religion) {
 }
 
 export default function CulturalNameAnalysisCard({ data, faqData = [], pageUrl, trendingNames = [], trendingNamesSource = 'suggested' }) {
+  const safeFaqData = Array.isArray(faqData)
+    ? faqData.filter((item) => item && typeof item === 'object' && item.q && item.a)
+    : [];
   const religion = cleanText(data.religion || 'islamic').toLowerCase();
   const religionLabel = getReligionLabel(religion);
   const firstLetter = cleanText(data.name).charAt(0).toUpperCase();
@@ -78,6 +83,8 @@ export default function CulturalNameAnalysisCard({ data, faqData = [], pageUrl, 
     },
   ].filter(link => link.href);
 
+  const topicClusterId = `${religion}-names` || 'baby-names';
+
   return (
     <SitePage
       breadcrumbs={[
@@ -87,10 +94,24 @@ export default function CulturalNameAnalysisCard({ data, faqData = [], pageUrl, 
         { label: data.name },
       ]}
     >
+      {/* Topic Cluster Navigation */}
+      <div className="nv-card-solid mb-6">
+        <TopicClusterNav
+          clusterId={topicClusterId}
+          currentName={data.name}
+          currentReligion={religion}
+        />
+      </div>
+
       <NameHero data={data} pageUrl={pageUrl} />
       <div className="nv-stack">
         <LinguisticOriginPanel data={data} />
         <RelatedNames data={data} />
+      </div>
+
+      {/* Knowledge Graph Section */}
+      <div className="nv-stack">
+        <KnowledgeGraph data={data} religion={religion} />
       </div>
 
 
@@ -98,7 +119,7 @@ export default function CulturalNameAnalysisCard({ data, faqData = [], pageUrl, 
         <section className="nv-card-solid">
           <div className="flex items-center gap-3 mb-5">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-700">
-              <Sparkles className="h-5 w-5" />
+              <LayoutDashboard className="h-5 w-5" />
             </div>
             <div>
               <h2 className="text-xl font-semibold text-slate-900">Explore Related {religionLabel} Name Collections</h2>
@@ -110,7 +131,7 @@ export default function CulturalNameAnalysisCard({ data, faqData = [], pageUrl, 
               <Link
                 key={link.href}
                 href={link.href}
-                className="rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-indigo-300 hover:bg-indigo-50"
+                className="rounded-2xl border border-slate-200 bg-indigo-50 p-4 transition hover:border-indigo-300 hover:bg-indigo-100"
               >
                 <span className="flex items-center gap-2 text-sm font-semibold text-slate-900">
                   {link.label} <ArrowRight className="h-4 w-4" />
@@ -118,9 +139,10 @@ export default function CulturalNameAnalysisCard({ data, faqData = [], pageUrl, 
                 <span className="mt-2 block text-sm leading-6 text-slate-600">{link.description}</span>
               </Link>
             ))}
+            {/* Additional topic explorer links */}
             <Link
               href={`/names/${religion}/categories/modern/1`}
-              className="rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-indigo-300 hover:bg-indigo-50"
+              className="rounded-2xl border border-slate-200 bg-indigo-50 p-4 transition hover:border-indigo-300 hover:bg-indigo-100"
             >
               <span className="flex items-center gap-2 text-sm font-semibold text-slate-900">
                 Browse by Category <ArrowRight className="h-4 w-4" />
@@ -129,7 +151,7 @@ export default function CulturalNameAnalysisCard({ data, faqData = [], pageUrl, 
             </Link>
             <Link
               href="/search"
-              className="rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-indigo-300 hover:bg-indigo-50"
+              className="rounded-2xl border border-slate-200 bg-indigo-50 p-4 transition hover:border-indigo-300 hover:bg-indigo-100"
             >
               <span className="flex items-center gap-2 text-sm font-semibold text-slate-900">
                 Search All Names <Search className="h-4 w-4" />
