@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getSiteUrl } from '@/lib/seo/site';
 import { BookOpen, Heart, Star, ArrowRight, Sparkles, Award, CheckCircle, Users, Globe } from 'lucide-react';
+import NativeBanner from '@/components/Ads/NativeBanner';
 
 // ISR: 30-day cache — static content
 export const revalidate = 2592000; // 30 days
@@ -55,6 +56,9 @@ export default function ExpertNamingGuidePage() {
       <article className="nv-container nv-section pt-2">
         <div className="nv-card-solid p-6 sm:p-10">
           
+          {/* Native Banner 1 — After page title/intro */}
+          <NativeBanner className="my-6" minHeight="90px" instanceId="expert-guide-1" />
+
           {/* Introduction */}
           <section className="mb-10">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Why Your Baby's Name Matters</h2>
@@ -97,6 +101,9 @@ export default function ExpertNamingGuidePage() {
               ))}
             </div>
           </section>
+
+          {/* Native Banner 2 — Mid-content */}
+          <NativeBanner className="my-6" minHeight="90px" instanceId="expert-guide-2" />
 
           {/* Religion Sections */}
           <section className="mb-10">
@@ -144,6 +151,9 @@ export default function ExpertNamingGuidePage() {
               </Link>
             </div>
           </section>
+
+          {/* Native Banner 3 — Before CTA/footer */}
+          <NativeBanner className="my-6" minHeight="90px" instanceId="expert-guide-3" />
 
           {/* CTA */}
           <section className="nv-card text-center">

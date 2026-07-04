@@ -14,6 +14,8 @@ import { AppProvider } from "@/contexts/AppContext";
 import LoadingWrapper from "@/components/LoadingAnimation/LoadingWrapper";
 import { Suspense } from 'react';
 import RouteChrome from "@/components/Layout/RouteChrome";
+import SocialBar from "@/components/Ads/SocialBar";
+import NativeAdScript from "@/components/Ads/NativeAdScript";
 import { getSiteUrl } from '@/lib/seo/site';
 // Use environment variable or default - will be overridden client-side if needed
 const siteUrl = getSiteUrl();
@@ -182,6 +184,11 @@ export default function RootLayout({ children }) {
           </AppProvider>
         </div>
 
+        {/* Native ad script — loaded once globally */}
+        <NativeAdScript />
+
+        {/* Social sharing bar — loaded globally */}
+        <SocialBar />
       </body>
     </html>
   );

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { BookOpen, Heart, Clock, ArrowLeft, Share2, Calendar, User, Tag, CheckCircle, Star, Sparkles, ArrowRight } from 'lucide-react';
 import { getSiteUrl } from '@/lib/seo/site';
 import blogPostsData from '../../../../public/data/blog-posts.json';
+import NativeBanner from '@/components/Ads/NativeBanner';
 
 // ISR: 30-day cache — static blog content
 export const revalidate = 2592000; // 30 days
@@ -167,6 +168,9 @@ export default async function GuidePage({ params }) {
               </p>
             </div>
 
+            {/* Native Banner 1 — After introduction */}
+            <NativeBanner className="my-6" minHeight="90px" instanceId="guide-post-1" />
+
             {/* Main Content Sections */}
             {post.content.sections && post.content.sections.map((section, index) => (
               <section key={index} className="mb-10">
@@ -196,6 +200,9 @@ export default async function GuidePage({ params }) {
                 )}
               </section>
             ))}
+
+            {/* Native Banner 2 — Mid-content */}
+            <NativeBanner className="my-6" minHeight="90px" instanceId="guide-post-2" />
 
             {/* Expert Tips */}
             {post.content.expertTips && (
@@ -229,6 +236,9 @@ export default async function GuidePage({ params }) {
                 ))}
               </div>
             </div>
+
+            {/* Native Banner 3 — Before related content */}
+            <NativeBanner className="my-6" minHeight="90px" instanceId="guide-post-3" />
 
             {/* Share */}
             <div className="flex items-center gap-4 pt-6 border-t border-gray-200">

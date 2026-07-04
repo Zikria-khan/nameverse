@@ -6,7 +6,7 @@ import KnowledgeGraph from './KnowledgeGraph';
 import TopicClusterNav from './TopicClusterNav';
 import SitePage from '@/components/Layout/SitePage';
 import BlogSection from '@/components/Blog/BlogSection';
-import NativeAdBanner from '@/components/Ads/NativeAdBanner';
+import NativeBanner from '@/components/Ads/NativeBanner';
 import Link from 'next/link';
 import { ArrowRight, Search, Grid3X3, Sparkles, TrendingUp, Network, LayoutDashboard } from 'lucide-react';
 import { createSafeSlug } from '@/lib/utils/createSafeSlug';
@@ -107,13 +107,13 @@ export default function CulturalNameAnalysisCard({ data, faqData = [], pageUrl, 
       <NameHero data={data} pageUrl={pageUrl} />
 
       {/* Native Banner 1 — After page title/intro */}
-      <NativeAdBanner className="my-6" minHeight="90px" />
+      <NativeBanner className="my-6" minHeight="90px" instanceId="name-detail-1" />
 
       <div className="nv-stack">
         <LinguisticOriginPanel data={data} />
 
         {/* Native Banner 2 — Mid-content, between Meaning and RelatedNames */}
-        <NativeAdBanner className="my-6" minHeight="90px" />
+        <NativeBanner className="my-6" minHeight="90px" instanceId="name-detail-2" />
 
         <RelatedNames data={data} />
       </div>
@@ -237,7 +237,7 @@ export default function CulturalNameAnalysisCard({ data, faqData = [], pageUrl, 
       </div>
 
       {/* Native Banner 3 — After all content, before related content/footer */}
-      <NativeAdBanner className="my-6" minHeight="90px" />
+      <NativeBanner className="my-6" minHeight="90px" instanceId="name-detail-3" />
 
       <BlogSection religion={religion} title={`${religionLabel} Name Guides`} />
     </SitePage>

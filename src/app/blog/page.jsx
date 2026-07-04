@@ -6,7 +6,7 @@ import StructuredData from '@/components/SEO/StructuredData';
 import BlogImageWithFallback from '@/components/Blog/BlogImageWithFallback';
 import { getSiteUrl } from '@/lib/seo/site';
 import SitePage from '@/components/Layout/SitePage';
-import NativeAdBanner from '@/components/Ads/NativeAdBanner';
+import NativeBanner from '@/components/Ads/NativeBanner';
 
 // ISR with 90-day cache for blog index — keep content stable
 export const revalidate = 7776000; // 90 days
@@ -95,7 +95,7 @@ export default function BlogPage() {
          </div>
        </section>
        
-       <NativeAdBanner className="my-6" minHeight="90px" />
+       <NativeBanner className="my-6" minHeight="90px" instanceId="blog-index-1" />
 
       {/* Blog internal links */}
       <section className="py-10 px-4 bg-gradient-to-r from-indigo-50 via-white to-cyan-50 border-b border-gray-200">
@@ -298,7 +298,7 @@ export default function BlogPage() {
         </div>
        </section>
  
-       <NativeAdBanner className="my-6" minHeight="90px" />
+       <NativeBanner className="my-6" minHeight="90px" instanceId="blog-index-2" />
  
        {/* FAQ Section */}
        <section className="py-16 px-4 bg-slate-50">
@@ -315,7 +315,7 @@ export default function BlogPage() {
          </div>
        </section>
  
-       <NativeAdBanner className="my-6" minHeight="90px" />
+       <NativeBanner className="my-6" minHeight="90px" instanceId="blog-index-3" />
  
        {/* CTA Section */}
        <section className="py-16 px-4">

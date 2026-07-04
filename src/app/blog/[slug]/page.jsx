@@ -10,7 +10,7 @@ import hinduNames from '../../../../public/hindu_names.json';
 import christianNames from '../../../../public/christians_names.json';
 import SitePage from '@/components/Layout/SitePage';
 import { createSafeSlug } from '@/lib/utils/createSafeSlug';
-import NativeAdBanner from '@/components/Ads/NativeAdBanner';
+import NativeBanner from '@/components/Ads/NativeBanner';
 
 // ISR with 90-day cache for blog posts — keep content stable
 export const revalidate = 7776000; // 90 days
@@ -345,7 +345,7 @@ export default async function BlogPostPage({ params }) {
                </p>
              </div>
              
-             <NativeAdBanner className="my-6" minHeight="90px" />
+             <NativeBanner className="my-6" minHeight="90px" instanceId="blog-post-1" />
  
              {/* Sections */}
              {post.content.sections && post.content.sections.map((section, index) => (
@@ -387,7 +387,7 @@ export default async function BlogPostPage({ params }) {
                </section>
              ))}
              
-             <NativeAdBanner className="my-6" minHeight="90px" />
+             <NativeBanner className="my-6" minHeight="90px" instanceId="blog-post-2" />
  
              {/* FAQs Section */}
              {post.content.faqs && post.content.faqs.length > 0 && (
@@ -418,7 +418,7 @@ export default async function BlogPostPage({ params }) {
                </section>
              )}
  
-             <NativeAdBanner className="my-6" minHeight="90px" />
+             <NativeBanner className="my-6" minHeight="90px" instanceId="blog-post-3" />
  
      {/* CTA */}
      <section className="py-12 px-4">
