@@ -19,10 +19,12 @@ function debounce(func, wait) {
   };
 }
 
+// These must live in /public so they're servable at these paths.
+// Filenames match your uploaded extraction files exactly.
 const NAME_FILES = [
-  { filename: 'islamic_names.json', religion: 'islamic' },
-  { filename: 'hindu_names.json', religion: 'hindu' },
-  { filename: 'christians_names.json', religion: 'christian' }
+  { filename: 'islamic_extracted.json', religion: 'islamic' },
+  { filename: 'hindu_extracted.json', religion: 'hindu' },
+  { filename: 'christian_extracted.json', religion: 'christian' }
 ];
 
 const POPULAR_SEARCHES = [
@@ -120,6 +122,37 @@ function getStaticIntentResults(query, religion) {
     : intentResults.filter((item) => item.religion === religion);
 }
 
+// The raw datasets use wildly inconsistent gender strings
+// (e.g. "(Male or Female or Unisex)", "مذكر", "female,male", "Boy", "Girl").
+// Normalize everything down to Boy / Girl / Unisex / '' for filtering + display.
+function normalizeGender(raw) {
+  if (!raw) return '';
+  const g = raw.toString().toLowerCase();
+
+  const isMale = /\b(male|boy|masculine|مذكر)\b/.test(g);
+  const isFemale = /\b(female|girl|feminine|أنثى)\b/.test(g);
+
+  if (isMale && isFemale) return 'Unisex';
+  if (/unisex|neutral|neuter|genderless|gender.?not.?specified/.test(g)) return 'Unisex';
+  if (isMale) return 'Boy';
+  if (isFemale) return 'Girl';
+  return '';
+}
+
+// Names in the raw files are inconsistently cased ("abeliel", "Nikhil").
+function toDisplayName(name) {
+  if (!name) return '';
+  return name
+    .split(/\s+/)
+    .map((w) => (w.length ? w[0].toUpperCase() + w.slice(1) : w))
+    .join(' ');
+}
+
+function normalizeLanguage(language) {
+  if (Array.isArray(language)) return language.filter(Boolean).join(', ');
+  return language || '';
+}
+
 export default function GlobalSearchClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -134,7 +167,7 @@ export default function GlobalSearchClient() {
   const [selectedReligion, setSelectedReligion] = useState('all');
   const debouncedSearchRef = useRef(null);
 
-  // Load names from local JSON files
+  // Load names from local JSON files (place these in /public exactly as named in NAME_FILES)
   const loadNamesData = useCallback(async () => {
     if (dataLoaded) return;
 
@@ -152,14 +185,19 @@ export default function GlobalSearchClient() {
 
             allNamesData.push(
               ...json.map((item) => {
-                const name = typeof item === 'string' ? item : (item.name || '');
+                const rawName = typeof item === 'string' ? item : (item.name || '');
+                const displayName = toDisplayName(rawName);
+                const language = normalizeLanguage(item.language);
+
                 return {
-                  name,
+                  name: displayName,
                   religion,
-                  slug: createSafeSlug(name),
-                  meaning: item.meaning || item.short_meaning || '',
-                  gender: item.gender || '',
-                  origin: item.origin || ''
+                  slug: createSafeSlug(rawName),
+                  meaning: item.short_meaning || item.meaning || '',
+                  gender: normalizeGender(item.gender),
+                  origin: item.origin || '',
+                  language,
+                  category: item.category || ''
                 };
               })
             );
@@ -169,7 +207,7 @@ export default function GlobalSearchClient() {
         })
       );
 
-      // Remove duplicates
+      // Remove duplicates (same religion + slug)
       const uniqueNames = Array.from(
         new Map(allNamesData.map((item) => [`${item.religion}:${item.slug}`, item])).values()
       );
@@ -205,6 +243,7 @@ export default function GlobalSearchClient() {
         item.name.toLowerCase().includes(lowerQuery) ||
         item.meaning?.toLowerCase().includes(lowerQuery) ||
         item.origin?.toLowerCase().includes(lowerQuery) ||
+        item.language?.toLowerCase().includes(lowerQuery) ||
         item.religion?.toLowerCase().includes(lowerQuery) ||
         item.gender?.toLowerCase().includes(lowerQuery)
       );
@@ -212,6 +251,13 @@ export default function GlobalSearchClient() {
       if (religion !== 'all') {
         filtered = filtered.filter((item) => item.religion === religion);
       }
+
+      // Prioritize names that start with the query over substring-only matches
+      filtered.sort((a, b) => {
+        const aStarts = a.name.toLowerCase().startsWith(lowerQuery) ? 0 : 1;
+        const bStarts = b.name.toLowerCase().startsWith(lowerQuery) ? 0 : 1;
+        return aStarts - bStarts;
+      });
 
       setResults(filtered.slice(0, 20));
     }, 300);
@@ -370,7 +416,7 @@ export default function GlobalSearchClient() {
           <div className="flex justify-center items-center py-20">
             <div className="text-center">
               <Loader2 className="w-12 h-12 animate-spin text-purple-600 mx-auto mb-4" />
-              <p className="text-gray-600">Loading baby names database...</p>
+              <p className="text-gray-600">Loading baby names database…</p>
             </div>
           </div>
         )}
@@ -442,4 +488,3 @@ export default function GlobalSearchClient() {
     </div>
   );
 }
-
