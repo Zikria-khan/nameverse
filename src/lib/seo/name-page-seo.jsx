@@ -149,6 +149,50 @@ function getPublishedDate(data) {
   return data.published_date || data.created_at || data.updated_at || new Date().toISOString().split('T')[0];
 }
 
+/**
+ * Rough content-completeness score for a name record.
+ * Pages whose assembled content is too thin tend to be flagged by Google as
+ * "Duplicate / alternate canonical" because thousands of them share the same
+ * short boilerplate. This score (not a hardcoded list) drives a conditional
+ * noindex so genuinely thin records are still rendered but not fully indexed.
+ */
+function computeContentScore(data) {
+  let score = 0;
+  let totalChars = 0;
+  const tally = (value) => {
+    const t = cleanText(typeof value === 'string' ? value : (value && typeof value === 'object' ? JSON.stringify(value) : ''));
+    if (!t) return;
+    totalChars += t.length;
+    score += 1;
+    if (t.length >= 60) score += 1;
+  };
+
+  tally(data.short_meaning || data.meaning);
+  tally(data.long_meaning);
+  tally(data.numerology_meaning);
+  tally(data.spiritual_meaning || data.spiritual_significance);
+  tally(data.cultural_impact);
+  tally(data.personality_traits);
+  tally(data.emotional_traits);
+  tally(data.hidden_personality_traits);
+  tally(data.islamic_reference && (data.islamic_reference.note || data.islamic_reference.is_quranic));
+  tally(data.vedic_reference && (data.vedic_reference.root_origin || data.vedic_reference.is_vedic));
+  if (Array.isArray(data.historical_references)) score += Math.min(data.historical_references.length, 3);
+  if (Array.isArray(data.celebrity_usage)) score += Math.min(data.celebrity_usage.length, 3);
+
+  // Translations and lucky details add unique, per-name content.
+  score += Math.min(getLanguages(data).length, 5);
+  if (cleanText(data.lucky_number || data.luckyNumber)) score += 1;
+  if (cleanText(data.lucky_day)) score += 1;
+  if (Array.isArray(data.lucky_colors) && data.lucky_colors.length) score += 1;
+  if (cleanText(data.lucky_stone)) score += 1;
+
+  return { score, totalChars };
+}
+
+// Below this, a name page is considered too thin to index on its own.
+const THIN_CONTENT_THRESHOLD = 4;
+
 function q(question, answer) {
   return { question, answer: cleanText(answer) };
 }
@@ -434,6 +478,15 @@ export async function generateNamePageMetadata(data, religion, slug) {
   const description = descriptionObj.desktop;
   const keywords = generateOptimizedKeywords(data, religion);
 
+  // Conditional noindex for thin records (see computeContentScore). Thin pages
+  // are still rendered but excluded from full indexing to reduce the duplicate
+  // / alternate-canonical buckets in GSC.
+  const { score: contentScore } = computeContentScore(data);
+  const isThin = contentScore < THIN_CONTENT_THRESHOLD;
+  const robots = isThin
+    ? { index: false, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 }
+    : { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 };
+
   return {
     title,
     description,
@@ -467,12 +520,7 @@ export async function generateNamePageMetadata(data, religion, slug) {
       creator: '@NameVerseOfficial',
       site: '@NameVerseOfficial',
     },
-    robots: {
-      index: true,
-      follow: true,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
+    robots,
     other: {
       'theme-color': '#D97706',
       'article:section': 'Name Meaning',

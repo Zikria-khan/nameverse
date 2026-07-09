@@ -1,10 +1,20 @@
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
 import { getSiteUrl } from '@/lib/seo/site';
+import { NOINDEX_ROBOTS } from '@/lib/seo/topical-authority-architecture';
 import SitePage from '@/components/Layout/SitePage';
 import { Heart, Save, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 const siteUrl = getSiteUrl();
+
+// /my-names is client-side, personalized and empty on the server, so it must
+// not be indexed. The robots directive is sourced from NOINDEX_ROBOTS so it
+// stays in sync with /search and the rest of the crawl strategy.
+const noindex = NOINDEX_ROBOTS.split(',').map((token) => token.trim());
+const robots = {
+  index: !noindex.includes('noindex'),
+  follow: noindex.includes('follow'),
+};
 
 export const metadata = {
   title: validateMetaTitle('My Saved Names — Your Personal Baby Name Collection | NameVerse'),
@@ -12,6 +22,7 @@ export const metadata = {
     'View and manage your saved baby names collection. Keep track of names you love from Islamic, Hindu, and Christian traditions.'
   ),
   alternates: { canonical: `${siteUrl}/my-names` },
+  robots,
   openGraph: {
     title: validateMetaTitle('My Saved Names — Personal Collection'),
     description: validateMetaDescription(

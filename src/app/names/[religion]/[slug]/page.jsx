@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { createSlug, nameAbsoluteUrl, isValidSlug } from '@/lib/seo/url-builder';
 import { generateNamePageMetadata, generateNamePageSchemas } from '@/lib/seo/name-page-seo';
-import { serverFetchNameDetail, serverFetchTrendingNames } from '@/lib/api/server-fetch';
+import { serverFetchNameDetail, serverFetchTrendingNames, serverFilterKnownSlugs } from '@/lib/api/server-fetch';
 import { sanitizeNameData } from '@/lib/utils/sanitizeNameData';
 import CulturalNameAnalysisCard from '@/components/name/NameDetail';
 import Script from 'next/script';
@@ -271,6 +271,21 @@ export default async function NameDetailPage({ params }) {
   }
 
   nameData = sanitizeNameData(nameData);
+
+  // Pre-validate similar/related/variation links against the backend so the page
+  // only renders internal <Link>s to name pages that actually exist (fixes a
+  // long-standing source of 404s from similar_sounding_names).
+  const [filteredSimilar, filteredRelated, filteredVariations] = await Promise.all([
+    serverFilterKnownSlugs(religion, nameData.similar_sounding_names),
+    serverFilterKnownSlugs(religion, nameData.related_names),
+    serverFilterKnownSlugs(religion, nameData.name_variations),
+  ]);
+  nameData = {
+    ...nameData,
+    similar_sounding_names: filteredSimilar,
+    related_names: filteredRelated,
+    name_variations: filteredVariations,
+  };
 
   const pageUrl = nameAbsoluteUrl(religion, slug);
   const schemas = generateNamePageSchemas(nameData, religion, slug);

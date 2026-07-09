@@ -137,13 +137,22 @@ function normalizePath(pathname) {
   // Step 3: Collapse double slashes
   normalized = normalized.replace(/\/+/g, '/');
 
-  // Step 4: Check if any normalization happened
-  if (normalized !== pathname.toLowerCase()) {
+  // Step 4: Check if any normalization happened.
+  // IMPORTANT: compare against the ORIGINAL pathname, not pathname.toLowerCase(),
+  // otherwise pure-case differences (e.g. /Names/Islamic/Abdullah/) would never
+  // trigger a redirect and would instead fall through to a 404.
+  if (normalized !== pathname) {
     return normalized;
   }
 
   return null; // No normalization needed
 }
+
+// Inline trace example (verified):
+//   normalizePath('/Names/Islamic/Abdullah/')
+//     -> lowercased  '/names/islamic/abdullah/'
+//     -> trailing slash removed '/names/islamic/abdullah'
+//     -> !== original '/Names/Islamic/Abdullah/'  => returns '/names/islamic/abdullah' (301)
 
 /**
  * Handle old URL pattern redirects
@@ -258,6 +267,14 @@ export function middleware(request) {
         status: 410,
         headers: { 'X-Robots-Tag': 'noindex', 'Cache-Control': 'public, max-age=31536000, immutable' },
       });
+    }
+    // Canonical letter pages use uppercase (sitemap-letter.xml only lists A-Z).
+    // Redirect a lowercase/mixed-case letter to its uppercase canonical form
+    // so /names/islamic/letter/a/1 → 301 /names/islamic/letter/A/1 instead of
+    // returning a duplicate 200.
+    if (segments[3] !== segments[3].toUpperCase()) {
+      const canonical = `/names/${religion}/letter/${segments[3].toUpperCase()}/${segments[4]}`;
+      return NextResponse.redirect(new URL(canonical, request.url), 301);
     }
     return NextResponse.next();
   }

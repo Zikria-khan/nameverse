@@ -39,14 +39,15 @@ const RESERVED_SLUGS = new Set([
   'pages', 'religion', 'religions', 'search', 'tag', 'tags',
 ]);
 
-// Only include static routes that have corresponding app routes
+// Only include static routes that have corresponding app routes.
+// Every entry MUST resolve to a real page file under src/app (see
+// validateStaticRoutes() guard in writeSitemapFiles). Phantom routes that
+// have no matching page were removed to stop the sitemap submitting 404s.
 const STATIC_ROUTES = [
   '/', '/names', '/search', '/blog', '/about', '/privacy', '/terms',
-  '/languages', '/popularity', '/name-meanings', '/names-by-meaning', 
+  '/languages', '/popularity', '/name-meanings', '/names-by-meaning',
   '/names-by-origin', '/unique-names', '/trending-names', '/advanced-search', '/my-names',
-  '/guides/expert-naming-guide', '/viral-names', '/popular-baby-names',
-  '/names-by-letter', '/stories', '/religions',
-  '/top-islamic-names', '/top-christian-names', '/top-hindu-names',
+  '/guides/expert-naming-guide', '/viral-names', '/stories',
 ];
 
 function readJson(file, fallback) {
@@ -59,11 +60,50 @@ function readJson(file, fallback) {
 
 function writeJson(file, data) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`);
+  const content = `${JSON.stringify(data, null, 2)}\n`;
+  // Retry on transient filesystem errors (e.g. file lock from sync tools).
+  let lastError;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      fs.writeFileSync(file, content);
+      return;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  throw lastError;
 }
 
 function cleanText(value = '') {
   return String(value || '').replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Resolve a static route (e.g. "/foo/bar") to a page file under src/app.
+ * Returns the resolved path or null if no matching page exists.
+ */
+function resolveStaticRoutePage(route) {
+  const rel = route === '/' ? 'app/page' : `app${route}/page`;
+  for (const ext of ['jsx', 'js', 'tsx', 'ts']) {
+    const candidate = path.join(rootDir, 'src', `${rel}.${ext}`);
+    if (fs.existsSync(candidate)) return candidate;
+  }
+  return null;
+}
+
+/**
+ * Build-time guard: every STATIC_ROUTES entry must resolve to a real page
+ * file. Throw loudly if any route has regressed to a phantom (no page file),
+ * so the sitemap can never again submit guaranteed 404s.
+ */
+function validateStaticRoutes() {
+  const missing = STATIC_ROUTES.filter((route) => !resolveStaticRoutePage(route));
+  if (missing.length) {
+    throw new Error(
+      `[sitemap] STATIC_ROUTES contains paths with no matching page file under src/app: ${missing.join(', ')}`
+    );
+  }
+  return true;
 }
 
 /**
@@ -224,9 +264,15 @@ function addEntry(entries, seen, pathname, type, lastmod, changefreq, priority) 
 }
 
 async function fetchJson(url) {
-  const response = await fetch(url, { headers: { accept: 'application/json' } });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  return response.json();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 12000);
+  try {
+    const response = await fetch(url, { headers: { accept: 'application/json' }, signal: controller.signal });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.json();
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 async function fetchFilters(religion) {
@@ -256,6 +302,83 @@ async function fetchCollectionPages(religion, params) {
   } catch {
     return 0;
   }
+}
+
+// Cache of confirmed backend slugs per religion, built once per build run.
+// The backend caps list responses at 100 items/page. Offset-based pagination
+// trips a backend MongoDB sort memory limit on deep pages, so we instead
+// paginate PER LETTER (alphabet filter) — each letter's result set is small
+// enough that sorting never exceeds the limit. We collect the full slug set
+// into a Set for O(1) membership lookups.
+const backendSlugCache = new Map();
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// fetchJson throws on transport/HTTP errors; retry with backoff so a transient
+// backend hiccup or connection-limit rejection doesn't silently drop slugs.
+async function fetchJsonRetry(url, retries = 4) {
+  let lastError;
+  for (let attempt = 0; attempt <= retries; attempt += 1) {
+    try {
+      return await fetchJson(url);
+    } catch (error) {
+      lastError = error;
+      if (attempt < retries) await sleep(250 * (attempt + 1));
+    }
+  }
+  throw lastError;
+}
+
+async function fetchBackendSlugs(religion) {
+  if (backendSlugCache.has(religion)) return backendSlugCache.get(religion);
+
+  const slugs = new Set();
+  const collect = (arr) => {
+    for (const item of (arr || [])) {
+      const s = item && item.slug;
+      if (s) slugs.add(String(s).toLowerCase());
+    }
+  };
+
+  async function fetchLetter(letter) {
+    const first = await fetchJsonRetry(`${API_BASE}/api/v1/names/${religion}?alphabet=${letter}&page=1&limit=100&sort=asc`);
+    collect(first.data);
+    const pagination = first.pagination || {};
+    let totalPages = Number(pagination.totalPages || pagination.pages || 0);
+    if (!totalPages || !isFinite(totalPages)) totalPages = 0;
+    totalPages = Math.min(totalPages, 500);
+    // Fetch the remaining pages of this letter in parallel (capped) so a letter
+    // with many pages doesn't serialize one slow request at a time.
+    const PAGE_CONCURRENCY = 10;
+    const pageNums = [];
+    for (let page = 2; page <= totalPages; page += 1) pageNums.push(page);
+    for (let i = 0; i < pageNums.length; i += PAGE_CONCURRENCY) {
+      const batch = pageNums.slice(i, i + PAGE_CONCURRENCY);
+      await Promise.all(batch.map(async (page) => {
+        try {
+          const data = await fetchJsonRetry(`${API_BASE}/api/v1/names/${religion}?alphabet=${letter}&page=${page}&limit=100&sort=asc`);
+          collect(data.data);
+        } catch {
+          // skip unreachable page; continue with the rest of the letter
+        }
+      }));
+    }
+    console.log(`[sitemap]   ${religion}/${letter}: ${slugs.size} slugs so far`);
+  }
+
+  const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
+  const CONCURRENCY = 3;
+  for (let i = 0; i < letters.length; i += CONCURRENCY) {
+    const batch = letters.slice(i, i + CONCURRENCY);
+    await Promise.all(batch.map((letter) => fetchLetter(letter).catch((error) => {
+      console.warn(`[sitemap] WARNING: could not fetch backend slugs for ${religion}/${letter}: ${error.message}`);
+    })));
+    await sleep(75);
+  }
+
+  console.log(`[sitemap] Fetched ${slugs.size} valid backend slugs for ${religion}`);
+  backendSlugCache.set(religion, slugs);
+  return slugs;
 }
 
 function localCounts(allNames, detailedNames) {
@@ -298,12 +421,28 @@ export async function buildSitemapEntries() {
     addEntry(entries, seen, `/${religion}/girl-names`, 'gender', today, 'weekly', 0.8);
   }
 
-  // Name pages — validate every slug before adding
+  // Name pages — validate every slug against the live backend dataset.
+  // A slug only enters the sitemap if the backend actually has a record for it.
+  const backendSlugSets = {};
+  for (const religion of RELIGIONS) {
+    backendSlugSets[religion] = await fetchBackendSlugs(religion);
+  }
+  let nameKept = 0;
+  let nameDropped = 0;
   for (const name of allNames) {
     if (!name.slug || !isValidSlug(name.slug)) continue;
-    const lastmod = name.updated_at || today;
-    addEntry(entries, seen, `/names/${name.religion}/${name.slug}`, 'name', lastmod, 'weekly', 0.8);
+    const backendSlugs = backendSlugSets[name.religion] || new Set();
+    // If the backend set is empty we couldn't reach it — fall back to including
+    // the slug so a transient outage doesn't wipe the entire name sitemap.
+    if (backendSlugs.size === 0 || backendSlugs.has(name.slug)) {
+      nameKept += 1;
+      const lastmod = name.updated_at || today;
+      addEntry(entries, seen, `/names/${name.religion}/${name.slug}`, 'name', lastmod, 'weekly', 0.8);
+    } else {
+      nameDropped += 1;
+    }
   }
+  console.log(`[sitemap] Name page validation: kept ${nameKept}, dropped ${nameDropped} (not found in backend dataset)`);
 
   // Blog posts
   for (const post of posts) {
@@ -394,6 +533,9 @@ function indexXml(locs) {
 }
 
 export async function writeSitemapFiles() {
+  // Guard: fail the build if any STATIC_ROUTES entry lost its page file.
+  validateStaticRoutes();
+
   const { entries } = await buildSitemapEntries();
   const groups = groupEntries(entries);
   const sitemapLocs = [];

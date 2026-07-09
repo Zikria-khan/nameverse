@@ -41,30 +41,12 @@ const nextConfig = {
 
   // REDIRECT CLEANUP: All redirects in one place — no chains, no loops
   // Rule: ONE URL → ONE redirect → final 200 page
+  //
+  // NOTE: Religion-path normalization (islam/muslim/christianity/hinduism →
+  // canonical islamic/christian/hindu) lives in middleware.js, NOT here, to
+  // avoid double-hop redirect chains. Do not re-add those four rules below.
   async redirects() {
     return [
-      // Religion name normalization → lowercase canonical form
-      // Prevents: /names/Islam/Abdullah vs /names/islamic/abdullah
-      {
-        source: '/names/islam/:path*',
-        destination: '/names/islamic/:path*',
-        permanent: true,
-      },
-      {
-        source: '/names/muslim/:path*',
-        destination: '/names/islamic/:path*',
-        permanent: true,
-      },
-      {
-        source: '/names/christianity/:path*',
-        destination: '/names/christian/:path*',
-        permanent: true,
-      },
-      {
-        source: '/names/hinduism/:path*',
-        destination: '/names/hindu/:path*',
-        permanent: true,
-      },
       // Old /baby-names/ paths → new /names/ structure
       {
         source: '/baby-names/:path*',

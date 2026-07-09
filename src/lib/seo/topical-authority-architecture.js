@@ -1659,6 +1659,19 @@ export const CRAWL_STRATEGY = {
   ],
 };
 
+// Single source of truth for the noindex robots directive. Pages that match
+// CRAWL_STRATEGY.noindexPatterns should render this exact directive so the
+// string can never drift out of sync between routes.
+export const NOINDEX_ROBOTS = 'noindex, follow';
+
+export function shouldNoIndex(pathname = '') {
+  const patterns = CRAWL_STRATEGY.noindexPatterns || [];
+  return patterns.some((pattern) => {
+    const cleaned = pattern.replace(/\/+$/, '');
+    return pathname.includes(cleaned) || pathname.startsWith(pattern);
+  });
+}
+
 // ============================================================
 // 7. NAVIGATION ARCHITECTURE
 // ============================================================

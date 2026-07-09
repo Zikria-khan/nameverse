@@ -22,6 +22,10 @@
 const API_BASE = (process.env.NEXT_PUBLIC_API_BASE || 'https://name-meaning-site-backend.vercel.app').replace(/\/+$/, '');
 const ISR_TTL = 2592000; // 30 days
 
+// Reuse the canonical slug builder so similar-name strings are normalized the
+// exact same way the rest of the app links to them.
+import { createSlug } from '../seo/url-builder';
+
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
 
 function normalizeReligion(val) {
@@ -284,6 +288,43 @@ export async function serverFetchNameDetail(religion, slug) {
 }
 
 /**
+ * Check whether a single slug actually exists in the backend dataset.
+ * Reuses serverFetchNameDetail (with its ISR cache) so we never invent a
+ * second client. Returns true only when the backend confirms a record.
+ */
+export async function serverIsKnownSlug(religion, slug) {
+  if (!religion || !slug) return false;
+  const result = await serverFetchNameDetail(religion, slug);
+  return Boolean(result.data && !result.notFound);
+}
+
+/**
+ * Filter a list of name strings down to those whose slug resolves to a real
+ * backend record. Used to pre-validate similar/related/variation links so the
+ * UI never renders an internal <Link> to a non-existent name page.
+ *
+ * Fetches are deduped by slug and run in parallel; the returned array keeps the
+ * original (pre-slugified) name strings in input order, capped to `limit`.
+ */
+export async function serverFilterKnownSlugs(religion, names, limit = 12) {
+  if (!Array.isArray(names) || !names.length) return [];
+  const seen = new Set();
+  const unique = [];
+  for (const name of names) {
+    if (typeof name !== 'string') continue;
+    const slug = createSlug(name.trim());
+    if (!slug || seen.has(slug)) continue;
+    seen.add(slug);
+    unique.push({ name, slug });
+    if (unique.length >= limit) break;
+  }
+  const results = await Promise.all(
+    unique.map((item) => serverIsKnownSlug(religion, item.slug).then((ok) => (ok ? item.name : null)))
+  );
+  return results.filter(Boolean);
+}
+
+/**
  * Fetch trending names with ISR
  * Backend: GET /api/names?religion=X&limit=20
  */
@@ -461,6 +502,8 @@ const serverAPI = {
   serverFetchNamesByLetter,
   serverFetchNamesWithAdvancedFilters,
   serverFetchNameDetail,
+  serverIsKnownSlug,
+  serverFilterKnownSlugs,
   serverFetchTrendingNames,
   serverFetchRelatedNames,
   serverFetchSimilarNames,

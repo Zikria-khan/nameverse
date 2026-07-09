@@ -102,6 +102,18 @@ function getReferencePeriod(item) {
   return item && typeof item === 'object' ? cleanText(item.time_period) : '';
 }
 
+// Deterministic hash so the same name always gets the same filler variant
+// (stable across renders/SSG), but different names generally get different text.
+function hashString(str) {
+  let hash = 0;
+  const value = String(str || '');
+  for (let i = 0; i < value.length; i += 1) {
+    hash = (hash << 5) - hash + value.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
+
 function buildSnippet(data) {
   const name = cleanText(data.name || 'This name');
   const meaning = getCoreMeaning(data);
@@ -113,8 +125,23 @@ function buildSnippet(data) {
   const luckyNumber = data.lucky_number || data.luckyNumber;
   let text = `${name} is a ${gender} name from ${origin} origin meaning "${meaning}". It is used in ${religion} naming contexts${languages.length ? ` and appears in ${languages.join(', ')}` : ''}.${pronunciation ? ` Pronunciation: ${pronunciation}.` : ''}${luckyNumber ? ` Lucky number: ${luckyNumber}.` : ''}`;
 
+  // Avoid a single boilerplate sentence on every thin record (was a top cause
+  // of duplicate-content in GSC). Compose filler from the name's own
+  // attributes and pick a variant deterministically by hash of the slug so two
+  // different names rarely end up with byte-identical filler.
   if (text.split(/\s+/).length < 40) {
-    text += ' Parents often choose it for its clear meaning, cultural background, and positive naming associations.';
+    const religionPhrase = religion.toLowerCase();
+    const originPhrase = origin.toLowerCase();
+    const variants = [
+      `${name} is often chosen by ${religionPhrase} families who value ${originPhrase} heritage and a meaning they can explain to their child.`,
+      `Many parents pick ${name} because its ${originPhrase} background pairs a clear meaning with easy everyday pronunciation.`,
+      `As a ${gender} ${religionPhrase} name, ${name} carries a meaning that travels well across cultures while keeping its ${originPhrase} root.`,
+      `${name} fits families looking for a ${religionPhrase} name with a ${originPhrase} origin and a meaning that feels personal rather than generic.`,
+      `The appeal of ${name} is its balance: a ${originPhrase} source, a ${religionPhrase} naming context, and a meaning that reads naturally aloud.`,
+      `Choosing ${name} lets parents honour ${originPhrase} tradition within a ${religionPhrase} naming practice without sacrificing a modern sound.`,
+    ];
+    const idx = hashString(`${data.religion || ''}|${name}`) % variants.length;
+    text += ` ${variants[idx]}`;
   }
 
   return text.split(/\s+/).slice(0, 58).join(' ');

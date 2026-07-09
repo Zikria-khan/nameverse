@@ -1,6 +1,7 @@
 import { serverSearchNames } from '@/lib/api/server-fetch';
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers';
 import { getSiteUrl } from '@/lib/seo/site';
+import { NOINDEX_ROBOTS } from '@/lib/seo/topical-authority-architecture';
 import ClientComponent from './ClientComponent';
 import { createSafeSlug } from '@/lib/utils/createSafeSlug';
 
@@ -19,7 +20,7 @@ export async function generateMetadata({ params }) {
   let meta = [];
   if (searchResults.count === 0) {
     meta = [
-      { name: 'robots', content: 'noindex, follow' }
+      { name: 'robots', content: NOINDEX_ROBOTS }
     ];
   }
 
