@@ -7,6 +7,7 @@ import TopicClusterNav from './TopicClusterNav';
 import SitePage from '@/components/Layout/SitePage';
 import BlogSection from '@/components/Blog/BlogSection';
 import NativeBanner from '@/components/Ads/NativeBanner';
+import RevenueBanners from '@/components/Ads/RevenueBanners';
 import Link from 'next/link';
 import { ArrowRight, Search, Grid3X3, Sparkles, TrendingUp, Network, LayoutDashboard } from 'lucide-react';
 import { createSafeSlug } from '@/lib/utils/createSafeSlug';
@@ -108,6 +109,9 @@ export default function CulturalNameAnalysisCard({ data, faqData = [], pageUrl, 
 
       {/* Native Banner 1 — After page title/intro */}
       <NativeBanner className="my-6" minHeight="90px" instanceId="name-detail-1" />
+
+      {/* REVENUE BANNERS — center of name detail content */}
+      <RevenueBanners />
 
       <div className="nv-stack">
         <LinguisticOriginPanel data={data} />

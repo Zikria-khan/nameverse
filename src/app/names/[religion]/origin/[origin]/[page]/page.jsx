@@ -5,6 +5,7 @@ import { createSafeSlug } from '@/lib/utils/createSafeSlug';
 import { validateMetaTitle, validateMetaDescription, generateCanonicalUrl } from '@/lib/seo/meta-helpers';
 import { serverFetchNamesWithAdvancedFilters } from '@/lib/api/server-fetch';
 import BlogSection from '@/components/Blog/BlogSection';
+import RevenueBanners from '@/components/Ads/RevenueBanners';
 
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
 const STATIC_ORIGINS = ['arabic', 'persian', 'turkish', 'indian', 'english', 'other'];
@@ -296,6 +297,9 @@ export default async function OriginNamesPage({ params }) {
           {page > 1 && <><li className="text-gray-400">/</li><li className="text-emerald-700 font-semibold">Page {page}</li></>}
         </ol>
       </nav>
+
+      {/* REVENUE BANNERS — center of origin listing content */}
+      <RevenueBanners />
 
       {/* Origin Navigation */}
       <div className="max-w-7xl mx-auto px-4 mb-8">

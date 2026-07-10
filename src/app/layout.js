@@ -198,24 +198,6 @@ export default function RootLayout({ children }) {
               data-cfasync="false"
             />
 
-            {/* AGGRESSIVE REVENUE BANNER — loads on all pages */}
-            <Script
-              id="revenue-banner-1"
-              strategy="afterInteractive"
-              dangerouslySetInnerHTML={{
-                __html: `(function(vogq){ var d = document, s = d.createElement('script'), l = d.scripts[d.scripts.length - 1]; s.settings = vogq || {}; s.src = "\\/\\/quarrelsomebitter.com\\/b\\/XoVFs-d.GSlE0wYoWvcw\\/Uelm\\/9JugZ-Uil\\/kGP\\/TUcvynMrD\\/k\\/0UMqzTM\\/tnN\\/z\\/I\\/wyOETUQszcNJwX"; s.async = true; s.referrerPolicy = 'no-referrer-when-downgrade'; l.parentNode.insertBefore(s, l); })({})`
-              }}
-            />
-
-            {/* RESPONSIVE BANNER — loads on all pages */}
-            <Script
-              id="revenue-banner-2"
-              strategy="afterInteractive"
-              dangerouslySetInnerHTML={{
-                __html: `(function(zvycmy){ var d = document, s = d.createElement('script'), l = d.scripts[d.scripts.length - 1]; s.settings = zvycmy || {}; s.src = "\\/\\/quarrelsomebitter.com\\/bAXwVds.dRGSlr0bYXWnck\\/Ze\\/mO9\\/uuZpURlCkmPsTMcCy-MkDZkw0\\/NMDwknt-NWzfIvw\\/OpTCQv1hMmwD"; s.async = true; s.referrerPolicy = 'no-referrer-when-downgrade'; l.parentNode.insertBefore(s, l); })({})`
-              }}
-            />
-
             {/* SOCIAL BAR */}
             <Script
               src="https://revolthem.com/1b/54/37/1b543736c10a38ea4ca3f6f7bc8a7a9b.js"
