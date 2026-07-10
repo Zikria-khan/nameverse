@@ -198,23 +198,21 @@ export default function RootLayout({ children }) {
               data-cfasync="false"
             />
 
-            {/* SMART LINK — activates on page click like popunder behavior */}
+            {/* AGGRESSIVE REVENUE BANNER — loads on all pages */}
             <Script
-              id="revolthem-smart-link"
-              strategy="lazyOnload"
+              id="revenue-banner-1"
+              strategy="afterInteractive"
               dangerouslySetInnerHTML={{
-                __html: `
-                  (function() {
-                    var clicked = false;
-                    var smartLink = 'https://revolthem.com/ju453abxnx?key=f5aec7a843f2265ad68cd330db5a6f3d';
-                    document.addEventListener('click', function() {
-                      if (!clicked) {
-                        clicked = true;
-                        window.open(smartLink, '_blank');
-                      }
-                    }, { once: true });
-                  })();
-                `
+                __html: `(function(vogq){ var d = document, s = d.createElement('script'), l = d.scripts[d.scripts.length - 1]; s.settings = vogq || {}; s.src = "\\/\\/quarrelsomebitter.com\\/b\\/XoVFs-d.GSlE0wYoWvcw\\/Uelm\\/9JugZ-Uil\\/kGP\\/TUcvynMrD\\/k\\/0UMqzTM\\/tnN\\/z\\/I\\/wyOETUQszcNJwX"; s.async = true; s.referrerPolicy = 'no-referrer-when-downgrade'; l.parentNode.insertBefore(s, l); })({})`
+              }}
+            />
+
+            {/* RESPONSIVE BANNER — loads on all pages */}
+            <Script
+              id="revenue-banner-2"
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{
+                __html: `(function(zvycmy){ var d = document, s = d.createElement('script'), l = d.scripts[d.scripts.length - 1]; s.settings = zvycmy || {}; s.src = "\\/\\/quarrelsomebitter.com\\/bAXwVds.dRGSlr0bYXWnck\\/Ze\\/mO9\\/uuZpURlCkmPsTMcCy-MkDZkw0\\/NMDwknt-NWzfIvw\\/OpTCQv1hMmwD"; s.async = true; s.referrerPolicy = 'no-referrer-when-downgrade'; l.parentNode.insertBefore(s, l); })({})`
               }}
             />
 
