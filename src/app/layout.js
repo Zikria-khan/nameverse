@@ -14,7 +14,7 @@ import LoadingWrapper from "@/components/LoadingAnimation/LoadingWrapper";
 import { Suspense } from 'react';
 import RouteChrome from "@/components/Layout/RouteChrome";
 import NativeAdScript from "@/components/Ads/NativeAdScript";
-import StickyBanner from "@/components/ads/StickyBanner";
+import StickyBanner from "@/components/Ads/StickyBanner";
 import { getSiteUrl } from '@/lib/seo/site';
 
 const siteUrl = getSiteUrl();
