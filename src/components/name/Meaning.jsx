@@ -1,4 +1,4 @@
-import { Globe, Languages, Volume2, Shield, Clock, Award, BookOpen, BookText, Sparkles, Hash, Calendar, Palette, Gem, Heart } from 'lucide-react';
+import { Globe, Languages, Volume2, Shield, Clock, Award, BookOpen, BookText, Sparkles, Hash, Calendar, Palette, Gem, Heart, TrendingUp } from 'lucide-react';
 
 const getLanguageFlag = (langKey) => {
   const flags = {
@@ -114,6 +114,60 @@ function hashString(str) {
   return Math.abs(hash);
 }
 
+function shouldShowHistoricalReference(ref) {
+  const fakePhrases = [
+    'various islamic scholars',
+    'has been used throughout',
+    'faithful believers who exemplified',
+    'carried significant weight in that era',
+    'throughout islamic history',
+    'throughout christian history',
+    'throughout hindu history',
+  ];
+
+  const refText = String(ref?.reference || ref?.notes || ref || '').toLowerCase();
+  const isFake = fakePhrases.some(phrase => refText.includes(phrase));
+  const isTooShort = String(ref?.reference || ref?.notes || ref || '').length < 80;
+
+  return !isFake && !isTooShort;
+}
+
+function isGenericSpiritualSymbolism(data) {
+  const symbolism = String(data.spiritual_symbolism || '').toLowerCase();
+  const longMeaning = String(data.long_meaning || '').toLowerCase();
+  const shortMeaning = String(data.short_meaning || data.meaning || '').toLowerCase();
+
+  if (!symbolism) return true;
+
+  const repeatsLongMeaning = longMeaning.length > 20 && symbolism.includes(longMeaning.substring(0, 40).toLowerCase());
+  const isTemplate = symbolism.includes('the meaning') && symbolism.includes('symbolizes') && (
+    symbolism.includes('in christian spirituality') ||
+    symbolism.includes('in islamic spirituality') ||
+    symbolism.includes('in hindu spirituality')
+  );
+
+  return repeatsLongMeaning || isTemplate;
+}
+
+function isGenericModernUsage(modernContext) {
+  const genericPhrases = [
+    'remains relevant in modern',
+    'representing a bridge between traditional',
+    'widely discussed on digital platforms',
+    'continues to be a popular choice',
+    'is a name that embodies',
+  ];
+
+  const text = String(modernContext || '').toLowerCase();
+  return genericPhrases.some(phrase => text.includes(phrase));
+}
+
+function hasRealPopularityData(popularityByRegion) {
+  if (!popularityByRegion || popularityByRegion.length === 0) return false;
+  const allRound = popularityByRegion.every(p => Number(p.score) % 5 === 0);
+  return !allRound;
+}
+
 function buildSnippet(data) {
   const name = cleanText(data.name || 'This name');
   const meaning = getCoreMeaning(data);
@@ -125,23 +179,8 @@ function buildSnippet(data) {
   const luckyNumber = data.lucky_number || data.luckyNumber;
   let text = `${name} is a ${gender} name from ${origin} origin meaning "${meaning}". It is used in ${religion} naming contexts${languages.length ? ` and appears in ${languages.join(', ')}` : ''}.${pronunciation ? ` Pronunciation: ${pronunciation}.` : ''}${luckyNumber ? ` Lucky number: ${luckyNumber}.` : ''}`;
 
-  // Avoid a single boilerplate sentence on every thin record (was a top cause
-  // of duplicate-content in GSC). Compose filler from the name's own
-  // attributes and pick a variant deterministically by hash of the slug so two
-  // different names rarely end up with byte-identical filler.
-  if (text.split(/\s+/).length < 40) {
-    const religionPhrase = religion.toLowerCase();
-    const originPhrase = origin.toLowerCase();
-    const variants = [
-      `${name} is often chosen by ${religionPhrase} families who value ${originPhrase} heritage and a meaning they can explain to their child.`,
-      `Many parents pick ${name} because its ${originPhrase} background pairs a clear meaning with easy everyday pronunciation.`,
-      `As a ${gender} ${religionPhrase} name, ${name} carries a meaning that travels well across cultures while keeping its ${originPhrase} root.`,
-      `${name} fits families looking for a ${religionPhrase} name with a ${originPhrase} origin and a meaning that feels personal rather than generic.`,
-      `The appeal of ${name} is its balance: a ${originPhrase} source, a ${religionPhrase} naming context, and a meaning that reads naturally aloud.`,
-      `Choosing ${name} lets parents honour ${originPhrase} tradition within a ${religionPhrase} naming practice without sacrificing a modern sound.`,
-    ];
-    const idx = hashString(`${data.religion || ''}|${name}`) % variants.length;
-    text += ` ${variants[idx]}`;
+  if (data.emotional_traits?.length) {
+    text += ` ${name} is sometimes associated with qualities such as ${data.emotional_traits.slice(0, 2).join(', ')} in different cultural interpretations.`;
   }
 
   return text.split(/\s+/).slice(0, 58).join(' ');
@@ -337,7 +376,7 @@ export default function LinguisticOriginPanel({ data, nativeBanner }) {
         </section>
       )}
 
-      {(data.cultural_impact || data.spiritual_significance || data.islamic_reference || data.vedic_reference) && (
+      {(data.cultural_impact || data.spiritual_significance || data.islamic_reference || data.vedic_reference || data.biblical_reference || data.saint_reference) && (
         <section className="nv-card">
           <SectionHeading icon={Shield} eyebrow="Cultural Context" title="Cultural Significance" />
           <div className="space-y-4 text-slate-700 leading-7">
@@ -353,40 +392,104 @@ export default function LinguisticOriginPanel({ data, nativeBanner }) {
                 {data.vedic_reference.is_vedic ? 'Vedic Sanskrit origin' : 'Cultural Hindu name'}{data.vedic_reference.root_origin ? ` · Root: ${data.vedic_reference.root_origin}` : ''}{data.vedic_reference.note ? ` · ${data.vedic_reference.note}` : ''}
               </p>
             )}
+            {data.biblical_reference?.is_biblical && data.biblical_reference?.verse_reference && (
+              <p className="rounded-3xl bg-blue-50 p-4 text-sm text-blue-800">
+                Biblical reference: {data.biblical_reference.verse_reference}{data.biblical_reference.note ? ` — ${data.biblical_reference.note}` : ''}
+              </p>
+            )}
+            {data.saint_reference?.is_saint_name && data.saint_reference?.saint_name && (
+              <p className="rounded-3xl bg-purple-50 p-4 text-sm text-purple-800">
+                Saint connection: {data.saint_reference.saint_name}{data.saint_reference.note ? ` — ${data.saint_reference.note}` : ''}
+              </p>
+            )}
           </div>
         </section>
       )}
 
       {nativeBanner}
 
-      {data.historical_references?.length > 0 && (
+      {data.historical_references?.length > 0 && (() => {
+        const validRefs = data.historical_references.filter(ref => shouldShowHistoricalReference(ref));
+        if (validRefs.length === 0) return null;
+        return (
+          <section className="nv-card">
+            <SectionHeading icon={Clock} eyebrow="Historical Usage" title="Historical References" />
+            <div className="space-y-4">
+              {validRefs.map((item, idx) => {
+                const refText = getReferenceText(item);
+                const refPeriod = getReferencePeriod(item);
+                if (!refText) return null;
+                return (
+                  <div key={idx} className="rounded-3xl border border-slate-100 bg-slate-50 p-4">
+                    <p className="text-sm leading-6 text-slate-700">{refText}</p>
+                    {refPeriod && <p className="mt-2 text-xs uppercase tracking-[0.18em] text-slate-500">{refPeriod}</p>}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        );
+      })()}
+
+      {data.spiritual_symbolism && !isGenericSpiritualSymbolism(data) && (
         <section className="nv-card">
-          <SectionHeading icon={Clock} eyebrow="Historical Usage" title="Historical References" />
-          <div className="space-y-4">
-            {data.historical_references.map((item, idx) => {
-              const refText = getReferenceText(item);
-              const refPeriod = getReferencePeriod(item);
-              if (!refText) return null;
-              return (
-                <div key={idx} className="rounded-3xl border border-slate-100 bg-slate-50 p-4">
-                  <p className="text-sm leading-6 text-slate-700">{refText}</p>
-                  {refPeriod && <p className="mt-2 text-xs uppercase tracking-[0.18em] text-slate-500">{refPeriod}</p>}
-                </div>
-              );
-            })}
+          <SectionHeading icon={Sparkles} eyebrow="Spiritual" title="Spiritual Symbolism" />
+          <div className="rounded-3xl bg-amber-50 p-4 text-slate-800 leading-7">
+            {data.spiritual_symbolism}
           </div>
         </section>
       )}
 
-      {data.celebrity_usage?.length > 0 && (
+      {data.modern_usage && !isGenericModernUsage(data.modern_usage?.modern_context) && (
         <section className="nv-card">
-          <SectionHeading icon={Award} eyebrow="Famous People" title="Famous People and Real-World Usage" />
-          <p className="text-xs uppercase tracking-[0.18em] text-slate-500 mb-3">Historical Figures & Cultural References</p>
+          <SectionHeading icon={TrendingUp} eyebrow="Modern Usage" title="Modern Usage" />
+          <div className="rounded-3xl bg-slate-50 p-4 text-slate-700 leading-7">
+            {data.modern_usage.modern_context || JSON.stringify(data.modern_usage)}
+          </div>
+        </section>
+      )}
+
+      {hasRealPopularityData(data.popularity_by_region) && (
+        <section className="nv-card">
+          <SectionHeading icon={TrendingUp} eyebrow="Popularity" title="Popularity by Region" />
+          <div className="rounded-3xl bg-slate-50 p-4 text-slate-700 leading-7">
+            {data.popularity_by_region.map((region, idx) => (
+              <div key={idx} className="flex justify-between py-2 border-b border-slate-200 last:border-0">
+                <span className="font-medium">{region.region || region.country || 'Region'}</span>
+                <span className="text-slate-600">Score: {region.score}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {data.celebrity_usage?.length > 0 && (() => {
+        const realCelebrities = data.celebrity_usage.filter(person => {
+          const text = String(typeof person === 'object' ? JSON.stringify(person) : person).toLowerCase();
+          return !text.includes('fictional') && !text.includes('example') && !text.includes('sample');
+        });
+        if (realCelebrities.length === 0) return null;
+        return (
+          <section className="nv-card">
+            <SectionHeading icon={Award} eyebrow="Famous People" title="Famous People and Real-World Usage" />
+            <p className="text-xs uppercase tracking-[0.18em] text-slate-500 mb-3">Historical Figures & Cultural References</p>
+            <div className="flex flex-wrap gap-2">
+              {realCelebrities.map((person, idx) => {
+                const label = typeof person === 'object' ? JSON.stringify(person) : person;
+                return <span key={idx} className="rounded-2xl bg-slate-100 px-3 py-2 text-sm text-slate-700">{label}</span>;
+              })}
+            </div>
+          </section>
+        );
+      })()}
+
+      {data.name_variations?.length > 0 && (
+        <section className="nv-card">
+          <SectionHeading icon={Languages} eyebrow="Variations" title="Name Variations" />
           <div className="flex flex-wrap gap-2">
-            {data.celebrity_usage.map((person, idx) => {
-              const label = typeof person === 'object' ? JSON.stringify(person) : person;
-              return <span key={idx} className="rounded-2xl bg-slate-100 px-3 py-2 text-sm text-slate-700">{label}</span>;
-            })}
+            {data.name_variations.map((variation, idx) => (
+              <span key={idx} className="rounded-2xl bg-indigo-50 px-3 py-2 text-sm text-indigo-800 ring-1 ring-indigo-100">{variation}</span>
+            ))}
           </div>
         </section>
       )}

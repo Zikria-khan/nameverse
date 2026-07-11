@@ -35,8 +35,10 @@ function loadLocalNameData(religion, slug) {
         const names = JSON.parse(raw);
         const found = names.find(n => createSlug(n.name) === slug);
         if (found) {
+          const cleanedName = String(found.name || '').trim().replace(/^\n+/, '');
           return {
             ...found,
+            name: cleanedName,
             religion: religion,
             lucky_number: found.luckyNumber,
             short_meaning: found.meaning,
@@ -203,6 +205,11 @@ export async function generateMetadata({ params }) {
   // Fallback to local data if API failed (degraded state)
   if (!nameData) {
     nameData = loadLocalNameData(religion, slug);
+  }
+
+  // Clean name field before metadata generation
+  if (nameData?.name && typeof nameData.name === 'string') {
+    nameData.name = nameData.name.trim().replace(/^\n+/, '');
   }
 
   // If no data found anywhere, return 404

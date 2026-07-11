@@ -328,25 +328,53 @@ function generateBaseFaqItems(data) {
   const luckyDay = cleanText(data.lucky_day);
   const luckyColors = getLuckyColors(data);
   const babyGender = getGender(data);
+  const meaning = getCoreMeaning(data);
 
-  return [
-    q(`What does ${name} mean?`, answerMeaning(data)),
-    q(`What is ${name} meaning in ${language || 'English'}?`, answerTranslation(data, language || 'English')),
-    q(`Is ${name} a ${religionLabel.toLowerCase()} name?`, answerReligion(data)),
-    q(`What is the origin of ${name}?`, `${name} has ${origin} origin according to NameVerse data.`),
-    q(`What language is ${name} used in?`, getLanguages(data).length ? `${name} appears in ${getLanguages(data).join(', ')} language contexts.` : `NameVerse does not list language usage for ${name}.`),
-    q(`How do you pronounce ${name}?`, answerPronunciation(data)),
-    q(`What is the lucky number of ${name}?`, luckyNumber ? `${name} has lucky number ${luckyNumber}.` : `NameVerse does not list a lucky number for ${name}.`),
-    q(`What is the lucky day of ${name}?`, luckyDay ? `${name} is associated with ${luckyDay}.` : `NameVerse does not list a lucky day for ${name}.`),
-    q(`What is the lucky color of ${name}?`, luckyColors.length ? `${name} is associated with ${luckyColors.join(', ')}.` : `NameVerse does not list lucky colors for ${name}.`),
-    q(`What personality traits are associated with ${name}?`, answerTraits(data)),
-    q(`Is ${name} a good name for a baby ${babyGender}?`, `${name} is a meaningful ${babyGender} name option with ${origin} origin and the meaning "${getCoreMeaning(data)}".`),
-    q(`Is ${name} a boy, girl, or unisex name?`, `${name} is listed as ${getGenderLabel(data).toLowerCase()}.`),
-    q(`What are names similar to ${name}?`, answerSimilarNames(data)),
-    q(`What are variations of ${name}?`, answerVariations(data)),
-    q(`What is the cultural significance of ${name}?`, answerCulturalSignificance(data)),
-    q(`What is the spiritual meaning of ${name}?`, answerSpiritualSignificance(data)),
-  ];
+  const items = [];
+
+  items.push(q(`What does ${name} mean?`, `${name} means ${meaning}. It is a ${babyGender} name from ${origin} origin and is used in ${religionLabel} naming contexts.`));
+
+  if (language) {
+    items.push(q(`What is ${name} meaning in ${language}?`, answerTranslation(data, language)));
+  }
+
+  if (cleanText(data.pronunciation?.english || data.pronunciation?.ipa)) {
+    items.push(q(`How do you pronounce ${name}?`, answerPronunciation(data)));
+  }
+
+  if (luckyNumber) {
+    items.push(q(`What is the lucky number of ${name}?`, `${name} has lucky number ${luckyNumber}.`));
+  }
+
+  if (luckyDay) {
+    items.push(q(`What is the lucky day of ${name}?`, `${name} is associated with ${luckyDay}.`));
+  }
+
+  if (luckyColors.length) {
+    items.push(q(`What is the lucky color of ${name}?`, `${name} is associated with ${luckyColors.join(', ')}.`));
+  }
+
+  if (getTraits(data).length) {
+    items.push(q(`What personality traits are associated with ${name}?`, answerTraits(data)));
+  }
+
+  if (data.similar_sounding_names?.length || data.related_names?.length || data.name_variations?.length) {
+    items.push(q(`What are names similar to ${name}?`, answerSimilarNames(data)));
+  }
+
+  if (data.name_variations?.length) {
+    items.push(q(`What are variations of ${name}?`, answerVariations(data)));
+  }
+
+  if (data.cultural_impact) {
+    items.push(q(`What is the cultural significance of ${name}?`, answerCulturalSignificance(data)));
+  }
+
+  if (data.spiritual_meaning || data.spiritual_significance) {
+    items.push(q(`What is the spiritual meaning of ${name}?`, answerSpiritualSignificance(data)));
+  }
+
+  return items;
 }
 
 function generateReligionFaqItems(data) {
@@ -354,42 +382,41 @@ function generateReligionFaqItems(data) {
   const religion = normalizeReligion(data.religion);
   const longMeaning = cleanText(data.long_meaning || '').toLowerCase();
 
+  const items = [];
+
   if (religion === 'islamic') {
-    return [
-      q(`Is ${name} mentioned in the Quran?`, answerQuranic(data)),
-      q(`What is ${name} meaning in Arabic?`, answerTranslation(data, 'Arabic')),
-      q(`What is ${name} meaning in Urdu?`, answerTranslation(data, 'Urdu')),
-      q(`What is the numerology meaning of ${name}?`, answerNumerology(data)),
-    ];
+    if (data.islamic_reference?.is_quranic === true) {
+      items.push(q(`Is ${name} mentioned in the Quran?`, `NameVerse marks ${name} as Quranic.${data.islamic_reference.note ? ` ${data.islamic_reference.note}` : ''}`));
+    } else if (data.islamic_reference?.is_quranic === false) {
+      items.push(q(`Is ${name} a Quranic name?`, `NameVerse lists ${name} as a traditional Islamic name and does not mark it as Quranic.${data.islamic_reference.note ? ` ${data.islamic_reference.note}` : ''}`));
+    }
+    items.push(q(`What is ${name} meaning in Arabic?`, answerTranslation(data, 'Arabic')));
+    items.push(q(`What is ${name} meaning in Urdu?`, answerTranslation(data, 'Urdu')));
+    items.push(q(`What is the numerology meaning of ${name}?`, answerNumerology(data)));
   }
 
   if (religion === 'christian') {
-    const saintQuestion = /agnes|saint|christian tradition/.test(longMeaning)
-      ? `Is ${name} associated with Saint Agnes?`
-      : `Does ${name} have a Christian saint connection?`;
-    return [
-      q(`Is ${name} a biblical name?`, answerBiblical(data)),
-      q(saintQuestion, answerSaintAgnes(data)),
-      q(`What is ${name} meaning in English?`, answerTranslation(data, 'English')),
-      q(`What is the numerology meaning of ${name}?`, answerNumerology(data)),
-    ];
+    if (data.biblical_reference?.is_biblical === true && data.biblical_reference?.verse_reference) {
+      items.push(q(`Is ${name} a Biblical name?`, `Yes, ${name} appears in the Bible at ${data.biblical_reference.verse_reference}.${data.biblical_reference.note ? ` ${data.biblical_reference.note}` : ''}`));
+    }
+    if (data.saint_reference?.is_saint_name === true && data.saint_reference?.saint_name) {
+      items.push(q(`Is there a saint named ${name}?`, `Yes, ${data.saint_reference.saint_name} is a recognized Christian saint.${data.saint_reference.note ? ` ${data.saint_reference.note}` : ''}`));
+    }
+    items.push(q(`What is ${name} meaning in English?`, answerTranslation(data, 'English')));
+    items.push(q(`What is the numerology meaning of ${name}?`, answerNumerology(data)));
   }
 
   if (religion === 'hindu') {
-    return [
-      q(`Is ${name} a Hindu name?`, answerReligion(data)),
-      q(`What is the Sanskrit meaning of ${name}?`, answerTranslation(data, 'Sanskrit')),
-      q(`Is ${name} connected to Vedic traditions?`, answerVedic(data)),
-      q(`What is the numerology meaning of ${name}?`, answerNumerology(data)),
-    ];
+    items.push(q(`What is ${name} meaning in Sanskrit?`, answerTranslation(data, 'Sanskrit')));
+    if (data.vedic_reference?.is_vedic === true) {
+      items.push(q(`Is ${name} connected to Vedic traditions?`, `NameVerse marks ${name} as Vedic.${data.vedic_reference.note ? ` ${data.vedic_reference.note}` : ''}`));
+    } else if (data.vedic_reference?.is_vedic === false) {
+      items.push(q(`Is ${name} connected to Vedic traditions?`, `NameVerse lists ${name} as a Hindu name and does not mark it as Vedic.${data.vedic_reference.note ? ` ${data.vedic_reference.note}` : ''}`));
+    }
+    items.push(q(`What is the numerology meaning of ${name}?`, answerNumerology(data)));
   }
 
-  return [
-    q(`What is the cultural origin of ${name}?`, answerOrigin(data)),
-    q(`How is ${name} pronounced?`, answerPronunciation(data)),
-    q(`What is the lucky number of ${name}?`, getLuckyNumber(data) ? `${name} has lucky number ${getLuckyNumber(data)}.` : `NameVerse does not list a lucky number for ${name}.`),
-    q(`What are names similar to ${name}?`, answerSimilarNames(data)),
-  ];
+  return items;
 }
 
 /**

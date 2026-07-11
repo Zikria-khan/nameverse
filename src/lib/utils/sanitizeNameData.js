@@ -7,6 +7,11 @@ export function sanitizeNameData(data) {
 
   const sanitized = { ...data };
 
+  // Clean name field: trim whitespace and remove leading newlines
+  if (sanitized.name && typeof sanitized.name === 'string') {
+    sanitized.name = sanitized.name.trim().replace(/^\n+/, '');
+  }
+
   // Convert non-string primitives to strings
   const stringFields = [
     'lucky_number', 'lucky_day', 'lucky_stone', 'life_path_number',
