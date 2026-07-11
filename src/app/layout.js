@@ -2,7 +2,6 @@ import "./globals.css";
 import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer/Footer";
 import AppInstallPopup from "./install";
-import Script from 'next/script';
 import { Fraunces, Instrument_Sans } from 'next/font/google';
 import ErrorBoundary from "@/components/ErrorBoundary/ErrorBoundary";
 import ResourceHints from "@/components/Performance/ResourceHints";
@@ -14,9 +13,10 @@ import { AppProvider } from "@/contexts/AppContext";
 import LoadingWrapper from "@/components/LoadingAnimation/LoadingWrapper";
 import { Suspense } from 'react';
 import RouteChrome from "@/components/Layout/RouteChrome";
+import NativeAdScript from "@/components/Ads/NativeAdScript";
+import StickyBanner from "@/components/ads/StickyBanner";
 import { getSiteUrl } from '@/lib/seo/site';
 
-// Use environment variable or default - will be overridden client-side if needed
 const siteUrl = getSiteUrl();
 
 const displayFont = Fraunces({
@@ -35,7 +35,6 @@ const bodyFont = Instrument_Sans({
   preload: true,
 });
 
-// ✅ Global SEO Metadata — Enterprise Grade
 export const metadata = {
   title: {
     default: validateMetaTitle("Baby Names, Meanings, Origins & Lucky Numbers | NameVerse"),
@@ -98,7 +97,6 @@ export const metadata = {
   classification: "Baby Name Dictionary & Cultural Knowledge Base",
 };
 
-// Viewport configuration (Next.js App Router)
 export const viewport = {
   width: "device-width",
   initialScale: 1,
@@ -128,32 +126,16 @@ export default function RootLayout({ children }) {
         <meta name="ahrefs-site-verification" content="650afaf6635223ff618a281883a22b69b937a121e933b19907debeca67754cd4" />
         <meta name="415fb3e376dd03499e3ea3cfd086272b2330a942" content="415fb3e376dd03499e3ea3cfd086272b2330a942" />
 
-        {/* ✅ Performance: Resource Hints */}
+        <link rel="preconnect" href="https://revolthem.com" />
+        <link rel="dns-prefetch" href="https://revolthem.com" />
+
         <ResourceHints />
 
-        {/* ✅ Icons - use relative paths */}
         <link rel="icon" type="image/png" href="/logo.png" />
         <link rel="shortcut icon" type="image/png" href="/logo.png" />
 
-        {/* ✅ Ahrefs Analytics Script */}
-        <Script
-          src="https://analytics.ahrefs.com/analytics.js"
-          data-key="Xu6eED27Kx1ZuJhBcJDJsA"
-          async
-          strategy="afterInteractive"
-        />
-        {/* ✅ Google AdSense Script */}
-        <Script
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1510675468129183"
-          async
-          crossorigin="anonymous"
-          strategy="afterInteractive"
-        />
-
-        {/* ✅ Enhanced crawl hints */}
         <GoogleBotMeta siteUrl={siteUrl} />
 
-        {/* ✅ Enhanced Structured Data — single source of truth for all JSON-LD schemas */}
         <StructuredData
           organization={true}
           website={true}
@@ -178,35 +160,16 @@ export default function RootLayout({ children }) {
               <Navbar />
             </Suspense>
 
+            <NativeAdScript />
+
             {/* TOP NATIVE AD */}
             <div id="container-1606e7870f004d67136f85f2b1698cd3"></div>
-            <Script
-              src="https://revolthem.com/1606e7870f004d67136f85f2b1698cd3/invoke.js"
-              strategy="lazyOnload"
-              async
-              data-cfasync="false"
-            />
 
             <RouteChrome>{children}</RouteChrome>
 
-            {/* BOTTOM NATIVE AD */}
-            <div id="container-CODE_2"></div>
-            <Script
-              src="https://revolthem.com/CODE_2/invoke.js"
-              strategy="lazyOnload"
-              async
-              data-cfasync="false"
-            />
-
-            {/* SOCIAL BAR */}
-            <Script
-              src="https://revolthem.com/1b/54/37/1b543736c10a38ea4ca3f6f7bc8a7a9b.js"
-              strategy="lazyOnload"
-              data-cfasync="false"
-            />
-
             <Footer />
             <AppInstallPopup />
+            <StickyBanner />
 
           </AppProvider>
         </div>

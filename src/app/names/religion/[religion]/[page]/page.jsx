@@ -8,7 +8,6 @@ import { ChevronLeft, ChevronRight, Sparkles, Moon, Globe, BookOpen, Heart, Star
 import FavoriteButton from '@/components/FavoriteButton';
 import { getSiteUrl } from '@/lib/seo/site';
 import { createSafeSlug } from '@/lib/utils/createSafeSlug';
-import RevenueBanners from '@/components/Ads/RevenueBanners';
 
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
 const RELIGION_LABELS = {
@@ -424,7 +423,7 @@ export default async function ReligionByPage({ params }) {
       </section>
 
       {/* REVENUE BANNERS — center of religion listing content */}
-      <RevenueBanners />
+
 
       {/* Why Choose This Religion Section */}
       <section className="nv-container">

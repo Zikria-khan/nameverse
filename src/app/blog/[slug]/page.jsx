@@ -11,7 +11,6 @@ import christianNames from '../../../../public/christians_names.json';
 import SitePage from '@/components/Layout/SitePage';
 import { createSafeSlug } from '@/lib/utils/createSafeSlug';
 import NativeBanner from '@/components/Ads/NativeBanner';
-import RevenueBanners from '@/components/Ads/RevenueBanners';
 
 // ISR with 90-day cache for blog posts — keep content stable
 export const revalidate = 7776000; // 90 days
@@ -349,7 +348,7 @@ export default async function BlogPostPage({ params }) {
              <NativeBanner className="my-6" minHeight="90px" instanceId="blog-post-1" />
 
              {/* REVENUE BANNERS — center of blog content */}
-             <RevenueBanners />
+
 
              {/* Sections */}
              {post.content.sections && post.content.sections.map((section, index) => (

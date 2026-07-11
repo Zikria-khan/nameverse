@@ -4,7 +4,6 @@ import { BookOpen, Heart, Clock, ArrowLeft, Share2, Calendar, User, Tag, CheckCi
 import { getSiteUrl } from '@/lib/seo/site';
 import blogPostsData from '../../../../public/data/blog-posts.json';
 import NativeBanner from '@/components/Ads/NativeBanner';
-import RevenueBanners from '@/components/Ads/RevenueBanners';
 
 // ISR: 30-day cache — static blog content
 export const revalidate = 2592000; // 30 days
@@ -173,7 +172,7 @@ export default async function GuidePage({ params }) {
             <NativeBanner className="my-6" minHeight="90px" instanceId="guide-post-1" />
 
             {/* REVENUE BANNERS — center of guide content */}
-            <RevenueBanners />
+
 
             {/* Main Content Sections */}
             {post.content.sections && post.content.sections.map((section, index) => (

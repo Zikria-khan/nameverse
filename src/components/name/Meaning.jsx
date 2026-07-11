@@ -177,7 +177,7 @@ function TranslationCard({ language }) {
   );
 }
 
-export default function LinguisticOriginPanel({ data }) {
+export default function LinguisticOriginPanel({ data, nativeBanner }) {
   const languages = getLanguages(data);
   const originTranslation = getOriginTranslation(data);
   const traits = getTraits(data);
@@ -356,6 +356,8 @@ export default function LinguisticOriginPanel({ data }) {
           </div>
         </section>
       )}
+
+      {nativeBanner}
 
       {data.historical_references?.length > 0 && (
         <section className="nv-card">

@@ -19,7 +19,6 @@ import {
 } from 'lucide-react';
 import HomePageSearch from '@/components/HomePage/HomePageSearch';
 import createSafeSlug from '@/lib/utils/createSafeSlug';
-import RevenueBanners from '@/components/Ads/RevenueBanners';
 
 const LatestArticles = dynamic(() => import('./LatestArticles'), {
   ssr: false,
@@ -298,7 +297,7 @@ export default function HomePageClient({ latestArticles = [] }) {
 
 
       {/* REVENUE BANNER — center of homepage content */}
-      <RevenueBanners />
+
 
       <section aria-label="Popular search intents" className="nv-section">
         <div className="nv-container">

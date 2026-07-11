@@ -7,7 +7,6 @@ import BlogImageWithFallback from '@/components/Blog/BlogImageWithFallback';
 import { getSiteUrl } from '@/lib/seo/site';
 import SitePage from '@/components/Layout/SitePage';
 import NativeBanner from '@/components/Ads/NativeBanner';
-import RevenueBanners from '@/components/Ads/RevenueBanners';
 
 // ISR with 90-day cache for blog index — keep content stable
 export const revalidate = 7776000; // 90 days
@@ -145,7 +144,7 @@ export default function BlogPage() {
       </section>
 
       {/* REVENUE BANNERS — center of blog index content */}
-      <RevenueBanners />
+
 
       {/* Featured Articles */}
       <section className="py-12 px-4 bg-gray-50">

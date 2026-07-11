@@ -42,9 +42,7 @@ export default function ResourceHints() {
       <link rel="dns-prefetch" href="https://www.clarity.ms" />
       <link rel="preconnect" href="https://www.clarity.ms" crossOrigin="anonymous" />
 
-{/* ⚡ DNS Prefetch + Preconnect for Ahrefs analytics */}
-      <link rel="dns-prefetch" href="https://analytics.ahrefs.com" />
-      <link rel="preconnect" href="https://analytics.ahrefs.com" crossOrigin="anonymous" />
+
 
       {/* Prefetch critical routes for instant navigation */}
       <link rel="prefetch" href="/names/religion/islamic/1" as="document" />

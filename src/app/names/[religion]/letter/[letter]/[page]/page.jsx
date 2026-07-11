@@ -6,7 +6,6 @@ import Link from 'next/link';
 import Script from 'next/script';
 import FavoriteButton from '@/components/FavoriteButton';
 import BlogSection from '@/components/Blog/BlogSection';
-import RevenueBanners from '@/components/Ads/RevenueBanners';
 
 const VALID_RELIGIONS = ['islamic', 'christian', 'hindu'];
 const ALPHABET = 'abcdefghijklmnopqrstuvwxyz#'.split('');
@@ -382,7 +381,7 @@ export default async function LetterNamesPage({ params }) {
       </nav>
 
       {/* REVENUE BANNERS — center of letter listing content */}
-      <RevenueBanners />
+
 
       {/* Alphabet Nav */}
       <div className="max-w-7xl mx-auto px-4 mb-8">

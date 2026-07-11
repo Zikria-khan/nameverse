@@ -2,7 +2,7 @@ import Link from 'next/link'
 import FAQAccordion from '@/components/names/FAQAccordion'
 import { getSiteUrl } from '@/lib/seo/site'
 import { validateMetaTitle, validateMetaDescription } from '@/lib/seo/meta-helpers'
-import RevenueBanners from '@/components/Ads/RevenueBanners'
+
 
 // ISR: 30-day cache
 export const revalidate = 2592000; // 30 days
@@ -275,7 +275,7 @@ export default function Page() {
       </div>
 
       {/* REVENUE BANNERS — center of names directory content */}
-      <RevenueBanners />
+
 
       {/* ── SEO Content Section ── */}
       <section className="max-w-5xl mx-auto px-4 mb-16">
