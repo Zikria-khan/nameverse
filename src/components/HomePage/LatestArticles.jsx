@@ -91,37 +91,42 @@ const LatestArticles = ({ articles }) => {
   const generateArticleStructuredData = (article, position) => {
     const colors = categoryColors[article.category] || defaultColors;
     const date = article.publishDate || article.lastUpdated || new Date().toISOString();
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app'; // Inlined at build time
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app';
+    const articleUrl = `${siteUrl}/blog/${article.id}`;
     
+    const item = {
+      '@type': 'Article',
+      'headline': article.title,
+      'description': article.excerpt,
+      'author': {
+        '@type': 'Person',
+        'name': article.author,
+        'credential': article.authorCredentials
+      },
+      'datePublished': article.publishDate || article.lastUpdated,
+      'dateModified': article.lastUpdated,
+      'url': articleUrl,
+      'publisher': {
+        '@type': 'Organization',
+        'name': 'NameVerse'
+      },
+      'about': article.category,
+      'timeRequired': article.readTime,
+      'wordCount': article.content?.introduction?.length || 0
+    };
+
+    if (article.featuredImage) {
+      const img = article.featuredImage.startsWith('http') ? article.featuredImage : `${siteUrl}${article.featuredImage}`;
+      item.image = img;
+    }
+
     return {
       '@context': 'https://schema.org',
       '@type': 'ItemList',
       'itemListElement': articles.map((article, index) => ({
         '@type': 'ListItem',
         'position': index + 1,
-        'item': {
-          '@type': 'Article',
-          'headline': article.title,
-          'description': article.excerpt,
-          'author': {
-            '@type': 'Person',
-            'name': article.author,
-            'credential': article.authorCredentials
-          },
-          'datePublished': article.publishDate || article.lastUpdated,
-          'dateModified': article.lastUpdated,
-          'image': article.featuredImage
-            ? (article.featuredImage.startsWith('http') ? article.featuredImage : `${siteUrl}${article.featuredImage}`)
-            : `${siteUrl}/api/og?title=${encodeURIComponent(article.title)}`,
-          'url': `${siteUrl}/blog/${article.id}`,
-          'publisher': {
-            '@type': 'Organization',
-            'name': 'NameVerse'
-          },
-          'about': article.category,
-          'timeRequired': article.readTime,
-          'wordCount': article.content?.introduction?.length || 0
-        }
+        'item': item
       }))
     };
   };
@@ -171,10 +176,6 @@ const LatestArticles = ({ articles }) => {
             {articles.map((article) => {
               const colors = categoryColors[article.category] || defaultColors;
               const truncatedExcerpt = truncateExcerpt(article.excerpt, 120);
-              const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nameverse.vercel.app'; // Inlined at build time
-              const imageUrl = article.featuredImage
-                ? (article.featuredImage.startsWith('http') ? article.featuredImage : `${siteUrl}${article.featuredImage}`)
-                : `${siteUrl}/api/og?title=${encodeURIComponent(article.title)}`;
               
               return (
                 <Link
@@ -185,21 +186,35 @@ const LatestArticles = ({ articles }) => {
                   <article
                     className={`flex flex-col h-full bg-white/80 rounded-[26px] border-2 ${colors.border} ${colors.hover} shadow-[0_22px_60px_-44px_var(--nv-shadow)] hover:shadow-[0_30px_70px_-44px_var(--nv-shadow)] transition-all duration-300 overflow-hidden backdrop-blur`}
                   >
-                    {/* Featured Image */}
-                     <div className="relative h-48 overflow-hidden bg-gray-100">
-                       <Image
-                         src={imageUrl}
-                         alt={article.title}
-                         fill
-                         className="object-cover transition-transform duration-300 group-hover:scale-105"
-                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                       />
-                       <div className="absolute top-3 left-3">
-                        <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${colors.badge} shadow-sm`}>
-                          {article.category}
-                        </span>
+                    {article.featuredImage ? (
+                      <div className="relative h-48 overflow-hidden bg-gray-100">
+                        <Image
+                          src={article.featuredImage.startsWith('http') ? article.featuredImage : `${siteUrl}${article.featuredImage}`}
+                          alt={article.title}
+                          fill
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                        <div className="absolute top-3 left-3">
+                          <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${colors.badge} shadow-sm`}>
+                            {article.category}
+                          </span>
+                        </div>
                       </div>
-                    </div>
+                    ) : (
+                      <div className={`relative h-48 overflow-hidden bg-gradient-to-br ${colors.gradient} flex items-center justify-center`}>
+                        <div className="absolute inset-0 bg-black/10" />
+                        <div className="relative grid h-16 w-16 place-items-center rounded-3xl bg-white/25 backdrop-blur-sm">
+                          <BookOpen className="h-8 w-8 text-white" />
+                        </div>
+                        <div className="absolute top-3 left-3">
+                          <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-full bg-white/25 text-white shadow-sm backdrop-blur-sm`}>
+                            {article.category}
+                          </span>
+                        </div>
+                      </div>
+                    )}
                     
                     {/* Content */}
                     <div className="p-5 sm:p-6 flex flex-col flex-1">

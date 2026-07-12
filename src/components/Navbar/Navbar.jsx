@@ -141,28 +141,28 @@ export default function Navbar() {
   if (!mounted) {
     return (
       <nav className="sticky top-0 z-[100] border-b border-slate-200 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="h-8 w-36 rounded-full bg-slate-200" />
-          <div className="hidden h-10 w-48 rounded-full bg-slate-200 lg:block" />
+        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
+          <div className="h-8 w-28 rounded-full bg-slate-200" />
+          <div className="hidden h-9 w-40 rounded-full bg-slate-200 lg:block" />
         </div>
       </nav>
     );
   }
 
   return (
-    <nav ref={navRef} className="sticky top-0 z-[100] border-b border-slate-200/80 bg-white/88 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex shrink-0 items-center gap-3" aria-label="NameVerse home">
-          <div className="grid h-10 w-10 place-items-center rounded-2xl bg-slate-950 text-white shadow-sm transition group-hover:scale-[1.02]">
-            <Image src="/logo.png" alt="" width={28} height={28} className="object-contain" priority />
+    <nav ref={navRef} className="sticky top-0 z-[100] border-b border-slate-200/80 bg-white/90 backdrop-blur-md">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
+        <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="NameVerse home">
+          <div className="grid h-9 w-9 place-items-center rounded-xl bg-slate-950 text-white shadow-sm">
+            <Image src="/logo.png" alt="" width={22} height={22} className="object-contain" priority />
           </div>
-          <div>
-            <div className="text-base font-black tracking-tight text-slate-950">NameVerse</div>
-            <div className="hidden text-xs font-semibold text-slate-500 sm:block">Meanings, origins & guides</div>
+          <div className="hidden sm:block">
+            <div className="text-sm font-black tracking-tight text-slate-950 leading-none">NameVerse</div>
+            <div className="text-[10px] font-semibold text-slate-500 leading-tight mt-0.5">Meanings & origins</div>
           </div>
         </Link>
 
-        <div className="hidden items-center gap-1 lg:flex">
+        <div className="hidden items-center gap-1 xl:flex">
           {navItems.map((item) => {
             const Icon = item.icon;
             const hasDropdown = Boolean(item.dropdown);
@@ -177,23 +177,23 @@ export default function Navbar() {
                     type="button"
                     onClick={() => setActiveDropdown(activeDropdown === item.name ? null : item.name)}
                     aria-expanded={activeDropdown === item.name}
-                    className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-bold transition ${
+                    className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold transition ${
                       active ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950'
                     }`}
                   >
-                    <Icon className="h-4 w-4" />
+                    <Icon className="h-3.5 w-3.5" />
                     {item.name}
-                    <ChevronDown className={`h-3.5 w-3.5 transition ${activeDropdown === item.name ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`h-3 w-3 transition ${activeDropdown === item.name ? 'rotate-180' : ''}`} />
                   </button>
                 ) : (
-                  <Link href={item.href} className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-bold transition ${active ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950'}`}>
-                    <Icon className="h-4 w-4" />
+                  <Link href={item.href} className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold transition ${active ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950'}`}>
+                    <Icon className="h-3.5 w-3.5" />
                     {item.name}
                   </Link>
                 )}
 
                 {hasDropdown && activeDropdown === item.name && (
-                  <div className="absolute left-0 top-full z-50 mt-2 w-[320px] overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white p-2 shadow-2xl">
+                  <div className="absolute left-0 top-full z-50 mt-2 w-[280px] overflow-hidden rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl">
                     {item.dropdown.map((link) => {
                       const LinkIcon = link.icon;
                       return (
@@ -201,16 +201,23 @@ export default function Navbar() {
                           key={link.href}
                           href={link.href}
                           onClick={() => setActiveDropdown(null)}
-                          className={`flex items-start gap-3 rounded-2xl p-3 transition ${
+                          className={`flex items-start gap-2.5 rounded-xl p-2.5 transition ${
                             isActive(link.href) ? 'bg-blue-50' : 'hover:bg-slate-50'
                           }`}
                         >
-                          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-slate-100 text-blue-700">
-                            <LinkIcon className="h-4 w-4" />
+                          <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-slate-100 text-blue-700">
+                            <LinkIcon className="h-3.5 w-3.5" />
                           </div>
-                          <div>
-                            <div className="text-sm font-bold text-slate-950">{link.name}</div>
-                            <div className="mt-0.5 text-xs leading-relaxed text-slate-500">{link.description}</div>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <div className="text-xs font-bold text-slate-950 truncate">{link.name}</div>
+                              {link.badge && (
+                                <span className="shrink-0 rounded-full bg-blue-100 px-1.5 py-0.5 text-[9px] font-bold text-blue-700 uppercase tracking-wide">
+                                  {link.badge}
+                                </span>
+                              )}
+                            </div>
+                            <div className="mt-0.5 text-[11px] leading-relaxed text-slate-500 line-clamp-1">{link.description}</div>
                           </div>
                         </Link>
                       );
@@ -222,35 +229,35 @@ export default function Navbar() {
           })}
         </div>
 
-        <div className="hidden items-center gap-2 lg:flex">
+        <div className="hidden items-center gap-2 xl:flex">
           <button
             type="button"
             onClick={toggleTheme}
-            className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+            className="grid h-9 w-9 place-items-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
             aria-label="Toggle theme"
           >
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
-          <Link href="/search" className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700" aria-label="Search names">
-            <Search className="h-4 w-4" />
+          <Link href="/search" className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700" aria-label="Search names">
+            <Search className="h-3.5 w-3.5" />
             Search
           </Link>
-          <Link href="/search" className="inline-flex items-center justify-center rounded-full bg-slate-950 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700">
+          <Link href="/search" className="inline-flex items-center justify-center rounded-full bg-slate-950 px-4 py-2 text-xs font-bold text-white transition hover:bg-blue-700">
             Start searching
           </Link>
         </div>
 
-        <div className="flex items-center gap-2 lg:hidden">
-          <Link href="/search" className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 bg-white text-slate-700" aria-label="Search names">
+        <div className="flex items-center gap-1.5 lg:hidden">
+          <Link href="/search" className="grid h-9 w-9 place-items-center rounded-full border border-slate-200 bg-white text-slate-700" aria-label="Search names">
             <Search className="h-4 w-4" />
           </Link>
           <button
             type="button"
             onClick={() => setIsMenuOpen((value) => !value)}
-            className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 bg-white text-slate-700"
+            className="grid h-9 w-9 place-items-center rounded-full border border-slate-200 bg-white text-slate-700"
             aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
           >
-            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>
         </div>
       </div>
@@ -258,57 +265,42 @@ export default function Navbar() {
       {isMenuOpen && (
         <>
           <div className="fixed inset-0 z-[101] bg-slate-950/40 backdrop-blur-sm lg:hidden" onClick={() => setIsMenuOpen(false)} />
-          <div className="fixed inset-x-0 top-0 bottom-0 z-[102] flex max-w-md flex-col bg-white shadow-2xl lg:hidden">
-            <div className="flex items-center justify-between border-b border-slate-200 px-4 py-4">
-              <Link href="/" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3">
-                <div className="grid h-10 w-10 place-items-center rounded-2xl bg-slate-950 text-white">
-                  <Image src="/logo.png" alt="" width={28} height={28} className="object-contain" />
-                </div>
-                <div>
-                  <div className="text-base font-black text-slate-950">NameVerse</div>
-                  <div className="text-xs font-semibold text-slate-500">Premium name research</div>
-                </div>
-              </Link>
-              <button type="button" onClick={() => setIsMenuOpen(false)} className="grid h-10 w-10 place-items-center rounded-full bg-slate-100 text-slate-700" aria-label="Close menu">
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto px-4 py-5">
-              <div className="mb-5 grid grid-cols-2 gap-3">
-                <button type="button" onClick={toggleTheme} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-700">
+          <div className="fixed inset-x-0 top-14 z-[102] flex max-h-[calc(100vh-3.5rem)] flex-col bg-white shadow-2xl lg:hidden">
+            <div className="flex-1 overflow-y-auto px-4 py-4">
+              <div className="mb-4 grid grid-cols-2 gap-2">
+                <button type="button" onClick={toggleTheme} className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-700">
                   {isDark ? 'Light mode' : 'Dark mode'}
                 </button>
-                <Link href="/search" onClick={() => setIsMenuOpen(false)} className="rounded-2xl bg-slate-950 px-4 py-3 text-center text-sm font-bold text-white">
+                <Link href="/search" onClick={() => setIsMenuOpen(false)} className="rounded-xl bg-slate-950 px-3 py-2.5 text-center text-xs font-bold text-white">
                   Search
                 </Link>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   const hasDropdown = Boolean(item.dropdown);
                   return (
-                    <div key={item.name} className="overflow-hidden rounded-3xl border border-slate-200 bg-white">
+                    <div key={item.name} className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
                       <button
                         type="button"
                         onClick={() => hasDropdown ? setMobileSection(mobileSection === item.name ? null : item.name) : setIsMenuOpen(false)}
-                        className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left"
+                        className="flex w-full items-center justify-between gap-2 px-3 py-3 text-left"
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="grid h-10 w-10 place-items-center rounded-2xl bg-blue-50 text-blue-700">
-                            <Icon className="h-4 w-4" />
+                        <div className="flex items-center gap-2.5">
+                          <div className="grid h-8 w-8 place-items-center rounded-lg bg-blue-50 text-blue-700">
+                            <Icon className="h-3.5 w-3.5" />
                           </div>
                           <div>
                             <div className="text-sm font-bold text-slate-950">{item.name}</div>
-                            <div className="text-xs text-slate-500">{hasDropdown ? 'Open section' : 'Open page'}</div>
+                            <div className="text-[11px] text-slate-500">{hasDropdown ? 'Open section' : 'Open page'}</div>
                           </div>
                         </div>
                         {hasDropdown && <ChevronDown className={`h-4 w-4 text-slate-400 transition ${mobileSection === item.name ? 'rotate-180' : ''}`} />}
                       </button>
 
                       {hasDropdown && mobileSection === item.name && (
-                        <div className="space-y-1 border-t border-slate-100 bg-slate-50 px-3 py-3">
+                        <div className="space-y-1 border-t border-slate-100 bg-slate-50 px-2.5 py-2.5">
                           {item.dropdown.map((link) => {
                             const LinkIcon = link.icon;
                             return (
@@ -316,9 +308,9 @@ export default function Navbar() {
                                 key={link.href}
                                 href={link.href}
                                 onClick={() => setIsMenuOpen(false)}
-                                className="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-white"
+                                className="flex items-center gap-2.5 rounded-xl px-2.5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-white"
                               >
-                                <LinkIcon className="h-4 w-4 text-blue-700" />
+                                <LinkIcon className="h-3.5 w-3.5 text-blue-700" />
                                 {link.name}
                               </Link>
                             );
@@ -332,7 +324,7 @@ export default function Navbar() {
                 {directLinks.map((link) => {
                   const Icon = link.icon;
                   return (
-                    <Link key={link.href} href={link.href} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 rounded-3xl border border-slate-200 bg-white px-4 py-4 text-sm font-bold text-slate-700">
+                    <Link key={link.href} href={link.href} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2.5 rounded-2xl border border-slate-200 bg-white px-3 py-3 text-sm font-bold text-slate-700">
                       <Icon className="h-4 w-4 text-blue-700" />
                       {link.name}
                     </Link>
@@ -340,9 +332,14 @@ export default function Navbar() {
                 })}
               </div>
 
-              <Link href="/search" onClick={() => setIsMenuOpen(false)} className="mt-5 inline-flex w-full items-center justify-center rounded-2xl bg-blue-700 px-4 py-4 text-sm font-bold text-white">
-                Start searching names
-              </Link>
+              <div className="mt-4 flex gap-2">
+                <Link href="/search" onClick={() => setIsMenuOpen(false)} className="flex-1 inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700">
+                  Search names
+                </Link>
+                <Link href="/search" onClick={() => setIsMenuOpen(false)} className="flex-1 inline-flex items-center justify-center rounded-xl bg-blue-700 px-4 py-3 text-sm font-bold text-white">
+                  Get started
+                </Link>
+              </div>
             </div>
           </div>
         </>

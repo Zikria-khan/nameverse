@@ -1,6 +1,4 @@
 /**
- * Server-Side Data Fetcher (SSR/ISR)
- *
  * Uses native fetch() with next.revalidate to enable ISR caching.
  * CRITICAL: Using native fetch with next.revalidate tells Next.js
  * this data can be cached, enabling ISR.
