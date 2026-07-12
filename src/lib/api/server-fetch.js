@@ -86,7 +86,8 @@ async function safeFetch(url, retries = 2, revalidate = ISR_TTL) {
  */
 async function isrFetchWithRetry(url, retries = 2, revalidate = ISR_TTL) {
   for (let attempt = 0; attempt <= retries; attempt++) {
-    const result = await safeFetch(url, 0, attempt === 0 ? revalidate : Math.min(revalidate, 60));
+    // Use the same revalidate on all attempts to avoid overriding page-level ISR cache
+    const result = await safeFetch(url, 0, revalidate);
     if (result.data || result.notFound) return result;
     if (attempt < retries) {
       await new Promise(r => setTimeout(r, 200 * (attempt + 1)));
@@ -478,7 +479,7 @@ export async function serverSearchNames(query, options = {}) {
   params.set('limit', String(limit));
   if (religion) params.set('religion', religion);
 
-  const result = await safeFetch(`${API_BASE}/api/v1/names/search?${params.toString()}`, 3600);
+  const result = await safeFetch(`${API_BASE}/api/v1/names/search?${params.toString()}`, 2, 3600);
 
   if (result.error || result.notFound) {
     return { data: [], count: 0, success: true, error: result.error };

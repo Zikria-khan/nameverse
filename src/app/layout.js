@@ -14,7 +14,7 @@ import LoadingWrapper from "@/components/LoadingAnimation/LoadingWrapper";
 import { Suspense } from 'react';
 import RouteChrome from "@/components/Layout/RouteChrome";
 import NativeAdScript from "@/components/Ads/NativeAdScript";
-import StickyBanner from "@/components/Ads/StickyBanner";
+import StickyBottomAd from "@/components/Ads/StickyBottomAd";
 import { getSiteUrl } from '@/lib/seo/site';
 
 const siteUrl = getSiteUrl();
@@ -169,7 +169,7 @@ export default function RootLayout({ children }) {
 
             <Footer />
             <AppInstallPopup />
-            <StickyBanner />
+            <StickyBottomAd />
 
           </AppProvider>
         </div>
