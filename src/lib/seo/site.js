@@ -3,11 +3,17 @@
  * SEO-safe + canonical-safe version
  */
 
-export const SITE_URL = (
+const rawSiteUrl = (
   process.env.NEXT_PUBLIC_SITE_URL || "https://nameverse.vercel.app"
-)
-  .trim()
-  .replace(/\/+$/, ""); // removes ALL trailing slashes safely
+).trim();
+
+// Guarantee a protocol so consumers using `new URL(SITE_URL)` never throw
+// (e.g. an env value like "localhost:3000" without a scheme).
+const normalizedSiteUrl = /^https?:\/\//i.test(rawSiteUrl)
+  ? rawSiteUrl
+  : `https://${rawSiteUrl}`;
+
+export const SITE_URL = normalizedSiteUrl.replace(/\/+$/, ""); // removes ALL trailing slashes safely
 
 /**
  * Normalize path to avoid duplicate URL issues:

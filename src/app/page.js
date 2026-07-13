@@ -6,7 +6,15 @@ import { getSiteUrl } from '@/lib/seo/site';
 
 export const revalidate = 2592000;
 
-const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || getSiteUrl();
+const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL || getSiteUrl();
+const DOMAIN = (() => {
+  try {
+    const candidate = /^https?:\/\//i.test(rawSiteUrl) ? rawSiteUrl : `https://${rawSiteUrl}`;
+    return new URL(candidate).origin;
+  } catch {
+    return 'https://nameverse.vercel.app';
+  }
+})();
 const publishedDate = new Date().toISOString().split('T')[0];
 const homepageUrl = `${DOMAIN}/`;
 const ogImage = `${DOMAIN}/og-home.png`;
